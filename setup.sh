@@ -37,7 +37,7 @@ wget https://daily-builds.s3.amazonaws.com/RavenDB-6.0.4-raspberry-pi.tar.bz2
 tar -xvjf RavenDB-6.0.4-raspberry-pi.tar.bz2
 rm RavenDB-6.0.4-raspberry-pi.tar.bz2
 mkdir -p data/Databases
-sudo mv raspberrypi.stackexchange.com data/RavenData/Databases
+sudo mv raspberrypi.stackexchange.com data/Databases
 mv settings.json RavenDB/Server/settings.json
 RavenDB/install-daemon.sh < /bin/yes
 
@@ -54,6 +54,7 @@ curl 'http://127.0.0.1:8080/admin/databases?name=raspberrypi.stackexchange.com&r
   -X 'PUT' --data-raw '{"DatabaseName":"raspberrypi.stackexchange.com"}'
 
 rm setup.sh # delete self
+rm install.txt # delete install instructions
 
 echo "Setup complete!"
 
