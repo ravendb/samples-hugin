@@ -1,0 +1,14 @@
+[Unit]
+Description=RavenDB Knowledge Application
+
+[Service]
+ExecStart=/usr/bin/node /home/rdb/web/index.js
+Restart=always
+User=rdb
+Group=nogroup
+Environment=PATH=/usr/bin:/usr/local/bin
+Environment=NODE_ENV=production
+WorkingDirectory=/home/rdb/web
+
+[Install]
+WantedBy=multi-user.target

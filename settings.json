@@ -1,0 +1,7 @@
+{
+    "ServerUrl": "http://0.0.0.0:8080",
+    "Setup.Mode": "None",
+    "DataDir": "/home/rdb/data",
+    "License.Eula.Accepted": true,
+    "Security.UnsecuredAccessAllowed": "PublicNetwork"
+}

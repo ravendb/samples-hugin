@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head'); %>
+</head>
+
+<body class="container">
+
+    <header>
+        <%- include('./partials/header'); %>
+    </header>
+
+    <main>
+
+        <% tags.forEach(function(tag) { %>
+            <div class="jumbotron">
+                <strong>
+                    <%= tag.Name %>
+                </strong>
+                - <%= tag.Count %>
+            </div>
+
+            <ul>
+                <% tag.recentQuestions.forEach(function(question) { %>
+                    <li>
+                        <%= question.Title %> @ <%= question.CreationDate %> by <%= question.Owner %>
+                                    [<%= question.Tags.join(", ") %>] with <%= question.Answers.length %> answers
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% }); %>
+
+    </main>
+
+    <footer>
+        <%- include('./partials/footer'); %>
+    </footer>
+
+</body>
+
+</html>
