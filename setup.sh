@@ -23,13 +23,13 @@ sudo mv etc.wpa_supplicant.wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplican
 sudo mv etc.nginx.sites-available.default /etc/nginx/sites-available/default
 sudo mv etc.dhcpcd.conf /etc/dhcpcd.conf
 sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf 
-sudo mv etc.dnsmasq.conf /etc/dnsmasq.confs
-sudo sed -i 's/#DNSMASQ_EXCEPT=lo/DNSMASQ_EXCEPT=lo/g' /etc/default/dnsmasq
+sudo mv etc.dnsmasq.conf /etc/dnsmasq.conf
+sudo sed -i 's/#DNSMASQ_EXCEPT="lo"/DNSMASQ_EXCEPT="lo"/g' /etc/default/dnsmasq
 
 # restart services and prepare...
 sudo systemctl disable wpa_supplicant
 sudo systemctl enable dnsmasq
-sudo systemctl start dnsmasq
+sudo systemctl restart dnsmasq
 sudo service dhcpcd restart
 sudo nginx -s reload
 
