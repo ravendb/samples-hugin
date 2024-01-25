@@ -8,54 +8,68 @@ set -e
 sudo raspi-config nonint do_wifi_country IL
 sudo rfkill unblock wifi
 
-# update and upgrade the system
-sudo apt-get update
-sudo apt-get -y upgrade
+sudo swapoff /var/swap
+sudo dd if=/dev/zero of=/var/swap count=8 bs=128M
+sudo mkswap /var/swap
+sudo chmod 0600 /var/swap
+sudo swapon /var/swap
 
 # install node.js from nodesource (raspbian has only node 12)
 curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && sudo apt-get install -y nodejs
 
 # install nginx and dnsmasq
-sudo apt-get install -y nginx dnsmasq
+sudo apt-get install -y nginx dnsmasq dhcpcd
+sudo dpkg -i ravendb.deb
+rm  ravendb.deb
+
+sudo mkdir -p /var/lib/ravendb/data/Databases
+sudo mv raspberrypi.stackexchange.com /var/lib/ravendb/data/Databases/raspberrypi.stackexchange.com
+sudo chown --recursive ravendb:ravendb /var/lib/ravendb/data/Databases
+sudo mv settings.json /etc/ravendb/settings.json
+sudo chown root:ravendb /etc/ravendb/settings.json
+sudo systemctl restart ravendb
+
+# setup the web app users
+getent group node-apps || sudo groupadd node-apps
+NODE_GID=$(getent group node-apps | cut -d ':' -f 3)
+getent passwd hugin-web || sudo adduser --disabled-login --disabled-password --system \
+  --home /var/lib/hugin-web --no-create-home --quiet --gid "$NODE_GID" hugin-web
+
+cd ~/web
+npm install
+cd ~/
+sudo mv ./web /usr/lib/hugin-web
+sudo chown --recursive root:node-apps /usr/lib/hugin-web
+sudo mv hugin-web.service /etc/systemd/system/hugin-web.service
+sudo systemctl enable hugin-web
+
+
+curl 'http://127.0.0.1:8080/admin/databases?name=raspberrypi.stackexchange.com&replicationFactor=1' \
+  -X 'PUT' --data-raw '{"DatabaseName":"raspberrypi.stackexchange.com"}'
+
+
+sudo systemctl start hugin-web
+
 
 # configuration of the system
 sudo mv etc.wpa_supplicant.wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
 sudo mv etc.nginx.sites-available.default /etc/nginx/sites-available/default
 sudo mv etc.dhcpcd.conf /etc/dhcpcd.conf
-sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf 
 sudo mv etc.dnsmasq.conf /etc/dnsmasq.conf
+
 sudo sed -i 's/#DNSMASQ_EXCEPT="lo"/DNSMASQ_EXCEPT="lo"/g' /etc/default/dnsmasq
+sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf 
 
 # restart services and prepare...
-sudo systemctl disable wpa_supplicant
+sudo systemctl stop wpa_supplicant
+sudo systemctl mask wpa_supplicant
+
 sudo systemctl enable dnsmasq
 sudo systemctl restart dnsmasq
 sudo service dhcpcd restart
+sudo wpa_cli -i wlan0 reconfigure
 sudo nginx -s reload
 
-wget https://daily-builds.s3.amazonaws.com/RavenDB-6.0.4-raspberry-pi.tar.bz2
-tar -xvjf RavenDB-6.0.4-raspberry-pi.tar.bz2
-rm RavenDB-6.0.4-raspberry-pi.tar.bz2
-mkdir -p data/Databases
-sudo mv raspberrypi.stackexchange.com data/Databases
-mv settings.json RavenDB/Server/settings.json
-RavenDB/install-daemon.sh < /bin/yes
+rm * # cleanup directoy
 
-
-# setup the web app
-cd ~/web
-npm install
-sudo mv web.service /etc/systemd/system/web.service
-sudo systemctl enable web
-sudo systemctl start web
-cd ..
-
-curl 'http://127.0.0.1:8080/admin/databases?name=raspberrypi.stackexchange.com&replicationFactor=1' \
-  -X 'PUT' --data-raw '{"DatabaseName":"raspberrypi.stackexchange.com"}'
-
-rm setup.sh # delete self
-rm install.txt # delete install instructions
-
-echo "Setup complete!"
-
-# we are done!
+echo "Ready ..."
