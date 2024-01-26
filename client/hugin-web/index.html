@@ -1,16 +1,122 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/raven.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hugin</title>
+  <title>RavenDB Raspberry App</title>
+  <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
+
+
+  <!-- <div class="container mt-5">
+    <div class="row mt-4">
+      <div class="col-md-8 mb-3">
+        <div class="card p-5">
+          <div class="hstack gap-4 align-items-center mb-4">
+            <img src="./img/raspberry-pi.svg" width="50px" alt="" />
+            <h2 class="m-0">How to install RavenDB on Raspberry Pi</h2>
+          </div>
+          <p class="lead">Here's how you can install RavenDB on your Raspberry Pi:</p>
+          <ul>
+            <li>Step 1: Install the required dependencies</li>
+            <li>Step 2: Download and extract RavenDB</li>
+            <li>Step 3: Run RavenDB</li>
+          </ul>
+          <h3>Questions</h3>
+          <ul>
+            <li>
+              <h4>Why did we put RavenDB on a Raspberry?</h4>
+              <p>In short, because we can!</p>
+              <p>
+                RavenDB can run on the Raspberry Pi, it is actually an important use case for us when our users are
+                deploying RavenDB as part of Internet of Things systems. We wanted to showcase RavenDB’s performance
+                and decided that instead of scaling up and showing you how well RavenDB does ridiculous loads, we’ll
+                go the other way around. We’ll go small, and let you directly experience how efficient RavenDB is.
+              </p>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-3">
+        <div class="card p-3 mb-3">
+          <div class="tag-cloud" id="tagCloud"></div>
+        </div>
+        <div class="card p-3 mb-3">
+          <h3>Users</h3>
+
+          <ul>
+            <li>John</li>
+            <li>Doe</li>
+            <li>Alice</li>
+            <li>Smith</li>
+            <li>Bob</li>
+            <li>Johnson</li>
+            <li>Eva</li>
+            <li>Morgan</li>
+            <li>Charlie</li>
+            <li>Miller</li>
+          </ul>
+        </div>
+        <div class="card p-3 mb-3">
+          <h3>Get started with RavenDB</h3>
+
+          <ul>
+            <li><a href="https://ravendb.net/">RavenDB Home Page</a></li>
+            <li><a href="https://ravendb.net/try">RavenDB Try</a></li>
+            <li><a href="https://github.com/ravendb/ravendb/discussions">Github Discussions</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+  <script src="./js/bootstrap.min.js"></script>
+  <!-- <script>
+    const tags = [
+      { name: "Raspberry Pi", frequency: 20 },
+      { name: "Raspbian", frequency: 16 },
+      { name: "GPIO", frequency: 12 },
+      { name: "Python", frequency: 18 },
+      { name: "Linux", frequency: 14 },
+      { name: "Docker", frequency: 8 },
+      { name: "Node.js", frequency: 6 },
+      { name: "IoT", frequency: 19 },
+      { name: "Raspberry Pi OS", frequency: 4 },
+      { name: "Pi Zero", frequency: 16 },
+      { name: "Pi Camera", frequency: 12 },
+      { name: "SSH", frequency: 14 },
+      { name: "Headless", frequency: 5 },
+      { name: "Sense HAT", frequency: 10 },
+      { name: "Pi 4", frequency: 18 },
+      { name: "RetroPie", frequency: 3 },
+      { name: "Home Automation", frequency: 15 },
+      { name: "Pi-hole", frequency: 13 },
+      { name: "Python GPIO", frequency: 10 },
+      { name: "Robotics", frequency: 17 },
+    ];
+
+    function generateTagCloud(tags) {
+      const tagCloudContainer = document.getElementById("tagCloud");
+
+      tags.forEach((tag) => {
+        const tagElement = document.createElement("span");
+        tagElement.textContent = tag.name;
+        tagElement.style.fontSize = `${tag.frequency * 1 + 5}px`;
+
+        tagElement.className = "tag";
+
+        tagCloudContainer.appendChild(tagElement);
+      });
+    }
+    generateTagCloud(tags);
+  </script> -->
+
 </body>
 
 </html>
