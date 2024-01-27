@@ -1,24 +1,27 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "../styles/components/app-header.css";
-import { useSearchParams } from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { getQuestions } from "../services/data.service";
 import { useDispatch } from "react-redux";
 import { setQuestions } from "../store/questionSlice";
 
 function AppHeader() {
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const dispatch = useDispatch();
   const [searchTerm, setSearchTerm] = useState(searchParams.get("term") || "");
 
-  function onSearch() {
-    const q = getQuestions();
+  const onSearch = useCallback(async () => {
+    const q = await getQuestions();
     dispatch(setQuestions(q));
-  }
+  }, [dispatch]);
 
   useEffect(() => {
-    if (searchTerm) onSearch();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    const searchTermFromParams = searchParams.get("term");
+    setSearchTerm(searchTermFromParams || "");
+    if (!searchTermFromParams) return;
+    onSearch();
+  }, [searchParams, location.search, onSearch]);
 
   return (
     <header className="hero">

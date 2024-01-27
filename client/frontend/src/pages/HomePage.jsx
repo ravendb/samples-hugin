@@ -57,15 +57,15 @@ function HomePage() {
               add more yourself):
             </p>
             <p className="tech-link">
-              <img src="/img/raspberry-pi.svg" alt="raspberry-pi" />
+              <img src="/img/raspberrypi.svg" alt="raspberry-pi" />
               raspberrypi.stackexchange.com
             </p>
             <p className="tech-link">
-              <img src="/img/linux.svg" alt="linux" />
+              <img src="/img/unix.svg" alt="linux" />
               unix.stackexchange.com
             </p>
             <p className="tech-link">
-              <img src="/img/server.svg" alt="server" />
+              <img src="/img/serverfault.svg" alt="server" />
               serverfault.com
             </p>
             <p>

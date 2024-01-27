@@ -1,10 +1,8 @@
-import { useQuestions } from "../hooks/useQuestions";
+/* eslint-disable react/prop-types */
 import "../styles/components/question-list.css";
 import QuestionPreview from "./QuestionPreview";
 
-function QuestioList() {
-  const { questions } = useQuestions();
-
+function QuestionList({ questions }) {
   return (
     <ul className="question-list">
       {questions.map((question, i) => (
@@ -16,4 +14,4 @@ function QuestioList() {
   );
 }
 
-export default QuestioList;
+export default QuestionList;

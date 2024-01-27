@@ -3,20 +3,20 @@ const cards = [
     name: "Raspberry Pi",
     description:
       "Raspberry Pi Stack Exchange is a question and answer site for users and developers of hardware and software for Raspberry Pi",
-    image: "raspberry-pi.svg",
+    image: "raspberrypi.svg",
     alt: "Raspberry Pi logo",
   },
   {
     name: "Server Fault",
     description:
       "Server Faults is a question and answer site for system and network administrators",
-    image: "server.svg",
+    image: "serverfault.svg",
   },
   {
     name: "Unix & Linux",
     description:
       "Unix & Linux Stack Exchange Is a question and answer site for users of Linux, FreeBSD and other Un*x-like operating systems",
-    image: "linux.svg",
+    image: "unix.svg",
   },
 ];
 
@@ -24,13 +24,10 @@ export function getCards() {
   return cards;
 }
 
-export function getCard(name) {
-  return cards.find((card) => card.name === name);
-}
-
 const demoQuestions = [
   {
     AcceptedAnswerId: 0,
+    Community: "raspberrypi",
     CreationDate: "2023-12-01T21:55:15.6200000",
     Score: 0,
     ViewCount: 10,
@@ -55,6 +52,7 @@ const demoQuestions = [
   },
   {
     AcceptedAnswerId: 0,
+    Community: "serverfault",
     CreationDate: "2023-12-01T11:46:25.1800000",
     Score: 0,
     ViewCount: 13,
@@ -78,6 +76,7 @@ const demoQuestions = [
   },
   {
     AcceptedAnswerId: 0,
+    Community: "unix",
     CreationDate: "2023-11-30T08:56:35.3900000",
     Score: 0,
     ViewCount: 22,
@@ -101,6 +100,7 @@ const demoQuestions = [
   },
   {
     AcceptedAnswerId: 0,
+    Community: "raspberrypi",
     CreationDate: "2023-11-27T11:17:37.1470000",
     Score: -1,
     ViewCount: 9,
@@ -124,6 +124,7 @@ const demoQuestions = [
   },
   {
     AcceptedAnswerId: 0,
+    Community: "raspberrypi",
     CreationDate: "2023-11-20T21:48:12.2970000",
     Score: 0,
     ViewCount: 29,
@@ -147,6 +148,7 @@ const demoQuestions = [
   },
   {
     AcceptedAnswerId: 0,
+    Community: "raspberrypi",
     CreationDate: "2023-11-19T17:22:39.4630000",
     Score: 0,
     ViewCount: 12,
@@ -170,6 +172,7 @@ const demoQuestions = [
   },
   {
     AcceptedAnswerId: 0,
+    Community: "raspberrypi",
     CreationDate: "2023-11-16T17:24:21.4700000",
     Score: 0,
     ViewCount: 45,
@@ -216,6 +219,7 @@ const demoQuestions = [
   },
   {
     AcceptedAnswerId: 0,
+    Community: "raspberrypi",
     CreationDate: "2023-11-05T06:32:05.1530000",
     Score: 0,
     ViewCount: 59,
@@ -239,6 +243,7 @@ const demoQuestions = [
   },
   {
     AcceptedAnswerId: 0,
+    Community: "raspberrypi",
     CreationDate: "2023-10-18T16:37:28.4700000",
     Score: 0,
     ViewCount: 21,
@@ -263,6 +268,7 @@ const demoQuestions = [
   },
   {
     AcceptedAnswerId: 0,
+    Community: "raspberrypi",
     CreationDate: "2023-10-12T03:29:29.5200000",
     Score: 0,
     ViewCount: 18,
@@ -286,111 +292,78 @@ const demoQuestions = [
   },
 ];
 
-export function getQuestions() {
-  return demoQuestions;
+export async function getQuestions() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(demoQuestions);
+    }, 2000);
+  });
 }
 
 const demoQuesiton = {
-  AcceptedAnswerId: 3545,
-  CreationDate: "2012-11-09T17:02:36.9770000",
-  Score: 22,
-  ViewCount: 47693,
-  Body: '<p>I have a Raspberry pi B, using Debian, just rigged up with a 3.5 inch TFT-LCD monitor via VGA. The text size in command line mode is too small to read, so I would like to increase its size, and one method says "edit /boot/config.txt". However the command <code>ls /boot</code> shows no <code>config.txt</code> -- the only <code>.txt</code> file is <code>cmdline.txt</code>.</p>\n\n<p>Another method ref: <a href="http://www.raspberrypi-spy.co.uk/2012/11/cheap-miniature-lcd-screen">http://www.raspberrypi-spy.co.uk/2012/11/cheap-miniature-lcd-screen</a> which says use <code>sudo  dpkg-reconfigure console-setup</code> doesn\'t seem to make any difference.</p>\n\n<p>Have I done something wrong? I\'d appreciate any help in progressing forward from here.</p>\n',
-  Owner: "users/3216",
-  LastEditor: "users/3228",
-  LastEditDate: "2012-11-10T11:12:07.9970000",
-  Title: "How do I increase the terminal font size?",
-  Tags: ["debian", "config.txt"],
+  Community: "raspberrypi",
+  AcceptedAnswerId: 0,
+  CreationDate: "2023-06-21T00:26:45.3300000",
+  Score: 0,
+  ViewCount: 748,
+  Body: "<p>I am new to Raspberry Pi and I want to do real-time object detection using YOLOv8 tentatively (will change if the fps is too low). I realize that by using the code below, it can't detect Pi Cam as the source and run into an error. The Pi Cam works fine with <code>libcamera-hello</code> and managed to capture photo everything. I also enabled the legacy camera feature. The code works fine with USB webcam.</p>\n<p>Code:</p>\n<pre><code>from ultralytics import YOLO\n\nmodel = YOLO('best.pt')\nresults = model.predict(source=0, show=True)\n\nprint(results)\n</code></pre>\n<p>Error:\nConnectionError: 1/1: 0... Failed to read images from 0</p>\n<p>I thought of one solution which is to capture image every time and pass to the model to predict, but it only produces an image every 2.5s. I guess maybe the model reinitialize every time it predicts an image again.</p>\n<p>Code:</p>\n<pre><code>import cv2\nfrom picamera2 import Picamera2\nfrom ultralytics import YOLO\nimport numpy as np\n\ncv2.startWindowThread()\n\npicam2 = Picamera2()\npicam2.configure(picam2.create_preview_configuration(main={&quot;format&quot;: 'XRGB8888', &quot;size&quot;: (640, 480)}))\npicam2.start()\n\nmodel = YOLO('best.pt')\n\nwhile True:\n    im = picam2.capture_array()\n\n    img = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)\n    results = model.predict(img)\n\n    for box in results[0].boxes:\n        x = int(np.floor(box[0].xywh[0][0].item()))\n        y = int(np.floor(box[0].xywh[0][1].item()))\n        w = int(np.floor(box[0].xywh[0][2].item()))\n        h = int(np.floor(box[0].xywh[0][3].item()))\n        \n        cv2.rectangle(im, (x, y), (x + w, y + h), (0, 255, 0))\n\n    cv2.imshow(&quot;Camera&quot;, im)\n</code></pre>\n<p>So, there are two questions in my mind:</p>\n<ol>\n<li>How to set Pi Cam as the default <code>source=0</code> to have real-time object detection using YOLOv8?</li>\n<li>How to prevent reinitialization of the YOLO model for image prediction? (If my guess is correct)</li>\n</ol>\n",
+  Owner: "users/raspberrypi/155333",
+  LastEditor: null,
+  LastEditDate: null,
+  Title: "How to stream from Pi Camera to YOLO model?",
+  Tags: ["camera", "webcam", "picamera", "streaming"],
   FavoriteCount: 0,
   Answers: [
     {
-      Id: 3545,
-      CreationDate: "2012-11-09T17:58:17.5830000",
-      Score: 17,
-      ViewCount: 0,
-      Body: "<p>I have this problem, too, when I'm using my huge TV. Try this:</p>\n\n<p>setfont /usr/share/consolefonts/Lat15-TerminusBold20x10.psf.gz</p>\n\n<p>To see a list of available fonts:\nls /usr/share/consolefonts/</p>\n\n<p>The numbers at the end indicate width and height (though not always that exact!)</p>\n\n<p>No idea why config.txt is missing.\nHowever, you can use this:</p>\n\n<p><a href=\"https://raw.github.com/Evilpaul/RPi-config/master/config.txt\">https://raw.github.com/Evilpaul/RPi-config/master/config.txt</a></p>\n\n<p>as a template for creating a new one.</p>\n\n<p>My guess would be that a) it's been deleted accidentally or b) has been corrupted in some way in the file system and has disappeared. (a is more likely)</p>\n",
-      Owner: "users/2949",
-      LastEditor: "users/2949",
-      LastEditDate: "2012-11-10T04:57:04.6630000",
-      Comments: [],
-    },
-    {
-      Id: 14182,
-      CreationDate: "2014-03-04T18:10:03.5000000",
-      Score: 5,
-      ViewCount: 0,
-      Body: "<p>You can use <code>setfont</code> from a terminal to set the current console font to one of the fonts found in <code>/usr/share/consolefonts/</code>. You don't need to specify the full path or the .psf.gz suffix. Just something like:</p>\n\n<pre><code>setfont Lat15-Fixed18\n</code></pre>\n\n<p>will do the trick. You can play around until you find a font you like, and then to make it systemwide and default, you can specify it in <code>/etc/kbd/config</code> as the kbd package/service takes it upon itself to monkey with the console font during startup.</p>\n\n<p>As a side note, you may find the you have to create a custom entry in <code>/etc/fb.modes</code> to get a native resolution on the small screen so the display looks nice and crisp.</p>\n",
-      Owner: "users/13278",
-      LastEditor: null,
-      LastEditDate: null,
-      Comments: [],
-    },
-    {
-      Id: 33765,
-      CreationDate: "2015-07-23T23:13:09.5370000",
-      Score: 2,
-      ViewCount: 0,
-      Body: "<p>Here's the simplest solution: When you log in to Linux (or Unix) a file named <code>.profile</code> is executed by the shell. I recently got a 7\" LCD, 1024x600 monitor. For the last 2 years I've communicated with my Rpi through ssh, but now I needed a system with a small monitor. So I edited the <code>.profile</code> file and added the following line at the end:</p>\n\n<pre><code>setfont /usr/share/consolefonts/Uni3-Terminus28x14.pst.gz\n</code></pre>\n\n<p>A 14x28 pixel font that works for me. There many (hundreds of) fonts. If you like a bit smaller try 24x12 or bigger 32x16.</p>\n",
-      Owner: "users/33078",
-      LastEditor: "users/9050",
-      LastEditDate: "2015-07-25T11:17:42.5900000",
-      Comments: [],
-    },
-    {
-      Id: 33767,
-      CreationDate: "2015-07-24T00:38:23.8000000",
+      Id: 143637,
+      CreationDate: "2023-07-05T01:54:00.9270000",
       Score: 0,
       ViewCount: 0,
-      Body: '<p>Clicking on the "edit" tab in LXTerminal -->\nGo to preferences -->\nClick on "Style" tab -->\nHere you can change your font, size, color &amp; background</p>\n',
-      Owner: "users/32830",
-      LastEditor: null,
-      LastEditDate: null,
+      Body: "<p>I got an idea:</p>\n<ol>\n<li><p>to see if the Pi Cam can be detected by your computer<br />\nin cmd:\n'pip install pygame'<br />\nand run the following python code<br />\n<code>import pygame.camera</code><br />\n<code>pygame.camera.init()</code><br />\n<code>camera_id_list = pygame.camera.list_cameras()</code><br />\n<code>print(camera_id_list)</code><br />\nIf the result comes out to be 0 which is the id of your computer own cam, you can't use the Pi cam directly.If there are other numbers in the result,  you can try by changing to 'source=1' for example.</p>\n</li>\n<li><p>to get other components provided by raspberrypi<br />\nI don't have an intimate knowledge of this, so I can't offer you some valuable suggestions.</p>\n</li>\n<li><p>to read the picamera document<br />\nclick the link: <a href=\"https://picamera.readthedocs.io/en/release-1.13/recipes2.html\" rel=\"nofollow noreferrer\">https://picamera.readthedocs.io/en/release-1.13/recipes2.html</a><br />\nand you can see something helpful for you in the section <code>4.2 Capturing to an OpenCV object</code></p>\n</li>\n</ol>\n",
+      Owner: "users/raspberrypi/155566",
+      LastEditor: "users/raspberrypi/155566",
+      LastEditDate: "2023-07-05T03:20:38.4070000",
       Comments: [],
     },
     {
-      Id: 103562,
-      CreationDate: "2019-09-14T14:18:26.2200000",
-      Score: 3,
-      ViewCount: 0,
-      Body: '<p>7 years later, I was having the same issue, and the solution that worked for me was "Method 2" from <a href="https://www.raspberrypi-spy.co.uk/2014/04/how-to-change-the-command-line-font-size/" rel="nofollow noreferrer">https://www.raspberrypi-spy.co.uk/2014/04/how-to-change-the-command-line-font-size/</a>.</p>\n\n<p>In short, I did <code>sudo nano /etc/default/console-setup</code> and updated the <code>FONTFACE</code> and <code>FONTSIZE</code> fields to the size I wanted:</p>\n\n<pre><code>FONTFACE="Terminus"\nFONTSIZE="16x32"\n</code></pre>\n\n<p>Then I saved the file and rebooted the pi.</p>\n\n<p>The benefit of doing it this way is that it works from the moment the device boots, instead of only kicking in after I log in (as with the answers that use <code>.profile</code>).</p>\n\n<p>Incidentally, to figure out what values to use for font face and size, I looked in the <code>/usr/share/consolefonts/</code> directory (as suggested above), and went from there.</p>\n',
-      Owner: "users/109101",
-      LastEditor: null,
-      LastEditDate: null,
-      Comments: [],
-    },
-    {
-      Id: 115915,
-      CreationDate: "2020-08-05T12:41:43.4100000",
+      Id: 145169,
+      CreationDate: "2023-12-02T13:52:18.2100000",
       Score: 0,
       ViewCount: 0,
-      Body: "<p>The easiest way is to right-click inside the terminal window and select...</p>\n<p>&quot;Preferences&quot;</p>\n<p>In the &quot;Style&quot; tab select top item &quot;Terminal font&quot; by clicking on the name of the font displayed in that field.  Then select the font you want and its size using the selection pop-up window.</p>\n<p>You can even search for a specific font like &quot;mono&quot; or &quot;sans&quot; in the search field.</p>\n",
-      Owner: "users/123850",
+      Body: '<p>Check out the Ultralytics docs on this: <a href="https://docs.ultralytics.com/guides/raspberry-pi/#quick-start-with-yolov8" rel="nofollow noreferrer">https://docs.ultralytics.com/guides/raspberry-pi/#quick-start-with-yolov8</a></p>\n',
+      Owner: "users/raspberrypi/157763",
       LastEditor: null,
       LastEditDate: null,
-      Comments: [],
-    },
-    {
-      Id: 145168,
-      CreationDate: "2023-12-02T09:51:26.7170000",
-      Score: 0,
-      ViewCount: 0,
-      Body: "<p>The answers of PicktownBuckeye and iDug are the best for me.\nthe solution they give is good for me, previously I had to get very close to my TV screen ! I do not understand why they are noted 0 ( I tried the other with no success to increase fonts on my Samsung TV screen). Look at the number at right of the font and increase it.</p>\n",
-      Owner: "users/158168",
-      LastEditor: null,
-      LastEditDate: null,
-      Comments: [],
+      Comments: [
+        {
+          Id: 248153,
+          Score: 0,
+          Text: "While this link may answer the question, it is better to include the essential parts of the answer here and provide the link for reference.  Link-only answers can become invalid if the linked page changes. - [From Review](/review/late-answers/133023)",
+          CreationDate: "2023-12-03T01:07:08.5900000",
+          User: "users/raspberrypi/8697",
+        },
+      ],
     },
   ],
-  Comments: [],
+  Comments: [
+    {
+      Id: 248153,
+      Score: 0,
+      Text: "While this link may answer the question, it is better to include the essential parts of the answer here and provide the link for reference.  Link-only answers can become invalid if the linked page changes. - [From Review](/review/late-answers/133023)",
+      CreationDate: "2023-12-03T01:07:08.5900000",
+      User: "users/raspberrypi/8697",
+    },
+  ],
   "@metadata": {
     "@collection": "Questions",
     "Raven-Clr-Type": "Question, StackExchange.Import",
-    "@change-vector": "A:180338-PMuQEi92dkClK2hwMQItUw",
-    "@id": "questions/3543",
-    "@last-modified": "2024-01-22T17:15:48.1768064Z",
   },
 };
 
-export function getQuestion() {
-  return demoQuesiton;
+export async function getQuestion() {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(demoQuesiton);
+    }, 2000);
+  });
 }
