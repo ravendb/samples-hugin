@@ -1,3 +1,7 @@
 /raspberrypi.stackexchange.com/
 /client/server/node_modules/
 /web/node_modules/
+/client/server/package-lock.json
+/ravendb.deb
+/web/package-lock.json
+/client/hugin-web/package-lock.json

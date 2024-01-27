@@ -44,12 +44,13 @@ app.get("/api/cards", (req, res) => {
             description: "Unix & Linux Stack Exchange Is a question and answer site for users of Linux, FreeBSD and other Un*x-like operating systems",
             image: "linux.svg",
             link: "/technology/unix"
-        }, {
-            name: "RavenDB",
-            description: "Learn more about RavenDB and how to best use it",
-            image: "ravendb-logo.svg",
-            link: "/technology/ravendb"
         },
+        //  {
+        //     name: "RavenDB",
+        //     description: "Learn more about RavenDB and how to best use it",
+        //     image: "ravendb-logo.svg",
+        //     link: "/technology/ravendb"
+        // },
     ]
 
     res.send({
