@@ -1,0 +1,20 @@
+.comment {
+  display: flex;
+  gap: 10px;
+  padding: 20px;
+  color: #f0f1f6;
+  border-top: 1px solid #616587;
+}
+
+.comment-text {
+  margin: 0;
+}
+
+.comment-owner {
+  color: #616587;
+  font-weight: 600;
+}
+
+.comment-creation-date {
+  color: #929292;
+}
