@@ -26,3 +26,14 @@ img {
 a {
   color: #629ee1;
 }
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  box-shadow: 0 0 18.5px rgba(24, 24, 38, 0.8);
+  text-align: left;
+  border-radius: 5px;
+  background-color: #1e1f2b;
+}

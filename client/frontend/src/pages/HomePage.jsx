@@ -56,18 +56,18 @@ function HomePage() {
               Hugin comes by default with the following data sets (and you can
               add more yourself):
             </p>
-            <p className="tech-link">
+            <div className="tech-link">
               <img src="/img/raspberrypi.svg" alt="raspberry-pi" />
-              raspberrypi.stackexchange.com
-            </p>
-            <p className="tech-link">
+              <p>raspberrypi.stackexchange.com</p>
+            </div>
+            <div className="tech-link">
               <img src="/img/unix.svg" alt="linux" />
-              unix.stackexchange.com
-            </p>
-            <p className="tech-link">
+              <p>unix.stackexchange.com</p>
+            </div>
+            <div className="tech-link">
               <img src="/img/serverfault.svg" alt="server" />
-              serverfault.com
-            </p>
+              <p>serverfault.com</p>
+            </div>
             <p>
               Hugin is typically deployed on a Raspberry Pi Zero 2 W (but is
               compatbile with any Raspberry Pi release in the last decade or
@@ -160,8 +160,8 @@ function HomePage() {
             </p>
             <img src="/img/ravendb-logo.svg" alt="RavenDB's Logo" />
           </div>
-          <div className="card p-3 mb-3">
-            <img src="/img/raven.svg" alt="RavenDB's Logo" width="{50}" />
+          <div className="card">
+            <img src="/img/raven.svg" alt="RavenDB's Logo" className="raven-icon" />
             <h3>Learn more about RavenDB</h3>
             <ul>
               <li>

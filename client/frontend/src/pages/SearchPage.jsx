@@ -8,11 +8,18 @@ function SearchPage() {
 
   return (
     <main className="search-page">
-      {isQuestionListEmpty ? (
-        <div className="loader">Loading...</div>
-      ) : (
-        <QuestionList questions={questions} />
-      )}
+      <div className="question-container">
+        {isQuestionListEmpty ? (
+          <div className="loader">Loading...</div>
+        ) : (
+          <QuestionList questions={questions} />
+        )}
+      </div>
+
+      <div className="card search-page-info-card">
+        <div>questions length:</div>
+        <div>{questions.length}</div>
+      </div>
     </main>
   );
 }

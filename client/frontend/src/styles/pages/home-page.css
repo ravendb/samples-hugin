@@ -13,17 +13,6 @@
   padding-top: 18.5px;
 }
 
-.card {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  box-shadow: 0 0 18.5px rgba(24, 24, 38, 0.8);
-  text-align: left;
-  border-radius: 5px;
-  background-color: #1e1f2b;
-}
-
 .tag-card {
   background-color: #233551;
   color: #629ee1;
@@ -55,8 +44,10 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  margin: 30px calc(-0.5 * 1.5rem) 18px;
+  margin: 30px auto;
   padding: 0 30px;
+  width: 100%;
+  max-width: 1200px;
 }
 
 .info-container h3 {
@@ -90,7 +81,13 @@
 }
 
 .hugin-description {
-  padding: 50px;
+  padding: 30px;
+}
+
+@media screen and (min-width: 767px) {
+  .hugin-description {
+    padding: 50px;
+  }
 }
 
 .hugin-description img {
@@ -120,6 +117,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+  word-break: break-all;
 }
 
 .right-col {
@@ -130,6 +128,11 @@
 
 .right-col > * {
   padding: 18.5px;
+}
+
+.raven-icon {
+  width: 100%;
+  max-width: 50px;
 }
 
 @media screen and (min-width: 768px) {
