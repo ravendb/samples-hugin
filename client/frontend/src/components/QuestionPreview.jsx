@@ -9,9 +9,7 @@ function QuestionPreview({ question }) {
   const text = question.Body.replace(/<[^>]+>/g, "").slice(0, 200) + "...";
 
   function handlePreviewclick() {
-    const rawId = question["@metadata"]["@id"];
-    const id = rawId.replace("questions/", "");
-    navigate(`/question/${id}`);
+    navigate(`/question?id=${question.id}`);
   }
 
   return (
@@ -45,14 +43,6 @@ function QuestionPreview({ question }) {
 
       <footer className="question-preview-footer">
         <TagList tags={question.Tags} />
-        {/* <div className="question-preview-tags">
-          {question.Tags.map((tag) => (
-            <div key={tag} className="question-preview-tag">
-              <span>{tag}</span>
-            </div>
-          ))}
-        </div> */}
-
         <div className="question-preview-details">
           <span className="question-preview-owner">{question.Owner}</span>
           {question.FavoriteCount > 0 && (

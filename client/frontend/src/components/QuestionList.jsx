@@ -2,10 +2,10 @@
 import "../styles/components/question-list.css";
 import QuestionPreview from "./QuestionPreview";
 
-function QuestionList({ questions }) {
+function QuestionList({ queryResult }) {
   return (
     <ul className="question-list">
-      {questions.map((question, i) => (
+      {queryResult.results.map((question, i) => (
         <li key={i}>
           <QuestionPreview question={question} />
         </li>

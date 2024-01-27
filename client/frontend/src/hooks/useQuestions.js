@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux";
 
 export function useQuestions() {
-  const { questions, question } = useSelector((state) => state.question);
+  const { queryResult, question } = useSelector((state) => state.question);
 
   return {
-    questions,
+    queryResult,
     question,
   };
 }

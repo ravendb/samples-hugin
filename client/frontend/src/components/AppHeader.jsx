@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import "../styles/components/app-header.css";
 import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
-import { getQuestions } from "../services/data.service";
+import { queryQuestions } from "../services/data.service";
 import { useDispatch } from "react-redux";
-import { setQuestions } from "../store/questionSlice";
+import { setQueryResult } from "../store/questionSlice";
 
 function AppHeader() {
   const [searchParams] = useSearchParams();
@@ -12,15 +12,23 @@ function AppHeader() {
   const dispatch = useDispatch();
 
   const [searchTerm, setSearchTerm] = useState(searchParams.get("q") || "");
-  const community = searchParams.get("community");
-  const tag = searchParams.get("tag");
 
   const onSearch = useCallback(async (args) => {
-    const q = await getQuestions(args);
-    dispatch(setQuestions(q));
+    const q = await queryQuestions(args);
+    dispatch(setQueryResult(q.data));
   }, [dispatch]);
+
   function onSearchClick() {
-    navigate(`/search?q=${searchTerm}`);
+    let url = `/search?q=${searchTerm}`;
+    const community = searchParams.get("community");
+    if (community)
+      url += '&community=' + community;
+
+    const tag = searchParams.get("tag");
+    if (tag)
+      url += '&tag=' + tag;
+
+    navigate(url);
   }
 
   function inputChangeHandler(e) {
@@ -29,9 +37,10 @@ function AppHeader() {
 
   useEffect(() => {
     const community = searchParams.get("community");
-    setSearchTerm(community || "");
-    if (!community) return;
-    onSearch({ community, });
+    const tag = searchParams.get("tag");
+    const q = searchParams.get("q");
+    setSearchTerm(q || "");
+    onSearch({ community, q, tag });
   }, [searchParams, location.search, onSearch]);
 
   return (

@@ -9,8 +9,8 @@ const questionSlice = createSlice({
   name: "question",
   initialState,
   reducers: {
-    setQuestions: (state, action) => {
-      state.questions = action.payload;
+    setQueryResult: (state, action) => {
+      state.queryResult = action.payload;
     },
     setQuestion: (state, action) => {
       state.question = action.payload;
@@ -18,6 +18,6 @@ const questionSlice = createSlice({
   },
 });
 
-export const { setQuestions, setQuestion } = questionSlice.actions;
+export const { setQueryResult, setQuestion } = questionSlice.actions;
 
 export default questionSlice.reducer;

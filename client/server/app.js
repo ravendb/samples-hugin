@@ -56,7 +56,7 @@ app.get("/api/search", async (req, res) => {
         .execute();
 
     const results = await createQuery()
-        .orderByDescending(req.query.orderBy || "CreatedDate")
+        //  .orderByDescending(req.query.orderBy || "CreatedAt")
         .include("Owner")
         .all();
 
