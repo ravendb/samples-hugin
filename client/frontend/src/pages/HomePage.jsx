@@ -1,33 +1,45 @@
 import { useNavigate } from "react-router-dom";
-import { getCards } from "../services/data.service";
+import { getCommunities } from "../services/data.service";
 import "../styles/pages/home-page.css";
+import { useDispatch } from "react-redux";
+import { useState, useEffect } from "react";
 
 function HomePage() {
-  const navigtate = useNavigate();
-  const cards = getCards();
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [communities, setCommunities] = useState([]);
 
-  function handleCardClick(name) {
-    navigtate(`/search?term=${name}`);
+  useEffect(() => {
+    async function fetchCommunities() {
+      const res = await getCommunities();
+      setCommunities(res.data);
+    }
+
+    fetchCommunities();
+  }, [dispatch]);
+
+  function communityClick(community) {
+    navigate(`/search?community=${community}`);
   }
 
   return (
     <main className="home-page">
       <div className="cards">
-        {cards.map((card) => (
+        {communities.map((c) => (
           <div
             className="card tag-card"
-            onClick={() => handleCardClick(card.name)}
-            key={card.name}
+            onClick={() => communityClick(c.Community)}
+            key={c.Name}
           >
             <div className="card-content">
               <img
-                src={`/img/${card.image}`}
-                alt={card.alt}
+                src={`/img/${c.Community}.svg`}
+                alt={c.Description}
                 className="card-img"
               />
               <div>
-                <h3 className="card-title">{card.name}</h3>
-                <p>{card.description}</p>
+                <h3 className="card-title">{c.Name}</h3>
+                <p>{c.Description}</p>
               </div>
             </div>
           </div>
@@ -95,7 +107,7 @@ function HomePage() {
               aimed specifically for running on the edge.
             </p>
             <p>
-              We hope that you&apos;ll find it useful, and would appreciate any
+              We hope that you'll find it useful, and would appreciate any
               feedback or comments you have.
             </p>
 
@@ -123,8 +135,8 @@ function HomePage() {
             </p>
             <p>
               Hugin is open source (as is RavenDB, for that matter). If
-              you&apos;ll browse Hugin&apos;s source code, (which we highly
-              encourage), you&apos;ll that there isn&apos;t anything fancy going
+              you'll browse Hugin's source code, (which we highly
+              encourage), you'll that there isn't anything fancy going
               on there. It is a pretty standard React application, using node.js
               server in the backend to talk to RavenDB. The key here is that we
               are working with the most vanilla setup possible, and we are still
@@ -155,7 +167,7 @@ function HomePage() {
             <p>
               The elevator pitch is that it is a Raspberry Pi Zero 2 W appliance
               running RavenDB and a node.js React application to provide a
-              completely offline access to StackExchange communities&apos;
+              completely offline access to StackExchange communities'
               questions and answers.
             </p>
             <img src="/img/ravendb-logo.svg" alt="RavenDB's Logo" />
@@ -181,14 +193,14 @@ function HomePage() {
               </li>
               <li>
                 <a href="https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
-                  Hugin&apos;s GitHub page
+                  Hugin's GitHub page
                 </a>
               </li>
             </ul>
             <p>
-              <em>Note:</em> you may need to disconnect from Hugin&apos;s WiFi
+              <em>Note:</em> you may need to disconnect from Hugin's WiFi
               and connect to the normal network to access those links. By
-              default Hugin&apos;s WiFi is not connected to the Internet.
+              default Hugin's WiFi is not connected to the Internet.
             </p>
           </div>
         </div>

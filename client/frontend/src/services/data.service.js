@@ -1,27 +1,52 @@
-const cards = [
-  {
-    name: "Raspberry Pi",
-    description:
-      "Raspberry Pi Stack Exchange is a question and answer site for users and developers of hardware and software for Raspberry Pi",
-    image: "raspberrypi.svg",
-    alt: "Raspberry Pi logo",
-  },
-  {
-    name: "Server Fault",
-    description:
-      "Server Faults is a question and answer site for system and network administrators",
-    image: "serverfault.svg",
-  },
-  {
-    name: "Unix & Linux",
-    description:
-      "Unix & Linux Stack Exchange Is a question and answer site for users of Linux, FreeBSD and other Un*x-like operating systems",
-    image: "unix.svg",
-  },
-];
 
-export function getCards() {
-  return cards;
+export function getCommunities() {
+
+  //return await httpService.get("communities");
+  return {
+    "status": "success",
+    "data": [
+      {
+        "Community": "unix",
+        "Name": "Unix & Linux",
+        "Description": "Unix & Linux Stack Exchange Is a question and answer site for users of Linux, FreeBSD and other Un*x-like operating systems",
+        "Source": "https://unix.stackexchange.com/",
+        "@metadata": {
+          "@collection": "Communities",
+          "@change-vector": "A:5466346-L+T7Z+KZTU+CZgOHc69RWQ",
+          "@id": "communities/unix",
+          "@last-modified": "2024-01-27T14:02:34.3568277Z"
+        },
+        "id": "communities/unix"
+      },
+      {
+        "Community": "serverfault",
+        "Name": "Server Fault",
+        "Description": "Server Fault is a question and answer site for system and network administrators",
+        "Source": "https://serverfault.com/",
+        "@metadata": {
+          "@collection": "Communities",
+          "@change-vector": "A:5466348-L+T7Z+KZTU+CZgOHc69RWQ",
+          "@id": "communities/serverfault",
+          "@last-modified": "2024-01-27T14:02:44.6772542Z"
+        },
+        "id": "communities/serverfault"
+      },
+      {
+        "Community": "raspberrypi",
+        "Name": "Raspberry Pi",
+        "Description": "Raspberry Pi Stack Exchange is a question and answer site for users and developers of hardware and software for Raspberry Pi",
+        "Source": "https://raspberrypi.stackexchange.com/",
+        "@metadata": {
+          "@collection": "Communities",
+          "@change-vector": "A:5466350-L+T7Z+KZTU+CZgOHc69RWQ",
+          "@id": "communities/raspberrypi",
+          "@last-modified": "2024-01-27T14:02:54.9359362Z"
+        },
+        "id": "communities/raspberrypi"
+      }
+    ],
+    "code": "app.get(\"/api/communities\", async (req, res) => {\r\n    const session = documentStore.openSession();\r\n    const results = await session.query({ collection: \"Communities\" })\r\n        .all();\r\n\r\n    res.send({\r\n        status: \"success\",\r\n        data: results,\r\n        code: getRouteCode(req)\r\n    })\r\n\r\n})"
+  }
 }
 
 const demoQuestions = [
@@ -292,7 +317,7 @@ const demoQuestions = [
   },
 ];
 
-export async function getQuestions() {
+export async function getQuestions(args) {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(demoQuestions);
