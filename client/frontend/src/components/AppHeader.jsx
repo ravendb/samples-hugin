@@ -15,7 +15,7 @@ function AppHeader() {
 
   const onSearch = useCallback(async (args) => {
     const q = await queryQuestions(args);
-    dispatch(setQueryResult(q.data));
+    dispatch(setQueryResult(q));
   }, [dispatch]);
 
   function onSearchClick() {

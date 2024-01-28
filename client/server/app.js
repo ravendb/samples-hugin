@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const ravendb = require("ravendb");
+const { performance } = require('perf_hooks');
+const { cwd } = require("process");
 
 const documentStore = new ravendb.DocumentStore("http://localhost:8080", "Hugin");
 documentStore.initialize();
@@ -30,6 +32,7 @@ if (isProdEnv) {
 }
 
 app.get("/api/question", async (req, res) => {
+    console.log(req.query);
     const session = documentStore.openSession();
     const question = await session.include("Owner")
         .include("Answers[].Owner")
@@ -41,7 +44,6 @@ app.get("/api/question", async (req, res) => {
             .concat([a.Owner])).flat();
     const users = await session.load(userIds);
     res.send({
-        status: "success",
         data: { question, users },
         code: getRouteCode(req)
     })
@@ -50,59 +52,68 @@ app.get("/api/question", async (req, res) => {
 app.get("/api/search", async (req, res) => {
     const session = documentStore.openSession();
 
-    const facets = await createQuery()
-        .aggregateBy(x => x.byField("Community"))
-        .andAggregateBy(x => x.byField("Tags").withOptions({ termSortMode: "CountDesc", pageSize: 10 }))
-        .execute();
+    const tags = Array.isArray(req.query.tag) ?
+        req.query.tags : [req.query.tag].filter(x => x);
+    const page = req.query.page || 0;
+    const pageSize = req.query.pageSize || 10;
 
-    const results = await createQuery()
-        //  .orderByDescending(req.query.orderBy || "CreatedAt")
+    const query = session.query({ indexName: "Questions/Search" })
+        .take(pageSize).skip(page * pageSize);
+
+    if (tags.length > 0) {
+        query.whereIn("Tags", tags);
+    }
+    if (req.query.community) {
+        query.andAlso().whereEquals("Community", req.query.community);
+    }
+    if (req.query.search) {
+        query.andAlso().search("Query", req.query.search);
+    }
+
+    var queryStart = performance.now();
+    const results = await query
+        .orderByDescending(req.query.orderBy || "CreationDate")
         .include("Owner")
         .all();
+
+    var queryEnd = performance.now();
+
+    var postTags = new Set(results.map(x => x.Tags).flat());
+
+    var tagsStart = performance.now();
+    const relatedTags = await session.query({ indexName: "Questions/Tags" })
+        .whereIn("Tag", postTags)
+        .orderByDescending("Count", "Long")
+        .take(10)
+        .all();
+    var tagsEnd = performance.now();
 
     const users = await session.load(results.map(q => q.Owner));
 
     res.send({
-        status: "success",
-        data: {
-            results,
-            users,
-            facets
-        },
-        code: getRouteCode(req)
+        data: { results, users, relatedTags },
+        code: getRouteCode(req),
+        timings: {
+            query: queryEnd - queryStart,
+            tags: tagsEnd - tagsStart
+        }
     })
-
-    function createQuery() { // used for query & facets, so we extract it to a function
-        const tags = Array.isArray(req.query.tags) ? req.query.tags : [req.query.tags].filter(x => x);
-        const page = req.query.page || 0;
-        const pageSize = req.query.pageSize || 10;
-        const query = session.query({ indexName: "Questions/Search" })
-            .take(pageSize).skip(page * pageSize);
-        if (tags.length > 0) {
-            query.whereIn("Tags", tags).andAlso();
-        }
-        if (req.query.community) {
-            query.whereEquals("Community", req.query.community).andAlso();
-        }
-        if (req.query.search) {
-            query.search("Query", req.query.search);
-        }
-        else { // need this to complete the "and also" from before
-            query.whereExists("Query");
-        }
-        return query;
-    }
 })
 
 app.get("/api/communities", async (req, res) => {
     const session = documentStore.openSession();
-    const results = await session.query({ collection: "Communities" })
+    var queryStart = performance.now();
+    const results = await session
+        .query({ collection: "Communities" })
         .all();
+    var queryEnd = performance.now();
 
     res.send({
-        status: "success",
         data: results,
-        code: getRouteCode(req)
+        code: getRouteCode(req),
+        timings: {
+            query: queryEnd - queryStart,
+        }
     })
 
 });

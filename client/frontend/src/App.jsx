@@ -13,7 +13,7 @@ function App() {
         <Route index element={<Navigate replace to="/home" />} />
         <Route path="/home" element={<HomePage />} />
         <Route path="/search" element={<SearchPage />} />
-        <Route path="/question/:id" element={<QuestionPage />} />
+        <Route path="/question" element={<QuestionPage />} />
       </Routes>
     </>
   );

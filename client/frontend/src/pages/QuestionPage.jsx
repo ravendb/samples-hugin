@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import { getQuestion } from "../services/data.service";
 import "../styles/pages/question-page.css";
 import { formatDateToRelativeTime } from "../services/util.service";
@@ -11,17 +11,17 @@ import { setQuestion } from "../store/questionSlice";
 
 function QuestionPage() {
   const dispatch = useDispatch();
-  const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const { question } = useQuestions();
 
   useEffect(() => {
     async function fetchQuestion(id) {
       const question = await getQuestion(id);
-      dispatch(setQuestion(question));
+      dispatch(setQuestion(question.data.question));
     }
 
-    fetchQuestion(id);
-  }, [id, dispatch]);
+    fetchQuestion(searchParams.get("id"));
+  }, [dispatch]);
 
   if (!question) return <div className="loader">Loading...</div>;
   return (

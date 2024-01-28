@@ -7,12 +7,13 @@ import { useState, useEffect } from "react";
 function HomePage() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [communities, setCommunities] = useState([]);
+  const [serverResult, setCommunities] = useState([]);
 
   useEffect(() => {
     async function fetchCommunities() {
       const res = await getCommunities();
-      setCommunities(res.data);
+     
+      setCommunities(res);
     }
 
     fetchCommunities();
@@ -25,7 +26,7 @@ function HomePage() {
   return (
     <main className="home-page">
       <div className="cards">
-        {communities.map((c) => (
+        {(serverResult.data || []).map((c) => (
           <div
             className="card tag-card"
             onClick={() => communityClick(c.Community)}
@@ -158,6 +159,20 @@ function HomePage() {
         </div>
 
         <div className="info-col right-col">
+          <div className="card p-3 mb-3">
+            <h4>Backend timings:</h4>
+            <ul>
+              {Object.entries(serverResult.timings || {}).map(([key, value]) => (
+                <li><strong>{key}</strong> - {(value).toLocaleString(undefined, { maximumFractionDigits: 2 })} ms</li>
+              ))}
+            </ul>
+            <h3>Reading the code!</h3><img src={`/img/code.svg`} width="50px" /> Click here to see how the backend works.
+            <pre>
+              <code class="language-js">
+                {serverResult.code}
+              </code>
+            </pre>
+          </div>
           <div className="card p-3 mb-3">
             <h3>How this works?</h3>
             <p>
