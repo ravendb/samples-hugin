@@ -74,12 +74,19 @@ app.get("/api/search", async (req, res) => {
     query.andAlso().search("Query", req.query.q);
   }
 
-  let numberOfResults = 0;
-
   var queryStart = performance.now();
+
+  if (req.query.orderBy === "Score") {
+    query.orderByScore();
+  } else {
+    query.orderByDescending(req.query.orderBy || "CreationDate");
+  }
+
+  let queryStats = null;
   const results = await query
-    .statistics((stats) => (numberOfResults = stats.longTotalResults))
-    .orderByDescending(req.query.orderBy || "CreationDate")
+    .statistics((stats) => {
+      queryStats = stats;
+    })
     .include("Owner")
     .all();
 
@@ -97,9 +104,14 @@ app.get("/api/search", async (req, res) => {
   var tagsEnd = performance.now();
 
   const users = await session.load(results.map((q) => q.Owner));
-
+  console.log({ numberOfResults });
   res.send({
-    data: { results, users, relatedTags, numberOfResults },
+    data: {
+      results,
+      users,
+      relatedTags,
+      totalResults: queryStats.totalResults,
+    },
     code: getRouteCode(req),
     timings: {
       query: queryEnd - queryStart,
