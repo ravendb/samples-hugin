@@ -44,7 +44,8 @@
   display: flex;
   flex-direction: column;
   flex-wrap: wrap;
-  margin: 30px auto;
+  gap: 30px;
+  margin: 100px auto 30px;
   padding: 0 30px;
   width: 100%;
   max-width: 1200px;
@@ -72,7 +73,6 @@
 .info-col {
   display: flex;
   flex-direction: column;
-  padding: 18.5px calc(0.5 * 1.5rem);
   flex: 1;
 }
 

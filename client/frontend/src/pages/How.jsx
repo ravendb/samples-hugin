@@ -15,16 +15,16 @@ function How() {
                     </div>
                 </div>
             </div>
-            <div class="container mt-5">
+            <div className="container mt-5">
 
-                <div class="row mt-4">
-                    <div class="col-md-8 mb-3">
-                        <div class="card p-5">
-                            <div class="hstack gap-4 align-items-center mb-4">
+                <div className="row mt-4">
+                    <div className="col-md-8 mb-3">
+                        <div className="card p-5">
+                            <div className="hstack gap-4 align-items-center mb-4">
                                 <img src="/img/raven.svg" width="50px" alt="" />
-                                <h2 class="m-0">All about Hugin</h2>
+                                <h2 className="m-0">All about Hugin</h2>
                             </div>
-                            <p class="lead">Hugin is an appliance, meant to provide you with the ability
+                            <p className="lead">Hugin is an appliance, meant to provide you with the ability
                                 to browse through the Stack Exchange data in an offline manner. In this page
                                 we'll take a deep dive into exactly it is built</p>
                             <p>It is built using the following technologies:</p>
@@ -39,8 +39,8 @@ function How() {
                         </div>
                     </div>
 
-                    <div class="col-md-4 mb-3">
-                        <div class="card p-3 mb-3">
+                    <div className="col-md-4 mb-3">
+                        <div className="card p-3 mb-3">
                             <h3>💡Tip: Read the code</h3>
                             <p>Most pages has this code icon that you can click:</p>
                             <img src="/img/code.svg" alt="Code Marker" width={50} />

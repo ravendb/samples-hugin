@@ -18,17 +18,16 @@
   width: 100%;
 }
 
+.search-page-info-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 10px 0;
+}
+
 @media screen and (min-width: 767px) {
   .search-page {
     flex-direction: row;
     padding: 10px;
-  }
-
-  .search-page-info-card {
-    flex: 1;
-  }
-
-  .question-container {
-    flex: 4;
   }
 }

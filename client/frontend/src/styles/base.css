@@ -37,3 +37,20 @@ a {
   border-radius: 5px;
   background-color: #1e1f2b;
 }
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}
+
+* {
+  -ms-overflow-style: none;
+}
+
+*::-webkit-scrollbar {
+  width: 0.2em;
+  background-color: transparent;
+}

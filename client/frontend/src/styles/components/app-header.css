@@ -47,6 +47,7 @@
   line-height: 1.2;
   text-align: center;
   font-size: calc(1.5533453794rem + 3.6401445523vw);
+  cursor: pointer;
 }
 
 @media (min-width: 1200px) {
@@ -112,4 +113,5 @@
   font-size: 1.25rem;
   border: none;
   background-color: #388ee9;
+  cursor: pointer;
 }

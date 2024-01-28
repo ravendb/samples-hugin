@@ -1,0 +1,52 @@
+.backend-timing {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 25px;
+}
+
+.backend-timing-title {
+  margin: 0;
+}
+
+.backend-timing-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0 0 0 25px;
+}
+
+.backend-timing-list-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.backend-timing-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background-color: #414458;
+  padding: 10px 15px;
+  border-radius: 5px;
+}
+
+.backend-timing-btn-img {
+  width: 50px;
+}
+
+.backend-timing-btn-text {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #f0f1f6;
+}
