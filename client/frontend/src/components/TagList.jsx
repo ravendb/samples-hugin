@@ -1,19 +1,24 @@
 /* eslint-disable react/prop-types */
-import { useLocation, useNavigate } from "react-router-dom";
 import "../styles/components/tag-list.css";
+import { useAddToQueryParams } from "../hooks/useAddToQueryParams";
 
 function TagList({ tags }) {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  function handleTagClick(tag) {
-    navigate(`/search?tag=${tag}`);
-  }
+  const { addToQueryParams } = useAddToQueryParams();
 
   return (
     <div className="tag-list">
       {tags.map((tag) => (
-        <div key={tag} className="tag" onClick={() => handleTagClick(tag)}>
+        <div
+          key={tag}
+          className="tag"
+          onClick={(e) => {
+            e.stopPropagation();
+            addToQueryParams({
+              key: "tag",
+              value: tag,
+            });
+          }}
+        >
           <span>{tag}</span>
         </div>
       ))}

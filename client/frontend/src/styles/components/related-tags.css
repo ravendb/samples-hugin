@@ -23,18 +23,36 @@
 .related-tag {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  padding: 10px;
+  gap: 6px;
+  padding: 5px;
   border-radius: 5px;
   background-color: #1e1f2b;
-  cursor: pointer;
   width: fit-content;
 }
 
 .related-tag-title {
   display: flex;
+  align-items: center;
+  gap: 4px;
   white-space: nowrap;
   margin: 0;
+  cursor: pointer;
+}
+
+.related-tag-communities {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0;
+  list-style: none;
+}
+
+.related-tag-community {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  cursor: pointer;
 }
 
 @media screen and (min-width: 768px) {

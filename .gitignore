@@ -5,3 +5,5 @@
 /ravendb.deb
 /web/package-lock.json
 /client/hugin-web/package-lock.json
+/node_modules/
+/client/node_modules/

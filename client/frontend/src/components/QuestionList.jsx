@@ -3,13 +3,21 @@ import "../styles/components/question-list.css";
 import QuestionPreview from "./QuestionPreview";
 
 function QuestionList({ queryResult }) {
+  const isEmpty = queryResult.results.length === 0;
+
   return (
     <ul className="question-list">
-      {queryResult.results.map((question, i) => (
-        <li key={i}>
-          <QuestionPreview question={question} />
-        </li>
-      ))}
+      {isEmpty ? (
+        <div className="card no-res">No results found</div>
+      ) : (
+        <>
+          {queryResult.results.map((question, i) => (
+            <li key={i}>
+              <QuestionPreview question={question} />
+            </li>
+          ))}
+        </>
+      )}
     </ul>
   );
 }

@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { setQueryResult } from "../store/questionSlice";
 
 function AppHeader() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -22,19 +22,17 @@ function AppHeader() {
   );
 
   function onSearchClick() {
-    let url = `/search?q=${searchTerm}`;
+    let url = "/search";
+    if (searchTerm) url += `?q=${searchTerm}`;
     const community = searchParams.get("community");
-    if (community) url += "&community=" + community;
-
+    if (community) url += `&community=${community}`;
     const tag = searchParams.get("tag");
-    if (tag) url += "&tag=" + tag;
-
+    if (tag) url += `&tag=${tag}`;
     navigate(url);
   }
 
   function inputChangeHandler(e) {
     setSearchTerm(e.target.value);
-    setSearchParams({ q: e.target.value });
   }
 
   function handleTitleClick() {
@@ -42,12 +40,14 @@ function AppHeader() {
   }
 
   useEffect(() => {
-    console.log("search params: ", searchParams.q);
     const community = searchParams.get("community");
     const tag = searchParams.get("tag");
     const q = searchParams.get("q");
+    const page = searchParams.get("page") || 0;
+    const orderBy = searchParams.get("orderBy") || "CreationDate";
     setSearchTerm(q || "");
-    onSearch({ community, q, tag });
+    if (!q && !community && !tag) return;
+    onSearch({ community, q, tag, page, orderBy });
   }, [searchParams, location.search, onSearch]);
 
   return (
@@ -68,7 +68,7 @@ function AppHeader() {
               type="text"
               className="search-input"
               placeholder="Search database"
-              defaultValue={searchTerm}
+              value={searchTerm}
               onChange={inputChangeHandler}
             />
             <button

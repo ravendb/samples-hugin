@@ -16,3 +16,10 @@
   width: 100%;
   max-width: 750px;
 }
+
+.no-res {
+  min-width: 340px;
+  padding: 25px;
+  text-align: center;
+  font-size: 22px;
+}

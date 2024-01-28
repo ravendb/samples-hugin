@@ -1,21 +1,22 @@
 /* eslint-disable react/prop-types */
-import { useNavigate, useSearchParams } from "react-router-dom";
 import "../styles/components/related-tags.css";
+import { useAddToQueryParams } from "../hooks/useAddToQueryParams";
 
 function RelatedTags({ tags }) {
-  const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
+  const { addToQueryParams } = useAddToQueryParams();
 
   function handleTagClick(tag) {
-    let url = `/search?`;
-    const q = searchParams.get("q");
-    if (q) url += "&q=" + q;
-    const community = searchParams.get("community");
-    if (community) url += "&community=" + community;
+    addToQueryParams({
+      key: "tag",
+      value: tag,
+    });
+  }
 
-    if (tag) url += "&tag=" + tag;
-
-    navigate(url);
+  function handleCommunityClick(community) {
+    addToQueryParams({
+      key: "community",
+      value: community,
+    });
   }
 
   return (
@@ -28,14 +29,17 @@ function RelatedTags({ tags }) {
               className="related-tag-title"
               onClick={() => handleTagClick(t.Tag)}
             >
-              {" "}
-              <strong>{t.Tag}</strong> {t.Count.toLocaleString()}
+              <strong>{t.Tag}</strong> <span>{t.Count.toLocaleString()}</span>
             </p>
-            <ul>
+            <ul className="related-tag-communities">
               {Object.entries(t.Communities).map(([key, value]) => (
-                <li key={key}>
-                  <img src={`/img/${key}.svg`} width="25px" />{" "}
-                  {value.toLocaleString()}
+                <li
+                  key={key}
+                  className="related-tag-community"
+                  onClick={() => handleCommunityClick(key)}
+                >
+                  <img src={`/img/${key}.svg`} width="25px" />
+                  <span>{value.toLocaleString()}</span>
                 </li>
               ))}
             </ul>
