@@ -163,7 +163,7 @@ function HomePage() {
         </div>
 
         <div className="info-col right-col">
-          <BackendTiming serverResult={serverResult} />
+          <BackendTiming timings={serverResult.timings} code={serverResult.code} />
           <DatabaseLink />
 
           <div className="card">
