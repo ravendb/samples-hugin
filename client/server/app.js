@@ -12,11 +12,22 @@ const documentStore = new ravendb.DocumentStore(
 documentStore.initialize();
 
 const app = express();
+let currentHandlerFunction = null;
+app.asyncGet = function (path, handler) {
+  return this.get(path, async (req, res, next) => {
+    try {
+      currentHandlerFunction = handler;
+      await handler(req, res, next);
+    } catch (err) {
+      res
+        .status(err.status || 500)
+        .send({ error: err.message });
+    }
+  });
+}
 
 function getRouteCode(req) {
-  // quick and dirty way to do self reflection to render the route code
-  const code = req.route.stack[0].handle;
-  return `app.${req.method.toLowerCase()}("${req.route.path}", ${code})`;
+  return `app.${req.method.toLowerCase()}("${req.route.path}", ${currentHandlerFunction})`;
 }
 
 const isProdEnv = process.env.NODE_ENV === "production";
@@ -31,7 +42,7 @@ if (isProdEnv) {
   app.use(cors(corsOptions));
 }
 
-app.get("/api/question", async (req, res) => {
+app.asyncGet("/api/question", async (req, res) => {
   console.log(req.query);
   const session = documentStore.openSession();
   const question = await session
@@ -50,7 +61,7 @@ app.get("/api/question", async (req, res) => {
   });
 });
 
-app.get("/api/search", async (req, res) => {
+app.asyncGet("/api/search", async (req, res) => {
   const session = documentStore.openSession();
 
   const tags = Array.isArray(req.query.tag)
@@ -104,7 +115,6 @@ app.get("/api/search", async (req, res) => {
   var tagsEnd = performance.now();
 
   const users = await session.load(results.map((q) => q.Owner));
-  console.log({ numberOfResults });
   res.send({
     data: {
       results,
@@ -120,7 +130,7 @@ app.get("/api/search", async (req, res) => {
   });
 });
 
-app.get("/api/communities", async (req, res) => {
+app.asyncGet("/api/communities", async (req, res) => {
   const session = documentStore.openSession();
   var queryStart = performance.now();
   const results = await session.query({ collection: "Communities" }).all();
@@ -133,14 +143,6 @@ app.get("/api/communities", async (req, res) => {
       query: queryEnd - queryStart,
     },
   });
-});
-
-app.get("/**", (req, res) => {
-  res.sendFile(path.join(path.resolve(), "build", "public", "index.html"));
-});
-
-app.all("*", (req, res, next) => {
-  next(new Error(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 module.exports = app;

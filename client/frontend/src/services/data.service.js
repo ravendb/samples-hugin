@@ -2,13 +2,28 @@ import { httpService } from "./http.service";
 
 
 export async function getCommunities() {
-  return await httpService.get("communities");
+  try {
+    return await httpService.get("communities");
+  } catch (err) {
+    alert(err.response.data.error);
+    throw err;
+  }
 }
 
 export async function queryQuestions(args) {
-  return await httpService.get("search", args);
+  try {
+    return await httpService.get("search", args);
+  } catch (err) {
+    alert(err.response.data.error);
+    throw err;
+  }
 }
 
 export async function getQuestion(id) {
-  return await httpService.get("question", { id });
+  try {
+    return await httpService.get("question", { id });
+  } catch (err) {
+    alert(err.response.data.error);
+    throw err;
+  }
 }
