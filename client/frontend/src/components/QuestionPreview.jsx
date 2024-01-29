@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
 import { useNavigate } from "react-router-dom";
 import "../styles/components/question-preview.css";
-import { formatDateToRelativeTime } from "../services/util.service";
+import { formatDateToRelativeTime, getUserLink, getUserName } from "../services/util.service";
 import TagList from "./TagList";
 
-function QuestionPreview({ question }) {
+function QuestionPreview({ question, users }) {
   const navigate = useNavigate();
   const text = question.Body.replace(/<[^>]+>/g, "").slice(0, 200) + "...";
 
@@ -44,7 +44,7 @@ function QuestionPreview({ question }) {
       <footer className="question-preview-footer">
         <TagList tags={question.Tags} />
         <div className="question-preview-details">
-          <span className="question-preview-owner">{question.Owner}</span>
+          <span className="question-preview-owner"><a href={getUserLink(question.Owner)}> {getUserName(question.Owner, users)}</a></span>
           {question.FavoriteCount > 0 && (
             <span
               title="Favorite count"

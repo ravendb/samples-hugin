@@ -2,6 +2,34 @@ const SECONDS_IN_MINUTE = 60;
 const MINUTES_IN_HOUR = 60;
 const HOURS_IN_DAY = 24;
 
+function getUserLink(userId) {
+  const [_, community, id] = userId.split('/');
+  switch (community) {
+    case "stackoverflow":
+      return `https://stackoverflow.com/users/${id}`;
+    case "serverfault":
+      return `https://serverfault.com/users/${id}`;
+    case "superuser":
+      return `https://superuser.com/users/${id}`;
+    case "askubuntu":
+      return `https://askubuntu.com/users/${id}`;
+    case "mathoverflow":
+      return `https://mathoverflow.net/users/${id}`;
+    case "stackapps":
+      return `https://stackapps.com/users/${id}`;
+    case "rapsberrypi":
+    case "unix":
+    default:
+      return `https://${community}.stackexchange.com/users/${id}`;
+  }
+}
+
+function getUserName(userId, users) {
+  const user = users[userId];
+  if (!user) return userId;
+  return users[userId].DisplayName;
+}
+
 function formatDateToRelativeTime(dateStr) {
   if (!dateStr || !isValidDate(dateStr)) return "";
   const [seconds, minutes, hours, days] = calculateTimeDifference(dateStr);
@@ -35,4 +63,4 @@ function isValidDate(dateStr) {
   return !isNaN(date.getTime());
 }
 
-export { formatDateToRelativeTime };
+export { formatDateToRelativeTime, getUserName, getUserLink };

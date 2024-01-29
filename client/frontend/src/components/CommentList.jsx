@@ -1,10 +1,10 @@
 /* eslint-disable react/prop-types */
-import { formatDateToRelativeTime } from "../services/util.service";
+import { formatDateToRelativeTime, getUserName, getUserLink } from "../services/util.service";
 import "../styles/components/comment-list.css";
 
-function CommentList({ comments }) {
+function CommentList({ comments, users }) {
   if (!comments || comments.length === 0) return null;
-
+  const localUsers = users;
   return (
     <ul className="comment-list">
       {comments.map((comment, i) => (
@@ -12,7 +12,7 @@ function CommentList({ comments }) {
           <div className="comment-number">{i + 1}</div>
           <p className="comment-text">
             {comment.Text}{" "}
-            <span className="comment-owner">- {comment.User} </span>
+            <span className="comment-owner">- <a href={getUserLink(comment.User)} className="user-link">{getUserName(comment.User, localUsers)}</a> </span>
             <span className="comment-creation-date">
               {formatDateToRelativeTime(comment.CreationDate)}
             </span>

@@ -54,7 +54,9 @@ app.asyncGet("/api/question", async (req, res) => {
 
   const userIds = question.Answers.map((a) =>
     a.Comments.map((c) => c.User).concat([a.Owner])
-  ).flat();
+  ).concat([question.Owner])
+    .concat(question.Comments.map((c) => c.User))
+    .flat();
   const users = await session.load(userIds);
 
   const loadEnd = performance.now();
