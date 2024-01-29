@@ -6,6 +6,8 @@ import BackendTiming from "../components/BackendTiming";
 import RelatedTags from "../components/RelatedTags";
 import SearchController from "../components/SearchController";
 import DatabaseLink from "../components/DatabaseLink";
+import QuestionPagination from "../components/QuestionPagination";
+import "../styles/pages/search-page.css";
 
 function SearchPage() {
   const { queryResult } = useQuestions();
@@ -13,16 +15,21 @@ function SearchPage() {
   if (!queryResult) return <div>loading...</div>;
   return (
     <main className="search-page">
-      <div className="question-container">
-        <QuestionList queryResult={queryResult.data} />
-        {/* <QuestionPagination totalResults={queryResult.data.totalResults} /> */}
-      </div>
-      <div className="search-page-info-container">
-        <SearchController />
-        <BackendTiming timings={queryResult.timings} code={queryResult.code} />
-        <DatabaseLink />
-        <RelatedTags tags={queryResult.data.relatedTags} />
-      </div>
+      {!queryResult && <div className="search-page-loader">loading...</div>}
+      {queryResult && (
+        <>
+          <div className="question-container">
+            <QuestionList queryResult={queryResult.data} />
+            <QuestionPagination totalResults={queryResult.data.totalResults} />
+          </div>
+          <div className="search-page-info-container">
+            <SearchController />
+            <BackendTiming timings={queryResult.timings} code={queryResult.code} />
+            <DatabaseLink />
+            <RelatedTags tags={queryResult.data.relatedTags} />
+          </div>
+        </>
+      )}
     </main>
   );
 }

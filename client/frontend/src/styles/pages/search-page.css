@@ -6,8 +6,10 @@
   gap: 20px;
 }
 
-.loader {
-  font-size: 18px;
+.search-page-loader {
+  font-size: 24px;
+  letter-spacing: 1px;
+  font-weight: 500;
   margin: 20px;
   color: #f0f1f6;
 }
