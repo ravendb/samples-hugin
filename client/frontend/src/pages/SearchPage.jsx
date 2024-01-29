@@ -19,7 +19,7 @@ function SearchPage() {
       </div>
       <div className="search-page-info-container">
         <SearchController />
-        <BackendTiming serverResult={queryResult} />
+        <BackendTiming timings={queryResult.timings} code={queryResult.code} />
         <DatabaseLink />
         <RelatedTags tags={queryResult.data.relatedTags} />
       </div>

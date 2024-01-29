@@ -8,22 +8,26 @@ import { useQuestions } from "../hooks/useQuestions";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setQuestion } from "../store/questionSlice";
+import BackendTiming from "../components/BackendTiming";
+import DatabaseLink from "../components/DatabaseLink";
+
 
 function QuestionPage() {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const { question } = useQuestions();
+  const questionResult = useQuestions().question;
 
   useEffect(() => {
     async function fetchQuestion(id) {
-      const question = await getQuestion(id);
-      dispatch(setQuestion(question.data.question));
+      const q = await getQuestion(id);
+      dispatch(setQuestion(q));
     }
 
     fetchQuestion(searchParams.get("id"));
   }, [dispatch]);
 
-  if (!question) return <div className="loader">Loading...</div>;
+  if (!questionResult) return <div className="loader">Loading...</div>;
+  const question = questionResult.data.question;
   return (
     <main className="question-page">
       <div className="question-page-content">
@@ -108,6 +112,10 @@ function QuestionPage() {
             );
           })}
         </div>
+      </div>
+      <div >
+        <BackendTiming timings={questionResult.timings} code={questionResult.code} />
+        <DatabaseLink />
       </div>
     </main>
   );

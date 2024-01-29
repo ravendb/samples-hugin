@@ -3,7 +3,7 @@ import { useState } from "react";
 import "../styles/components/backend-timing.css";
 import CodeModal from "./CodeModal";
 
-function BackendTiming({ serverResult }) {
+function BackendTiming({ timings, code }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   function handleToggleModalBtn() {
@@ -18,7 +18,7 @@ function BackendTiming({ serverResult }) {
     <div className="card backend-timing">
       <h2 className="backend-timing-title">Backend timings:</h2>
       <ul className="backend-timing-list">
-        {Object.entries(serverResult.timings || {}).map(([key, value]) => (
+        {Object.entries(timings || {}).map(([key, value]) => (
           <li key={key} className="backend-timing-list-item">
             <strong>{key}</strong> -{" "}
             {value.toLocaleString(undefined, {
@@ -34,7 +34,7 @@ function BackendTiming({ serverResult }) {
           Click here to see how the backend works.
         </span>
       </button>
-      {isModalOpen && <CodeModal code={serverResult.code} onClose={onClose} />}
+      {isModalOpen && <CodeModal code={code} onClose={onClose} />}
     </div>
   );
 }
