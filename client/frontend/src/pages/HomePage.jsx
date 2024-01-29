@@ -4,6 +4,7 @@ import "../styles/pages/home-page.css";
 import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import BackendTiming from "../components/BackendTiming";
+import DatabaseLink from "../components/DatabaseLink";
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -163,6 +164,7 @@ function HomePage() {
 
         <div className="info-col right-col">
           <BackendTiming serverResult={serverResult} />
+          <DatabaseLink />
 
           <div className="card">
             <h3>How this works?</h3>
