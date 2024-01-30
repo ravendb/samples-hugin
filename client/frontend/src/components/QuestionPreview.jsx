@@ -13,7 +13,8 @@ function QuestionPreview({ question, users }) {
   }
 
   return (
-    <article className="question-preview" onClick={handlePreviewclick}>
+    <div className="card">
+    <article className="card-body question-preview" onClick={handlePreviewclick}>
       <div className="question-preview-stats">
         <div className="question-preview-stats-item">
           <span>{question.FavoriteCount}</span>
@@ -28,18 +29,15 @@ function QuestionPreview({ question, users }) {
           <span>views</span>
         </div>
       </div>
-
-      <div className="question-preview-content">
-        <div>
-          <h3 className="question-preview-title">{question.Title}</h3>
-          <p className="question-preview-text">{text}</p>
-        </div>
-        <img
-          className="question-preview-img"
-          src={`/img/${question.Community}.svg`}
-          alt="logo"
-        />
+      <h3 className="question-preview-title m-0">{question.Title}</h3>
+      <p className="question-preview-text">{text}</p>
+      <div className="question-preview-img">
+      <img
+      src={`/img/${question.Community}.svg`}
+      alt="logo"
+      />
       </div>
+
 
       <footer className="question-preview-footer">
         <TagList tags={question.Tags} />
@@ -60,6 +58,7 @@ function QuestionPreview({ question, users }) {
         </div>
       </footer>
     </article>
+    </div>
   );
 }
 

@@ -1,9 +1,15 @@
+.comment-list {
+  padding: 18.5px 0;
+  margin: 0;
+  list-style: none;
+}
+
 .comment {
   display: flex;
   gap: 10px;
-  padding: 20px;
+  padding: 7px;
   color: #f0f1f6;
-  border-top: 1px solid #616587;
+  border-top: 1px solid #424554;
 }
 
 .comment-text {
@@ -17,4 +23,4 @@
 
 .comment-creation-date {
   color: #929292;
-}
+}/*# sourceMappingURL=comment-list.css.map */

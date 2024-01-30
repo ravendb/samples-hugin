@@ -46,6 +46,7 @@
         gap: 0.3em;
         flex-wrap: wrap;
         justify-content: center;
+        align-items: start;
       }
 
       .hero-input {
@@ -90,4 +91,8 @@
   .tag {
     line-height: 1em;
   }
+}
+
+.text-emphasis {
+  color: $text-emphasis-color;
 }

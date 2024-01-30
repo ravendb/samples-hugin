@@ -76,17 +76,19 @@ function HomePage() {
               Hugin comes by default with the following data sets (and you can
               add more yourself):
             </p>
-            <div className="tech-link">
+            <div className="vstack gap-2 my-4">
+            <div className="tech-link bg-faded-raspberrypi py-2 px-4 rounded-5 hstack gap-3 align-items-center">
               <img src="/img/raspberrypi.svg" alt="raspberry-pi" />
-              <p>raspberrypi.stackexchange.com</p>
+              <div className="lead">raspberrypi.stackexchange.com</div>
             </div>
-            <div className="tech-link">
+            <div className="tech-link bg-faded-unix py-2 px-4 rounded-5 hstack gap-3 align-items-center">
               <img src="/img/unix.svg" alt="linux" />
-              <p>unix.stackexchange.com</p>
+              <div className="lead">unix.stackexchange.com</div>
             </div>
-            <div className="tech-link">
+            <div className="tech-link bg-faded-serverfault py-2 px-4 rounded-5 hstack gap-3 align-items-center">
               <img src="/img/serverfault.svg" alt="server" />
-              <p>serverfault.com</p>
+              <div className="lead">serverfault.com</div>
+            </div>
             </div>
             <p>
               Hugin is typically deployed on a Raspberry Pi Zero 2 W (but is
@@ -95,7 +97,7 @@ function HomePage() {
               device right now.
             </p>
 
-            <h3>Why build Hugin?</h3>
+            <h3 className="mt-5 mb-3">Why build Hugin?</h3>
             <p>
               We want to show case wide range of capabilities for RavenDB. From
               the backend database for cloud business applications all the way
@@ -119,7 +121,7 @@ function HomePage() {
               feedback or comments you have.
             </p>
 
-            <h3>Why did we put RavenDB on a Raspberry?</h3>
+            <h3 className="mt-5 mb-3">Why did we put RavenDB on a Raspberry?</h3>
             <p>
               In short, because we can! Because it is cool! And because it is
               fun!
@@ -173,7 +175,7 @@ function HomePage() {
           <DatabaseLink />
 
           <div className="card bg-faded-primary">
-            <div className="card-body">
+            <div className="card-body ">
             <h3>How this works?</h3>
             <p>
               You can read more about how Hugin works in the
@@ -190,8 +192,8 @@ function HomePage() {
             </div>
             </div>
           </div>
-          <div className="card bg-faded-primary">
-            <div className="card-body">
+          <div className="card bg-faded-warning">
+            <div className="card-body bg-faded-primary rounded-2">
             <img
               src="/img/raven.svg"
               alt="RavenDB's Logo"
@@ -220,12 +222,14 @@ function HomePage() {
                 </a>
               </li>
             </ul>
-            <p>
+            </div>
+            <div className="card-body">
+            
               <em>Note:</em> you may need to disconnect from Hugin&apos;s WiFi
               and connect to the normal network to access those links. By
               default Hugin&apos;s WiFi is not connected to the Internet.
-            </p>
-          </div>
+
+            </div>
           </div>
         </div>
         </div>
