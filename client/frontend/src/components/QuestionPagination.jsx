@@ -25,10 +25,10 @@ function QuestionPagination({ totalResults, className }) {
           Previous
         </button>
         <span className="search-page-pagination-info-text text-muted hstack gap-1">
-          Showing 
-          <strong className="text-emphasis"> {(page * pageSize).toLocaleString()} - {Math.min((page + 1) * pageSize, totalResults).toLocaleString()} </strong> 
-          of 
-          <strong className="text-emphasis"> {totalResults.toLocaleString()} </strong> 
+          Showing
+          <strong className="text-emphasis"> {(((page - 1) * pageSize) + 1).toLocaleString()} - {Math.min((page) * pageSize, totalResults).toLocaleString()} </strong>
+          of
+          <strong className="text-emphasis"> {totalResults.toLocaleString()} </strong>
           results
         </span>
         <button

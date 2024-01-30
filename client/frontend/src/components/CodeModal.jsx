@@ -13,9 +13,6 @@ function CodeModal({ code, onClose }) {
       <div className="code-modal">
         <h3 className="code-modal-title">Reading the code!</h3>
         <SyntaxHighlighter language="javascript" style={dracula}>{code}</SyntaxHighlighter>
-        {/* <pre className="code-modal-code">
-          <code>{code}</code>
-        </pre> */}
         <button className="code-modal-close-btn" onClick={onClose}>
           Close
         </button>
