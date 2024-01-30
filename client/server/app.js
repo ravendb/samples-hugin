@@ -12,6 +12,7 @@ documentStore.initialize();
 class QuestionsSearch extends ravendb.AbstractJavaScriptIndexCreationTask {
   constructor() {
     super();
+
     this.map('Questions', q => {
       return {
         Community: q.Community,
@@ -21,6 +22,9 @@ class QuestionsSearch extends ravendb.AbstractJavaScriptIndexCreationTask {
         Query: [q.Title, q.Tags]
       }
     });
+    const SearchMode = 'Search';
+    this.index('Query', SearchMode);
+    this.searchEngineType = 'Corax'
   }
 }
 
@@ -95,8 +99,14 @@ if (isProdEnv) {
 
 
 app.get("/api/indexes", (req, res) => {
+  const start = performance.now();
+  const indexesOutput = indexes.map(i => ({ name: i.name, code: i.toString() }));
+  const end = performance.now();
   res.send({
-    indexes: indexes.map(i => ({ name: i.name, code: i.toString() })),
+    indexes: indexesOutput,
+    timings: {
+      load: end - start
+    }
   })
 });
 
