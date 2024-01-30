@@ -3,12 +3,64 @@ const cors = require("cors");
 const path = require("path");
 const ravendb = require("ravendb");
 const { performance } = require("perf_hooks");
-
 const documentStore = new ravendb.DocumentStore(
   "http://127.0.0.1:8080",
   "Hugin"
 );
 documentStore.initialize();
+
+class QuestionsSearch extends ravendb.AbstractJavaScriptIndexCreationTask {
+  constructor() {
+    super();
+    this.map('Questions', q => {
+      return {
+        Community: q.Community,
+        Tags: q.Tags,
+        CreationDate: q.CreationDate,
+        ViewCount: q.ViewCount,
+        Query: [q.Title, q.Tags]
+      }
+    });
+  }
+}
+
+class QuestionsTags extends ravendb.AbstractJavaScriptIndexCreationTask {
+  constructor() {
+    super();
+    this.map("Questions", q => {
+      return q.Tags.map(t => {
+        const communities = {};
+        communities[q.Community] = 1;
+        return { Tag: t, Count: 1, Communities: communities };
+      })
+    })
+    this.reduce(g => {
+      return g.groupBy(x => x.Tag)
+        .aggregate(g => {
+          const communities = {};
+          const result = {
+            Tag: g.key,
+            Count: g.values.reduce((count, val) => val.Count + count, 0),
+            Communities: communities
+          };
+          for (const entry of g.values) {
+            for (const [key, value] of Object.entries(entry.Communities)) {
+              communities[key] = (communities[key] || 0) + value;
+            }
+          }
+          return result;
+        })
+    });
+  }
+}
+Promise.all([
+  new QuestionsTags().execute(documentStore),
+  new QuestionsSearch().execute(documentStore),
+]).then(() => {
+  console.log("Indexes created");
+}).catch(err => {
+  console.error("Failed to create indexes", err);
+});
 
 const app = express();
 let currentHandlerFunction = null;
@@ -41,8 +93,15 @@ if (isProdEnv) {
   app.use(cors(corsOptions));
 }
 
+
+app.get("/api/indexes", (req, res) => {
+  const indexes = [QuestionsTags, QuestionsSearch];
+  res.send({
+    indexes: indexes.map(i => ({ name: i.name, code: i.toString() })),
+  })
+});
+
 app.asyncGet("/api/question", async (req, res) => {
-  console.log(req.query);
   const session = documentStore.openSession();
   const loadStart = performance.now();
 
