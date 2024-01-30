@@ -1,0 +1,75 @@
+@import "../scss/colors";
+@import "../scss/bs5variables";
+
+.backend-timing {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.backend-timing-title {
+  margin: 0;
+}
+
+.backend-timing-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $gutter-xxs;
+  margin: 0;
+  padding: $gutter-xxs 0;
+  list-style: none;
+
+  .backend-timing-list-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    list-style: none;
+    margin: 0;
+    border: 1px solid $primary;
+    padding: 4px $gutter-xs;
+    border-radius: $gutter;
+  }
+  strong {
+    display: flex;
+    gap: $gutter-xxs;
+  }
+  span {
+    display: flex;
+    gap: 3px;
+    color: $text-emphasis-var;
+  }
+  .timing-icon {
+    width: 1.2em;
+  }
+
+  .stopwatch-icon {
+    width: 1em;
+  }
+}
+
+
+
+.backend-timing-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background-color: #414458;
+  padding: 10px 15px;
+  border-radius: 5px;
+}
+
+.backend-timing-btn-img {
+  width: 50px;
+}
+
+.backend-timing-btn-text {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: #f0f1f6;
+}

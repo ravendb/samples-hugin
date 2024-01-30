@@ -1,0 +1,31 @@
+/* Webkit */
+::-webkit-scrollbar {
+    width: $gutter-xxs;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: $well-bg;
+    
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: $gray-500;
+    border-radius: $gutter;
+    &:hover {
+        background-color: $primary;
+    }
+  }
+  
+  /* Mozilla */
+  ::-moz-scrollbar {
+    width: $gutter-xxs;
+  }
+  
+  ::-moz-scrollbar-track {
+    background-color: $well-bg;
+  }
+  
+  ::-moz-scrollbar-thumb {
+    background-color: $primary;
+    border-radius: $gutter;
+  }

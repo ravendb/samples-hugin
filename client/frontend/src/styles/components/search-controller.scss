@@ -1,0 +1,42 @@
+@import "../scss/colors";
+@import "../scss/bs5variables";
+
+.search-controller-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+.search-controller-tag,
+.search-controller-community {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background-color: $well-bg ;
+  padding: 3px $gutter-xs;
+  border-radius: $gutter;
+}
+
+.search-controller-close {
+  color: #f0f1f6;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+// .search-controller-sort-by-select {
+//   width: 100%;
+//   padding: 8px;
+//   border-radius: 4px;
+//   border: 1px solid #ddd;
+//   font-size: 16px;
+//   background-color: #1e1f2b;
+//   color: #f0f1f6;
+// }
+
+.search-controller-sort-by-option {
+  font-size: 16px;
+  padding: 8px;
+  background-color: #1e1f2b;
+  color: #f0f1f6;
+}

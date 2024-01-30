@@ -30,34 +30,37 @@ function SearchController() {
   }
 
   return (
-    <div className="card search-controller">
-      <div className="search-controller-tags">
-        {tags.map((tag) => (
-          <div key={tag} className="search-controller-tag">
-            <span>{tag}</span>
-            <IoClose
-              className="search-controller-close"
-              onClick={() => handleRemoveTag(tag)}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="search-controller-communities">
-        {communities.map((community) => (
-          <div key={community} className="search-controller-community">
-            <span>{community}</span>
-            <IoClose
-              className="search-controller-close"
-              onClick={() => handleRemoveCommunity(community)}
-            />
-          </div>
-        ))}
+    <div className="card bg-faded-interactive">
+      <div className="card-body search-controller hstack gap-4 align-items-start">
+      <div className="flex-grow-1">
+        <h4 className="search-controller-sort-by-title mb-2">Tags and Communities</h4>
+        <div className="search-controller-tags">
+          {communities.map((community) => (
+            <div key={community} className={"search-controller-community bg-faded-" + community}>
+              <span>{community}</span>
+              <IoClose
+                className="search-controller-close"
+                onClick={() => handleRemoveCommunity(community)}
+              />
+            </div>
+          ))}
+          {tags.map((tag) => (
+            <div key={tag} className="search-controller-tag">
+              <span>{tag}</span>
+              <IoClose
+                className="search-controller-close"
+                onClick={() => handleRemoveTag(tag)}
+              />
+            </div>
+          ))}
+        </div>
+        
       </div>
       <div className="search-controller-sort-by">
-        <h1 className="search-controller-sort-by-title">Sort By</h1>
+        <h4 className="search-controller-sort-by-title mb-2">Sort By</h4>
         <select
           onChange={handleSortByChange}
-          className="search-controller-sort-by-select"
+          className="search-controller-sort-by-select form-control form-control-lg"
         >
           <option
             value="CreationDate"
@@ -75,6 +78,7 @@ function SearchController() {
             View Count
           </option>
         </select>
+      </div>
       </div>
     </div>
   );

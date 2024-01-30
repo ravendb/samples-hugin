@@ -2,18 +2,18 @@ import { useSearchParams } from "react-router-dom";
 import "../styles/components/question-pagination.css";
 
 /* eslint-disable react/prop-types */
-function QuestionPagination({ totalResults }) {
+function QuestionPagination({ totalResults, className }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const page = Number(searchParams.get("page") || 1);
   const pageSize = Number(searchParams.get("pageSize") || 10);
   const numOfPages = Math.ceil(totalResults / pageSize);
 
   return (
-    <div className="search-page-pagination">
+    <div className={"search-page-pagination " + className}>
 
-      <div className="search-page-pagination-info">
+      <div className="search-page-pagination-info hstack justify-content-between gap-4">
         <button
-          className="search-page-pagination-info-button"
+          className="search-page-pagination-info-button btn btn-primary rounded-pill px-3"
           onClick={() => {
             setSearchParams(searchParams => {
               searchParams.set("page", page - 1);
@@ -24,11 +24,15 @@ function QuestionPagination({ totalResults }) {
         >
           Previous
         </button>
-        <span className="search-page-pagination-info-text">
-          Showing {(page * pageSize).toLocaleString()} - {Math.min((page + 1) * pageSize, totalResults).toLocaleString()} of {totalResults.toLocaleString()} results
+        <span className="search-page-pagination-info-text text-muted hstack gap-1">
+          Showing 
+          <strong className="text-emphasis"> {(page * pageSize).toLocaleString()} - {Math.min((page + 1) * pageSize, totalResults).toLocaleString()} </strong> 
+          of 
+          <strong className="text-emphasis"> {totalResults.toLocaleString()} </strong> 
+          results
         </span>
         <button
-          className="search-page-pagination-info-button"
+          className="search-page-pagination-info-button btn btn-primary rounded-pill px-3"
           onClick={() => {
             setSearchParams(searchParams => {
               searchParams.set("page", page + 1);

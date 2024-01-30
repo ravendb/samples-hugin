@@ -1,0 +1,89 @@
+@use "sass:math";
+$prefix: bs- !default;
+
+@function decimal-round($number, $digits: 0, $mode: round) {
+    $n: 1;
+    // $number must be a number
+    @if type-of($number) != number {
+        @warn '#{ $number } is not a number.';
+        @return $number;
+    }
+    // $digits must be a unitless number
+    @if type-of($digits) != number {
+        @warn '#{ $digits } is not a number.';
+        @return $number;
+    } @else if not unitless($digits) {
+        @warn '#{ $digits } has a unit.';
+        @return $number;
+    }
+    @if $digits > 0 {
+        @for $i from 1 through $digits {
+            $n: $n * 10;
+        }
+    }
+    @if $mode == round {
+        @return math.div(math.round($number * $n), $n);
+    } @else if $mode == ceil {
+        @return math.div(math.ceil($number * $n), $n);
+    } @else if $mode == floor {
+        @return math.div(math.floor($number * $n), $n);
+    } @else {
+        @warn '#{ $mode } is undefined keyword.';
+        @return $number;
+    }
+}
+
+$gutter: 30px;
+$gutter-ratio: 1.618;
+$gutter-md: decimal-round(($gutter * $gutter-ratio), 1);
+$gutter-lg: decimal-round(($gutter-md * $gutter-ratio), 1);
+$gutter-xl: decimal-round(($gutter-lg * $gutter-ratio), 1);
+$gutter-sm: decimal-round((math.div($gutter, $gutter-ratio)), 1);
+$gutter-xs: decimal-round((math.div($gutter-sm, $gutter-ratio)), 1);
+$gutter-xxs: decimal-round((math.div($gutter-xs, $gutter-ratio)), 1);
+
+$gutters: (
+    xxs: $gutter-xxs,
+    xs: $gutter-xs,
+    sm: $gutter-sm,
+    nr: $gutter,
+    md: $gutter-md,
+    lg: $gutter-lg,
+    xl: $gutter-xl,
+);
+
+$screen-xs: 480px !default;
+$screen-xs-min: $screen-xs !default;
+$screen-sm: 768px;
+$screen-sm-min: $screen-sm !default;
+$screen-md: 992px;
+$screen-md-min: $screen-md !default;
+$screen-lg: 1200px;
+$screen-lg-min: $screen-lg !default;
+$screen-xs-max: ($screen-sm-min - 1) !default;
+$screen-sm-max: ($screen-md-min - 1) !default;
+$screen-md-max: ($screen-lg-min - 1) !default;
+
+$font-size-root: 14px !default;
+$font-size-base: 1rem !default; // Assumes the browser default, typically `16px`
+$font-size-sm: $font-size-base * 0.875 !default;
+$font-size-lg: $font-size-base * 1.25 !default;
+$font-size-xs: $font-size-base * 0.7 !default;
+
+$border-width: 1px;
+$btn-border-width: 1px;
+
+// scss-docs-start border-radius-variables
+$border-radius-sm: decimal-round((math.div($gutter-xxs, $gutter-ratio)), 1) !default;
+$border-radius: $gutter-xxs !default;
+$border-radius-md: $gutter-xs !default;
+$border-radius-lg: $gutter-sm !default;
+$border-radius-xl: $gutter !default;
+$border-radius-xxl: $gutter-md !default;
+$border-radius-pill: 50rem !default;
+// scss-docs-end border-radius-variables
+
+$global-easing: cubic-bezier(0, 0.5, 0.5, 1);
+$global-easing-in-out: cubic-bezier(0.6, 0, 0.6, 1);
+$global-easing-out: cubic-bezier(0.5, 0, 1, 0.5);
+$easing-rubber: cubic-bezier(0.68, -0.55, 0.27, 1.55);

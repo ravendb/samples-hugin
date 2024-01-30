@@ -32,10 +32,11 @@ function QuestionPage() {
   const users = questionResult.data.users;
   const question = questionResult.data.question;
   return (
-    <main className="question-page">
-      <div className="question-page-content">
+    <main className="question-page container my-4">
+      <div className="row">
+      <div className="question-page-content col-lg-8">
         <header className="question-page-header">
-          <h1 className="question-page-title">{question.Title}</h1>
+          <h2 className="question-page-title">{question.Title}</h2>
 
           <div className="question-page-header-details">
             <div className="question-page-header-details-item">
@@ -68,10 +69,12 @@ function QuestionPage() {
           </div>
         </header>
 
+        <div className="card mb-3">
         <div
-          className="question-page-question-body"
+          className="question-page-question-body card-body"
           dangerouslySetInnerHTML={{ __html: question.Body }}
         ></div>
+        </div>
         <TagList tags={question.Tags} />
 
         <div className="question-page-user-info">
@@ -116,9 +119,10 @@ function QuestionPage() {
           })}
         </div>
       </div>
-      <div >
+      <div className="col-lg-4 vstack gap-3">
         <BackendTiming timings={questionResult.timings} code={questionResult.code} />
         <DatabaseLink />
+      </div>
       </div>
     </main>
   );

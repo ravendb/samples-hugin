@@ -24,7 +24,6 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin: 10px 0;
 }
 
 @media screen and (min-width: 767px) {
@@ -32,4 +31,4 @@
     flex-direction: row;
     padding: 10px;
   }
-}
+}/*# sourceMappingURL=search-page.css.map */
