@@ -70,27 +70,48 @@ function HomePage() {
               overhead.
             </p>
             <p>
-              Hugin comes by default with the following data sets (and you can
-              add more yourself):
+              The default configuration of Hugin includes 4.2 million documents and
+              over 2.6 million questions and answers. The data size is a bit higher
+              than 5GB in size.
             </p>
-            <div className="tech-link">
-              <img src="/img/raspberrypi.svg" alt="raspberry-pi" />
-              <p>raspberrypi.stackexchange.com</p>
-            </div>
-            <div className="tech-link">
-              <img src="/img/unix.svg" alt="linux" />
-              <p>unix.stackexchange.com</p>
-            </div>
-            <div className="tech-link">
-              <img src="/img/serverfault.svg" alt="server" />
-              <p>serverfault.com</p>
-            </div>
             <p>
               Hugin is typically deployed on a Raspberry Pi Zero 2 W (but is
               compatbile with any Raspberry Pi release in the last decade or
               so). If you are reading this text, you are probably looking at the
               device right now.
             </p>
+            <p>That means that we are working with a dataset that is 10 times
+              larger than memory and using an SD card for storage (<em>very</em> slow).
+              And yet, the application is very responsive and fast. This is because
+              we built RavenDB to make efficient use of resources and to be able to
+              deliver high performance even in constrained environments.
+            </p>
+            <p>Conversely, you can give RavenDB more resources and see it deliver
+              top of the line performance and throughput at any load.
+            </p>
+
+            <h3>The data set</h3>
+            <p>
+              Hugin comes by default with the following data sets (and you can
+              add more yourself):
+            </p>
+            <div className="tech-link">
+              <img src="/img/raspberrypi.svg" alt="raspberry-pi" />
+              <p>Raspberry Pi Stack Exchange</p>
+            </div>
+            <div className="tech-link">
+              <img src="/img/unix.svg" alt="linux" />
+              <p>Unix & Linux  Stack Exchange</p>
+            </div>
+            <div className="tech-link">
+              <img src="/img/serverfault.svg" alt="serverfault" />
+              <p>Server Fault</p>
+            </div>
+            <div className="tech-link">
+              <img src="/img/superuser.svg" alt="superuser" />
+              <p>Super User</p>
+            </div>
+
 
             <h3>Why build Hugin?</h3>
             <p>
@@ -112,7 +133,7 @@ function HomePage() {
               aimed specifically for running on the edge.
             </p>
             <p>
-              We hope that you&apos;ll find it useful, and would appreciate any
+              We hope that you'll find it useful, and would appreciate any
               feedback or comments you have.
             </p>
 
@@ -133,20 +154,21 @@ function HomePage() {
               device, specifically to show how efficient it is in running with
               very few resources. You can see how fast this application is,
               while RavenDB is running on a device that is likely less powerful
-              than your watch. In the same vien, RavenDB can deliver low
+              than your watch. In the same time, RavenDB can deliver low
               latency, high availability and high throughput for your systems.
               Most importantly, it can do that while encapsulating a lot of the
               complexity of building such as system.
             </p>
             <p>
               Hugin is open source (as is RavenDB, for that matter). If
-              you&apos;ll browse Hugin&apos;s source code, (which we highly
-              encourage), you&apos;ll that there isn&apos;t anything fancy going
+              you'll browse Hugin's source code, (which we highly
+              encourage), you'll that there isn't anything fancy going
               on there. It is a pretty standard React application, using node.js
               server in the backend to talk to RavenDB. The key here is that we
               are working with the most vanilla setup possible, and we are still
               getting a lot of value from RavenDB.
             </p>
+            <h3>Tanglible benefits</h3>
             <p>
               RavenDB is managing gigabytes on information, running on a
               constrained device with about 512MB of RAM and with an SD Card as
@@ -175,7 +197,7 @@ function HomePage() {
             <p>
               The elevator pitch is that it is a Raspberry Pi Zero 2 W appliance
               running RavenDB and a node.js React application to provide a
-              completely offline access to StackExchange communities&apos;
+              completely offline access to StackExchange communities'
               questions and answers.
             </p>
             <img src="/img/ravendb-logo.svg" alt="RavenDB's Logo" />
@@ -205,14 +227,14 @@ function HomePage() {
               </li>
               <li>
                 <a href="https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
-                  Hugin&apos;s GitHub page
+                  Hugin's GitHub page
                 </a>
               </li>
             </ul>
             <p>
-              <em>Note:</em> you may need to disconnect from Hugin&apos;s WiFi
+              <em>Note:</em> you may need to disconnect from Hugin's WiFi
               and connect to the normal network to access those links. By
-              default Hugin&apos;s WiFi is not connected to the Internet.
+              default Hugin's WiFi is not connected to the Internet.
             </p>
           </div>
         </div>

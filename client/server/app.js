@@ -53,10 +53,10 @@ class QuestionsTags extends ravendb.AbstractJavaScriptIndexCreationTask {
     });
   }
 }
-Promise.all([
-  new QuestionsTags().execute(documentStore),
-  new QuestionsSearch().execute(documentStore),
-]).then(() => {
+
+const indexes = [QuestionsSearch, QuestionsTags];
+
+Promise.all(indexes.map(index => new index().execute(documentStore))).then(() => {
   console.log("Indexes created");
 }).catch(err => {
   console.error("Failed to create indexes", err);
@@ -95,7 +95,6 @@ if (isProdEnv) {
 
 
 app.get("/api/indexes", (req, res) => {
-  const indexes = [QuestionsTags, QuestionsSearch];
   res.send({
     indexes: indexes.map(i => ({ name: i.name, code: i.toString() })),
   })
@@ -139,7 +138,7 @@ app.asyncGet("/api/search", async (req, res) => {
   const pageSize = req.query.pageSize || 10;
 
   const query = session
-    .query({ indexName: "Questions/Search" })
+    .query({ indexName: QuestionsSearch.name })
     .take(pageSize)
     .skip(page * pageSize);
 
@@ -175,7 +174,7 @@ app.asyncGet("/api/search", async (req, res) => {
 
   var tagsStart = performance.now();
   const relatedTags = await session
-    .query({ indexName: "Questions/Tags" })
+    .query({ indexName: QuestionsTags.name })
     .whereIn("Tag", postTags)
     .orderByDescending("Count", "Long")
     .take(10)
