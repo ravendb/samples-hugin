@@ -39,6 +39,10 @@ function AppHeader() {
     navigate("/home");
   }
 
+  function searchKeyUp(e) {
+    if (e.key === "Enter") onSearchClick();
+  }
+
   useEffect(() => {
     const community = searchParams.get("community");
     const tag = searchParams.get("tag");
@@ -52,7 +56,7 @@ function AppHeader() {
 
   return (
     <header className="hero">
-      <img src="/img/hero.jpg" className="hero-img" alt="raven-logo" />
+      <img src="/img/hero.jpg" className="hero-img" alt="raven-logo" onClick={handleTitleClick} />
       <div className="hero-container">
         <div className="hero-content">
           <h1 className="hero-title" onClick={handleTitleClick}>
@@ -70,6 +74,7 @@ function AppHeader() {
               placeholder="Search database"
               value={searchTerm}
               onChange={inputChangeHandler}
+              onKeyUp={searchKeyUp}
             />
             <button
               className="search-btn"
