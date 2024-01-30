@@ -3,7 +3,7 @@
   z-index: 1;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(25em, 1fr));
-  max-width: 160em;
+  max-width: 140em;
   margin: auto;
   margin-bottom: -11.4px;
   justify-content: center;
@@ -31,24 +31,6 @@
 .card-img {
   max-width: 60px;
   vertical-align: middle;
-}
-
-.card-title {
-  font-weight: 600;
-  line-height: 1.2;
-  margin: 0;
-  color: #f0f1f6;
-}
-
-.info-container {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  gap: 30px;
-  margin: 100px auto 30px;
-  padding: 0 30px;
-  width: 100%;
-  max-width: 1200px;
 }
 
 .info-container h3 {
@@ -80,22 +62,17 @@
   width: 100%;
 }
 
-.hugin-description {
-  padding: 30px;
-}
-
-@media screen and (min-width: 767px) {
+@media (min-width: 768px) {
   .hugin-description {
-    padding: 50px;
+    padding: 50px !important;
   }
 }
-
 .hugin-description img {
   max-width: 50px;
 }
 
 .hugin-description p {
-  font-size: 17.5px;
+  font-size: 18px;
 }
 
 .hugin-description-title {
@@ -126,10 +103,6 @@
   gap: 20px;
 }
 
-.right-col > * {
-  padding: 18.5px;
-}
-
 .raven-icon {
   width: 100%;
   max-width: 50px;
@@ -139,22 +112,18 @@
   .info-container {
     flex-direction: row;
   }
-
   .left-col {
     flex: 8;
   }
-
   .right-col {
     flex: 4;
   }
 }
-
 @media screen and (min-width: 1200px) {
   .hugin-description-title h2 {
     font-size: 38px;
   }
-
   .info-container h3 {
     font-size: 22px;
   }
-}
+}/*# sourceMappingURL=home-page.css.map */

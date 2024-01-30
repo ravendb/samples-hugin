@@ -12,7 +12,7 @@
   gap: 10px;
   max-width: 90vw;
   max-height: 90vh;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .code-modal-main-screen {

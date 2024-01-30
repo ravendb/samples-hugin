@@ -12,16 +12,23 @@ function SearchPage() {
   console.log(queryResult);
   if (!queryResult) return <div>loading...</div>;
   return (
-    <main className="search-page">
-      <div className="question-container">
-        <QuestionList queryResult={queryResult.data} />
-        {/* <QuestionPagination totalResults={queryResult.data.totalResults} /> */}
-      </div>
-      <div className="search-page-info-container">
-        <SearchController />
-        <BackendTiming serverResult={queryResult} />
-        <DatabaseLink />
-        <RelatedTags tags={queryResult.data.relatedTags} />
+    <main className="search-page container">
+      <div className="row">
+        <div className="col-lg-8">
+          <SearchController />
+          <div className="question-container">
+            <QuestionList queryResult={queryResult.data} />
+            {/* <QuestionPagination totalResults={queryResult.data.totalResults} /> */}
+          </div>
+        </div>
+        <div className="col-lg-4">
+          <div className="search-page-info-container">
+            
+            <BackendTiming serverResult={queryResult} />
+            <DatabaseLink />
+            <RelatedTags tags={queryResult.data.relatedTags} />
+          </div>
+        </div>
       </div>
     </main>
   );

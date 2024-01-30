@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import "./styles/base.css";
+import "./styles/styles.css";
 import AppHeader from "./components/AppHeader";
 import SearchPage from "./pages/SearchPage";
 import QuestionPage from "./pages/QuestionPage";

@@ -26,7 +26,7 @@
 .hero-content {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .hero-logo {
@@ -46,7 +46,6 @@
   font-weight: 600;
   line-height: 1.2;
   text-align: center;
-  font-size: calc(1.5533453794rem + 3.6401445523vw);
   cursor: pointer;
 }
 

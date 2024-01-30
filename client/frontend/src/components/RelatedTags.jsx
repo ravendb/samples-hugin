@@ -35,10 +35,10 @@ function RelatedTags({ tags }) {
               {Object.entries(t.Communities).map(([key, value]) => (
                 <li
                   key={key}
-                  className="related-tag-community"
+                  className={"related-tag-community tag-" + key + " bg-faded-" + key}
                   onClick={() => handleCommunityClick(key)}
                 >
-                  <img src={`/img/${key}.svg`} width="25px" />
+                  <img src={`/img/${key}.svg`} />
                   <span>{value.toLocaleString()}</span>
                 </li>
               ))}

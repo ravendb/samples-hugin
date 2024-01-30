@@ -58,7 +58,7 @@ function SearchController() {
         <h1 className="search-controller-sort-by-title">Sort By</h1>
         <select
           onChange={handleSortByChange}
-          className="search-controller-sort-by-select"
+          className="search-controller-sort-by-select form-control"
         >
           <option
             value="CreationDate"

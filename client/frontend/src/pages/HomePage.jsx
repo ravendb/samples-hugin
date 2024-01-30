@@ -42,8 +42,8 @@ function HomePage() {
                   className="card-img"
                 />
                 <div>
-                  <h3 className="card-title">{c.Name}</h3>
-                  <p>{c.Description}</p>
+                  <h3 className="mb-1">{c.Name}</h3>
+                  <p className="m-0">{c.Description}</p>
                 </div>
               </div>
             </div>
@@ -51,9 +51,12 @@ function HomePage() {
         </div>
       )}
 
-      <div className="info-container">
-        <div className="info-col left-col">
-          <div className="card info-card hugin-description">
+      <div className="info-container container my-6">
+        <div className="row">
+          <div className="col-lg-8">
+            <div className="info-col left-col">
+          <div className="card info-card">
+            <div className="card-body hugin-description">
             <div className="hugin-description-title">
               <img src="/img/raven.svg" alt="" />
               <h2 className="m-0">What is Hugin?</h2>
@@ -159,14 +162,18 @@ function HomePage() {
               You can read more about how Hugin works in the
               <a href="/how">How Hugin Works</a> page.
             </p>
+            </div>
+          </div>
+        
           </div>
         </div>
-
+        <div className="col-lg-4">
         <div className="info-col right-col">
           <BackendTiming serverResult={serverResult} />
           <DatabaseLink />
 
-          <div className="card">
+          <div className="card bg-faded-primary">
+            <div className="card-body">
             <h3>How this works?</h3>
             <p>
               You can read more about how Hugin works in the
@@ -178,9 +185,13 @@ function HomePage() {
               completely offline access to StackExchange communities&apos;
               questions and answers.
             </p>
-            <img src="/img/ravendb-logo.svg" alt="RavenDB's Logo" />
+            <div className="text-center">
+            <img src="/img/ravendb-logo.svg" alt="RavenDB Logo" width="61%" className="mt-2" />
+            </div>
+            </div>
           </div>
-          <div className="card">
+          <div className="card bg-faded-primary">
+            <div className="card-body">
             <img
               src="/img/raven.svg"
               alt="RavenDB's Logo"
@@ -215,6 +226,9 @@ function HomePage() {
               default Hugin&apos;s WiFi is not connected to the Internet.
             </p>
           </div>
+          </div>
+        </div>
+        </div>
         </div>
       </div>
     </main>
