@@ -3,7 +3,6 @@ const cors = require("cors");
 const path = require("path");
 const ravendb = require("ravendb");
 const { performance } = require("perf_hooks");
-const { cwd } = require("process");
 
 const documentStore = new ravendb.DocumentStore(
   "http://127.0.0.1:8080",
@@ -45,6 +44,8 @@ if (isProdEnv) {
 app.asyncGet("/api/question", async (req, res) => {
   console.log(req.query);
   const session = documentStore.openSession();
+  const loadStart = performance.now();
+
   const question = await session
     .include("Owner")
     .include("Answers[].Owner")
@@ -53,11 +54,19 @@ app.asyncGet("/api/question", async (req, res) => {
 
   const userIds = question.Answers.map((a) =>
     a.Comments.map((c) => c.User).concat([a.Owner])
-  ).flat();
+  ).concat([question.Owner])
+    .concat(question.Comments.map((c) => c.User))
+    .flat();
   const users = await session.load(userIds);
+
+  const loadEnd = performance.now();
+
   res.send({
     data: { question, users },
     code: getRouteCode(req),
+    timings: {
+      load: loadEnd - loadStart,
+    }
   });
 });
 

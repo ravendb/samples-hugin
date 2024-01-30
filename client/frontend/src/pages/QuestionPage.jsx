@@ -1,29 +1,36 @@
 import { useSearchParams } from "react-router-dom";
 import { getQuestion } from "../services/data.service";
 import "../styles/pages/question-page.css";
-import { formatDateToRelativeTime } from "../services/util.service";
+import { formatDateToRelativeTime, getUserLink, getUserName } from "../services/util.service";
 import TagList from "../components/TagList";
 import CommentList from "../components/CommentList";
 import { useQuestions } from "../hooks/useQuestions";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setQuestion } from "../store/questionSlice";
+import BackendTiming from "../components/BackendTiming";
+import DatabaseLink from "../components/DatabaseLink";
+
 
 function QuestionPage() {
   const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
-  const { question } = useQuestions();
+  const questionResult = useQuestions().question;
 
   useEffect(() => {
     async function fetchQuestion(id) {
-      const question = await getQuestion(id);
-      dispatch(setQuestion(question.data.question));
+      const q = await getQuestion(id);
+      dispatch(setQuestion(q));
     }
 
     fetchQuestion(searchParams.get("id"));
   }, [dispatch]);
 
-  if (!question) return <div className="loader">Loading...</div>;
+
+  if (!questionResult) return <div className="loader">Loading...</div>;
+
+  const users = questionResult.data.users;
+  const question = questionResult.data.question;
   return (
     <main className="question-page">
       <div className="question-page-content">
@@ -70,12 +77,12 @@ function QuestionPage() {
         <div className="question-page-user-info">
           <div className="question-page-user-info-details">
             <span className="question-page-user-info-name">
-              {question.Owner}
+              <a href={getUserLink(question.Owner)} className="user-link">{getUserName(question.Owner, users)}</a>
             </span>
           </div>
         </div>
 
-        <CommentList comments={question.Comments} />
+        <CommentList comments={question.Comments} users={users} />
 
         <div className="question-page-answers-list">
           <h3 className="question-page-answers-list-title">
@@ -98,16 +105,20 @@ function QuestionPage() {
                       {formatDateToRelativeTime(answer.CreationDate)}
                     </p>
                     <p className="question-page-answer-user-info-name">
-                      {answer.Owner}
+                      <a href={getUserLink(answer.Owner)} className="user-link">{getUserName(answer.Owner, users)}</a>
                     </p>
                   </div>
                 </div>
 
-                <CommentList comments={answer.Comments} />
+                <CommentList comments={answer.Comments} users={users} />
               </div>
             );
           })}
         </div>
+      </div>
+      <div >
+        <BackendTiming timings={questionResult.timings} code={questionResult.code} />
+        <DatabaseLink />
       </div>
     </main>
   );

@@ -13,7 +13,7 @@ function QuestionList({ queryResult }) {
         <>
           {queryResult.results.map((question, i) => (
             <li key={i}>
-              <QuestionPreview question={question} />
+              <QuestionPreview question={question} users={queryResult.users} />
             </li>
           ))}
         </>

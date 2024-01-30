@@ -9,25 +9,24 @@ function SearchController() {
   const communities = searchParams.getAll("community");
 
   function handleRemoveTag(tag) {
-    const newTags = tags.filter((t) => t !== tag);
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.delete("tag");
-    newTags.forEach((t) => newSearchParams.append("tag", t));
-    setSearchParams(newSearchParams);
+    setSearchParams(searchParams => {
+      searchParams.delete("tag", tag);
+      return searchParams;
+    })
   }
 
   function handleRemoveCommunity(community) {
-    const newCommunities = communities.filter((c) => c !== community);
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.delete("community");
-    newCommunities.forEach((c) => newSearchParams.append("community", c));
-    setSearchParams(newSearchParams);
+    setSearchParams(searchParams => {
+      searchParams.delete("community", community);
+      return searchParams;
+    });
   }
 
   function handleSortByChange(e) {
-    const newSearchParams = new URLSearchParams(searchParams);
-    newSearchParams.set("orderBy", e.target.value);
-    setSearchParams(newSearchParams);
+    setSearchParams(searchParams => {
+      searchParams.set("orderBy", e.target.value);
+      return searchParams;
+    });
   }
 
   return (

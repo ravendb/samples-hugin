@@ -169,7 +169,7 @@ function HomePage() {
         </div>
         <div className="col-lg-4">
         <div className="info-col right-col">
-          <BackendTiming serverResult={serverResult} />
+          <BackendTiming timings={serverResult.timings} code={serverResult.code} />
           <DatabaseLink />
 
           <div className="card bg-faded-primary">
