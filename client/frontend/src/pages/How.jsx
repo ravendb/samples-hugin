@@ -17,9 +17,9 @@ function How() {
     return (
         <main className="home-page">
 
-            <div className="info-container container my-6">
+            <div className="info-container container my-3">
                 <div className="row">
-                    <div className="col-lg-8">
+                    <div className="col-lg-8 mb-4">
                         <div className="info-col left-col">
                             <div className="card info-card">
                                 <div className="card-body hugin-description">
@@ -96,10 +96,10 @@ function How() {
                                     <p>
                                         RavenDB uses indexes to speed up queries. These allow us to search for questions in an efficent manner as well as show statistics on tags distributions. The following indexes are defined:
                                         {codeToShow ? (<CodeModal code={codeToShow} onClose={() => setCodeToShow(null)} />) : (<></>)}
-                                        <ul>
-                                            {serverResult.indexes.map(i => (
-                                                <li>
-                                                    <button className="backend-timing-btn mt-3" onClick={() => { setCodeToShow(i.code); }}>
+                                        <ul className="indexes-list hstack gap-3 flex-wrap my-4">
+                                            {serverResult.indexes.map((i, index) => (
+                                                <li key={index}>
+                                                    <button className="backend-timing-btn btn btn-lg  btn-secondary " onClick={() => { setCodeToShow(i.code); }}>
                                                         <img src={`/img/code.svg`} className="backend-timing-btn-img" /> <code>{i.name}</code>
                                                     </button>
                                                 </li>
@@ -128,7 +128,7 @@ function How() {
 
                         </div>
                     </div>
-                    <div className="col-lg-4">
+                    <div className="col-lg-4 mb-4">
                         <div className="info-col right-col">
 
                             <div className="card bg-faded-primary">
@@ -170,12 +170,14 @@ function How() {
                             </div>
                             <div className="card bg-faded-warning">
                                 <div className="card-body bg-faded-primary rounded-2">
-                                    <img
-                                        src="/img/raven.svg"
-                                        alt="RavenDB's Logo"
-                                        className="raven-icon"
-                                    />
-                                    <h3>Learn more about RavenDB</h3>
+                                    <div className="hstack align-items-center gap-3 mb-3">
+                                        <img
+                                            src="/img/raven.svg"
+                                            alt="RavenDB's Logo"
+                                            className="raven-icon"
+                                        />
+                                        <h3 className="m-0">Learn more about RavenDB</h3>
+                                    </div>
                                     <ul>
                                         <li>
                                             <a href="https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
@@ -189,11 +191,11 @@ function How() {
                                         </li>
                                         <li>
                                             <a href="https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
-                                                Github Discussions
+                                                GitHub Discussions
                                             </a>
                                         </li>
                                         <li>
-                                            <a href="https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                                            <a href="https://github.com/ravendb/samples-hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
                                                 Hugin&apos;s GitHub page
                                             </a>
                                         </li>

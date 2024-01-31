@@ -2,16 +2,5 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 5px;
-}
-
-.tag {
-  font-size: 0.9rem;
-  line-height: 1;
-  background-color: #4f5268;
-  color: #f0f1f6;
-  cursor: pointer;
-  padding: 5px 10px;
-  border-radius: 5px;
-  white-space: nowrap;
-}
+  gap: 7px;
+}/*# sourceMappingURL=tag-list.css.map */

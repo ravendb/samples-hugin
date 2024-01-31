@@ -50,26 +50,17 @@
 
 
 .backend-timing-btn {
-  display: flex;
+  display: flex !important;
   align-items: center;
-  gap: 5px;
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  background-color: #414458;
-  padding: 10px 15px;
-  border-radius: 5px;
+  gap: $gutter-sm;
+  padding: $gutter-xxs $gutter-sm !important;
 }
 
 .backend-timing-btn-img {
-  width: 50px;
+  width: 40px;
 }
 
 .backend-timing-btn-text {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1.2;
-  color: #f0f1f6;
+  text-align: left;
+  line-height: 1.2em;
 }

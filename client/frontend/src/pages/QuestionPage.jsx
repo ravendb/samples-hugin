@@ -34,7 +34,7 @@ function QuestionPage() {
   return (
     <main className="question-page container my-4">
       <div className="row">
-      <div className="question-page-content col-lg-8">
+      <div className="question-page-content col-lg-8 mb-4">
         <header className="question-page-header">
           <h2 className="question-page-title">{question.Title}</h2>
 
@@ -119,7 +119,7 @@ function QuestionPage() {
           })}
         </div>
       </div>
-      <div className="col-lg-4 vstack gap-3">
+      <div className="col-lg-4 vstack gap-3 mb-4">
         <BackendTiming timings={questionResult.timings} code={questionResult.code} />
         <DatabaseLink />
       </div>

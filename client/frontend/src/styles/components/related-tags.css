@@ -1,8 +1,3 @@
-.related-tags {
-  padding: 11.4px;
-  width: 100%;
-}
-
 .related-tags-title {
   margin: 0;
   font-size: 24px;
@@ -47,11 +42,16 @@
 }
 .related-tag .related-tag-communities {
   display: grid;
-  grid-template-columns: repeat(3, minmax(75px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   grid-auto-flow: dense;
   gap: 7px;
   padding: 0;
   list-style: none;
+}
+@media (min-width: 992px) {
+  .related-tag .related-tag-communities {
+    grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+  }
 }
 .related-tag .related-tag-communities .related-tag-community {
   display: flex;
@@ -79,14 +79,8 @@
   grid-column-start: 1;
 }
 .related-tag .related-tag-communities .related-tag-community.tag-unix {
-  grid-column-end: -2;
+  grid-column-start: 2;
 }
-.related-tag .related-tag-communities .related-tag-community.tag-serverfault {
+.related-tag .related-tag-communities .related-tag-community.tag-superuser {
   grid-column-end: -1;
-}
-
-@media screen and (min-width: 768px) {
-  .related-tags {
-    max-width: 550px;
-  }
 }/*# sourceMappingURL=related-tags.css.map */

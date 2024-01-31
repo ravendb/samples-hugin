@@ -21,7 +21,8 @@ function RelatedTags({ tags }) {
 
   return (
     <div className="card related-tags">
-      <h3 className="related-tags-title">Related tags:</h3>
+      <div className="card-body">
+      <h3>Related tags:</h3>
       <ul className="related-tags-list">
         {tags.map((t) => (
           <li className="related-tag" key={t.Tag}>
@@ -46,6 +47,7 @@ function RelatedTags({ tags }) {
           </li>
         ))}
       </ul>
+      </div>
     </div>
   );
 }

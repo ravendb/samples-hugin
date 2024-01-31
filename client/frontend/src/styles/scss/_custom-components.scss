@@ -96,3 +96,14 @@
 .text-emphasis {
   color: $text-emphasis-color;
 }
+
+.indexes-list {
+  list-style: none;
+  padding: 0;
+}
+
+.database-link {
+  @media (hover: none) {
+    display: none;
+  }
+}

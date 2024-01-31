@@ -51,9 +51,9 @@ function HomePage() {
         </div>
       )}
 
-      <div className="info-container container my-6">
+      <div className="info-container container my-3">
         <div className="row">
-          <div className="col-lg-8">
+          <div className="col-lg-8 mb-4">
             <div className="info-col left-col">
               <div className="card info-card">
                 <div className="card-body hugin-description">
@@ -80,7 +80,7 @@ function HomePage() {
                       <img src="/img/serverfault.svg" alt="server" />
                       <div className="lead"><a href="https://serverfault.com" target="_blank">serverfault.com</a></div>
                     </div>
-                    <div className="tech-link bg-faded-unix py-2 px-4 rounded-5 hstack gap-3 align-items-center">
+                    <div className="tech-link bg-faded-superuser py-2 px-4 rounded-5 hstack gap-3 align-items-center">
                       <img src="/img/superuser.svg" alt="superuser" />
                       <div className="lead"><a href="https://superuser.com" target="_blank">superuser.com</a></div>
                     </div>
@@ -116,13 +116,13 @@ function HomePage() {
 
             </div>
           </div>
-          <div className="col-lg-4">
+          <div className="col-lg-4 mb-4">
             <div className="info-col right-col">
               <BackendTiming timings={serverResult.timings} code={serverResult.code} />
               <DatabaseLink />
 
               <div className="card bg-faded-primary">
-                <div className="card-body ">
+                <div className="card-body text-light">
                   <h3>How this works?</h3>
                   <p>
                     You can read more about how Hugin works in the
@@ -141,30 +141,32 @@ function HomePage() {
               </div>
               <div className="card bg-faded-warning">
                 <div className="card-body bg-faded-primary rounded-2">
+                  <div className="hstack align-items-center gap-3 mb-3">
                   <img
                     src="/img/raven.svg"
                     alt="RavenDB's Logo"
                     className="raven-icon"
                   />
-                  <h3>Learn more about RavenDB</h3>
+                  <h3 className="m-0">Learn more about RavenDB</h3>
+                  </div>
                   <ul>
                     <li>
-                      <a href="https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                      <a href="https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin" target="_blank" rel="noreferrer">
                         RavenDB Home Page
                       </a>
                     </li>
                     <li>
-                      <a href="https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                      <a href="https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin" target="_blank" rel="noreferrer">
                         RavenDB Try
                       </a>
                     </li>
                     <li>
-                      <a href="https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
-                        Github Discussions
+                      <a href="https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin" target="_blank" rel="noreferrer">
+                        GitHub Discussions
                       </a>
                     </li>
                     <li>
-                      <a href="https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                      <a href="https://github.com/ravendb/samples-hugin?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin" target="_blank" rel="noreferrer">
                         Hugin&apos;s GitHub page
                       </a>
                     </li>

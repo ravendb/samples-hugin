@@ -18,13 +18,13 @@ function SearchPage() {
       {!queryResult && <div className="search-page-loader">loading...</div>}
       {queryResult && (
         <div className="row">
-          <div className="question-container col-lg-8">
+          <div className="question-container col-lg-8 mb-4">
             <SearchController />
             <QuestionPagination totalResults={queryResult.data.totalResults} className="pt-4 pb-1" />
             <QuestionList queryResult={queryResult.data} />
             <QuestionPagination totalResults={queryResult.data.totalResults} className={"pt-3 pb-7"} />
           </div>
-          <div className="search-page-info-container col-lg-4">
+          <div className="search-page-info-container col-lg-4 mb-4">
             
             <BackendTiming timings={queryResult.timings} code={queryResult.code} />
             <DatabaseLink />
