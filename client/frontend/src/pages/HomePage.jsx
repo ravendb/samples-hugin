@@ -229,22 +229,22 @@ function HomePage() {
                   <h3>Learn more about RavenDB</h3>
                   <ul>
                     <li>
-                      <a href={getRedirectLink("https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
+                      <a target="_blank" href={getRedirectLink("https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                         RavenDB Home Page
                       </a>
                     </li>
                     <li>
-                      <a href={getRedirectLink("https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
+                      <a target="_blank" href={getRedirectLink("https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                         RavenDB Try
                       </a>
                     </li>
                     <li>
-                      <a href={getRedirectLink("https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
+                      <a target="_blank" href={getRedirectLink("https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                         Github Discussions
                       </a>
                     </li>
                     <li>
-                      <a href={getRedirectLink("https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
+                      <a target="_blank" href={getRedirectLink("https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                         Hugin&apos;s GitHub page
                       </a>
                     </li>

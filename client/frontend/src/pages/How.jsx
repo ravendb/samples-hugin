@@ -99,12 +99,12 @@ function How() {
                                     <h3>How we got the data?</h3>
                                     <p>
                                         The data we are using for this project was taken from the
-                                        <a href={getRedirectLink("https://archive.org/details/stackexchange")}>Stack Exchange Data Dump</a> on archive.org.
+                                        <a target="_blank" href={getRedirectLink("https://archive.org/details/stackexchange")}>Stack Exchange Data Dump</a> on archive.org.
                                         We took the data sets from the sites focused on administration and devops, so we could generate a dataset
                                         to be used offline that would be <em>useful</em> for actual in-field work.
                                     </p>
-                                    <p>You can add your own communities to the dataset, visit the archive.org <a href={getRedirectLink("https://archive.org/details/stackexchange")}>Stack Exchange
-                                        Data Dump</a> and download the data sets you want. Then, you can use the following <a href={getRedirectLink("https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc")}>code snippet</a> to import the
+                                    <p>You can add your own communities to the dataset, visit the archive.org <a target="_blank" href={getRedirectLink("https://archive.org/details/stackexchange")}>Stack Exchange
+                                        Data Dump</a> and download the data sets you want. Then, you can use the following <a target="_blank" href={getRedirectLink("https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc")}>code snippet</a> to import the
                                         data into RavenDB. You'll also need to provide an <code>svg</code> icon file for the community, to get
                                         the UI to display it properly.
                                     </p>
@@ -120,7 +120,7 @@ function How() {
                                     </p>
                                     <p>
                                         The Stack Overflow data dump is distributed using multiple files, so you'll need to update the
-                                        <a href={getRedirectLink("https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc")}>code snippet</a> to handle that (instead
+                                        <a target="_blank" href={getRedirectLink("https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc")}>code snippet</a> to handle that (instead
                                         of assuming all the files are in the same archive file). But aside from that, it works just fine.
                                     </p>
                                 </div>
@@ -178,22 +178,22 @@ function How() {
                                     <h3>Learn more about RavenDB</h3>
                                     <ul>
                                         <li>
-                                            <a href={getRedirectLink("https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
+                                            <a target="_blank" href={getRedirectLink("https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                                                 RavenDB Home Page
                                             </a>
                                         </li>
                                         <li>
-                                            <a href={getRedirectLink("https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
+                                            <a target="_blank" href={getRedirectLink("https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                                                 RavenDB Try
                                             </a>
                                         </li>
                                         <li>
-                                            <a href={getRedirectLink("https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
+                                            <a target="_blank" href={getRedirectLink("https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                                                 Github Discussions
                                             </a>
                                         </li>
                                         <li>
-                                            <a href={getRedirectLink("https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
+                                            <a target="_blank" href={getRedirectLink("https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                                                 Hugin&apos;s GitHub page
                                             </a>
                                         </li>
