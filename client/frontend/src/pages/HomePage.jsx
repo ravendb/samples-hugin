@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import BackendTiming from "../components/BackendTiming";
 import DatabaseLink from "../components/DatabaseLink";
+import { getRedirectLink } from "../services/util.service";
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -228,22 +229,22 @@ function HomePage() {
                   <h3>Learn more about RavenDB</h3>
                   <ul>
                     <li>
-                      <a href="https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                      <a href={getRedirectLink("https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                         RavenDB Home Page
                       </a>
                     </li>
                     <li>
-                      <a href="https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                      <a href={getRedirectLink("https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                         RavenDB Try
                       </a>
                     </li>
                     <li>
-                      <a href="https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                      <a href={getRedirectLink("https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                         Github Discussions
                       </a>
                     </li>
                     <li>
-                      <a href="https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                      <a href={getRedirectLink("https://github.com/ravendb/hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin")}>
                         Hugin&apos;s GitHub page
                       </a>
                     </li>

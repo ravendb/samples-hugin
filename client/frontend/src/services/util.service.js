@@ -2,7 +2,13 @@ const SECONDS_IN_MINUTE = 60;
 const MINUTES_IN_HOUR = 60;
 const HOURS_IN_DAY = 24;
 
+function getRedirectLink(link) {
+  return "/redirect?url=" + encodeURIComponent(link);
+}
 function getUserLink(userId) {
+  return getRedirectLink(getUserLinkInternal(userId));
+}
+function getUserLinkInternal(userId) {
   const [_, community, id] = userId.split('/');
   switch (community) {
     case "stackoverflow":
@@ -63,4 +69,4 @@ function isValidDate(dateStr) {
   return !isNaN(date.getTime());
 }
 
-export { formatDateToRelativeTime, getUserName, getUserLink };
+export { formatDateToRelativeTime, getUserName, getUserLink, getRedirectLink };

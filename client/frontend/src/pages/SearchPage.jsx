@@ -11,7 +11,6 @@ import "../styles/pages/search-page.css";
 
 function SearchPage() {
   const { queryResult } = useQuestions();
-  console.log(queryResult);
   if (!queryResult) return <div>loading...</div>;
   return (
     <main className="search-page container my-3">
@@ -25,7 +24,7 @@ function SearchPage() {
             <QuestionPagination totalResults={queryResult.data.totalResults} className={"pt-3 pb-7"} />
           </div>
           <div className="search-page-info-container col-lg-4">
-            
+
             <BackendTiming timings={queryResult.timings} code={queryResult.code} />
             <DatabaseLink />
             <RelatedTags tags={queryResult.data.relatedTags} />
