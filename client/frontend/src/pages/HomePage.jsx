@@ -63,10 +63,10 @@ function HomePage() {
                     <h2 className="m-0">What is Hugin?</h2>
                   </div>
                   <p className="lead">
-                    Hugin is an offline knowledge base appliance, which is seeded with several
-                    <a href="https://stackexchange.com/">Stack Exchange</a> communities to allow
-                    you to access them even when you are offline. These communities were curated
-                    to be useful for devops scenarios when you don't have access to the internet.
+                      Hugin is an offline knowledge base appliance, which is seeded with several
+                    <a href="https://stackexchange.com/">Stack Exchange</a> communities allowing
+                    you to access even when offline. These communities were curated
+                    to be useful for devops scenarios when internet is inaccesable.
                   </p>
                   <div className="vstack gap-2 my-4">
                     <div className="tech-link bg-faded-raspberrypi py-2 px-4 rounded-5 hstack gap-3 align-items-center">
@@ -90,20 +90,20 @@ function HomePage() {
 
                   <h3 className="mt-5 mb-3">Why build Hugin?</h3>
                   <p>
-                    RavenDB is also very well suited for running in both disconnected
+                    RavenDB is very well suited for running in both disconnected
                     and partially connected environments and has a set of features
                     aimed specifically for running on the edge. We wanted to provide you
-                    with a useful demonstration of how RavenDB can be used in such a scenario.
+                    with a useful experience of how RavenDB can be used in such a scenario.
                   </p>
                   <p>
-                    Hugin is running on a Raspberry Pi Zero 2 W appliance which hosts a
-                    RavenDB database and a node.js React application to provide a completely
+                    Hugin is running on a Raspberry Pi Zero 2 W appliance. which hosts a
+                    RavenDB database and a node.js React application, providing a total
                     offline exprience. The appliance is loaded with several Stack Exchange
-                    communities with over 2.6 million questions and answers.
+                    communities with over 2.6 million Q&As.
                   </p>
-                  <p>Even though Hugin is running on low end hardware (just 512MB of RAM) it
-                    holds up very well and is able to run complex queries in a matter of milliseconds.
-                    That is with a dataset that is over ten times bigger than the amount of memory it holds.
+                  <p>Even though Hugin is running on low end hardware ,just 512MB of RAM, it
+                    holds up very well. it's capable running complex queries in a matter of milliseconds,
+                    while holding a dataset ten times bigger than the amount of memory held in the machine.
                     We want to make you <em>feel</em> just how fast and efficient RavenDB is.
                   </p>
 

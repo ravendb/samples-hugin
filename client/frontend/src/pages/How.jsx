@@ -27,8 +27,8 @@ function How() {
                                         <img src="/img/raven.svg" alt="" />
                                         <h2 className="m-0">All about Hugin...</h2>
                                     </div>
-                                    <p className="lead">Hugin is an appliance, meant to provide you with the ability to browse through the Stack Exchange data in an offline manner. In this page we'll take a deep dive into exactly it is built</p>
-                                    <p>It is built using the following technologies:</p>
+                                    <p className="lead">Hugin is an appliance meant to provide you with the ability to browse through the Stack Exchange data in an offline manner. In this page we'll take a deep dive into its building blocks</p>
+                                    <p>Hugin is built using the following tech:</p>
                                     <ul>
                                         <li><strong>Hardware:</strong> Raspberry Pi Zero 2 W (but any Raspberry Pi with a WiFi connection will do</li>
                                         <li><strong>Operating System:</strong> Raspberry Pi OS Lite (32 Bits, Bullseye)</li>
@@ -38,63 +38,46 @@ function How() {
                                     </ul>
                                     <h3>Default data sets</h3>
                                     <p>
-                                        Hugin comes with pre-loaded with a few Stack Exchange communities, so you can start using it immeidately. We chose to include the following communities: <code>raspberrypi.stackexchange.com</code>, <code>unix.stackexchange.com</code>, <code>serverfault.com</code>, and <code>superuser.com</code>.
+                                        Hugin comes with pre-loaded with a few Stack Exchange communities. you can start using it immeidately. We chose to include the following communities: <code>raspberrypi.stackexchange.com</code>, <code>unix.stackexchange.com</code>, <code>serverfault.com</code>, and <code>superuser.com</code>.
                                     </p>
-                                    <p>In total, the dataset contains <em>4.3 million documents</em> and over <em>2.6 million questions and answers</em> and consumes just over 5GB of disk space. This is possible because RavenDB used documents compression, without which the data size is about 11GB. RavenDB's documents compression feature was able to reduce the disk space used by over 50%. That also means that we are able to reduce the amount of disk operations and IOPS used in the system, which is very important given that the disk we are using is a micro SD card.</p>
-                                    <p>The situation is the same in most cloud environments, where you may be  paying a <em>lot</em> to get better disks and IOPS to match your needs. This feature can dramatically reduce this cost.</p>
+                                    <p>In total, the dataset contains <em>4.3 million documents</em> and over <em>2.6 million Q&As</em>. while it consumes just over 5GB of disk space. This is possible due to RavenDB useing documents compression. without it, the data size is about 11GB. Hence, RavenDB's documents compression feature is able to reduce the disk space used by over 50%. it also means that we are able to reduce the amount of disk operations and IOPS used in the system. An important fact, given that the disk we are using is a micro SD card.</p>
+                                    <p>This situation mimics most cloud environments. where you may be  paying a <em>lot</em> to get better disks and IOPS, to match your needs. This feature can dramatically reduce your cost.</p>
 
                                     <h3 className="mt-5 mb-3">Why did we put RavenDB on a Raspberry?</h3>
                                     <p>
-                                        In short, because we can! Because it is cool! And because it is fun!
+                                        In short, because we can, it's cool, and  it's fun!
                                     </p>
                                     <p>
-                                        RavenDB can run on the Raspberry Pi, it is actually an important use case for us when it comes to deploying RavenDB as part of Internet of Things systems. The platfrom is perfect for when you need to deploy a database on the edge, and we have a lot of users who are doing just that.
+                                        RavenDB can run on a Raspberry Pi, it is actually an important use case. When it comes to deploying RavenDB as part of Internet of Things. This appliance is perfect for showing edgy database deployment. We have a lot of users who are doing just that.
                                     </p>
                                     <p>
-                                        We also wanted to show case how RavenDB can run on a very small device, specifically to show how efficient it is in running with very few resources. You can see how fast this application is, while RavenDB is running on a device that is likely less powerful than your watch. In the same vien, RavenDB can deliver low latency, high availability and high throughput for your systems. Most importantly, it can do that while encapsulating a lot of the complexity of building such as system.
+                                        Also, we wanted to exhibit how RavenDB can run on a very small device. specifically to show how efficient it is running with very few resources. You can see how fast this application is. While RavenDB is running on a device likely less powerful than your watch. In the same vien, RavenDB can deliver low latency, high availability and high throughput for your systems. Most importantly, it can do that while encapsulating a lot of the complexity building such system.
                                     </p>
 
                                     <p>
-                                        Hugin is open source (as is RavenDB, for that matter). If
-                                        you&apos;ll browse Hugin&apos;s source code, (which we highly
-                                        encourage), you&apos;ll that there isn&apos;t anything fancy going
+                                        Hugin is open source ,as is RavenDB for that matter. If
+                                        you&apos;ll browse Hugin&apos;s source code, which we highly
+                                        encourage, you&apos;ll see that there isn&apos;t anything fancy going
                                         on there. It is a pretty standard React application, using node.js
-                                        server in the backend to talk to RavenDB. The key here is that we
-                                        are working with the most vanilla setup possible, and we are still
-                                        getting a lot of value from RavenDB.
+                                        server in the backend talking to RavenDB. The key here is that we
+                                        work with the most vanilla setup possible, yet
+                                        getting a big value from RavenDB.
                                     </p>
                                     <p>
-                                        RavenDB is managing gigabytes on information, running on a
-                                        constrained device with about 512MB of RAM and with an SD Card as
-                                        storage, which is very slow device. To a very large extent, we
+                                        RavenDB is managing gigabytes of information. While running on a
+                                        constrained device with about 512MB of RAM and SD Card as
+                                        storage. It's a very slow device. yet, we push it to a very large extent. We
                                         stacked the cards against us being able to deliver a good user
-                                        experience and a snappy application. It is doing so while
+                                        experience and a naet application. It's doing so while
                                         providing a very responsive user experience.
                                     </p>
-                                    <p>
-                                        The default configuration of Hugin includes 4.2 million documents and
-                                        over 2.6 million questions and answers. The data size is a bit higher
-                                        than 5GB in size.
-                                    </p>
-                                    <p>
-                                        Hugin is typically deployed on a Raspberry Pi Zero 2 W (but is
-                                        compatbile with any Raspberry Pi release in the last decade or
-                                        so). If you are reading this text, you are probably looking at the
-                                        device right now.
-                                    </p>
-                                    <p>That means that we are working with a dataset that is 10 times
-                                        larger than memory and using an SD card for storage (<em>very</em> slow).
-                                        And yet, the application is very responsive and fast. This is because
-                                        we built RavenDB to make efficient use of resources and to be able to
-                                        deliver high performance even in constrained environments.
-                                    </p>
                                     <p>Conversely, you can give RavenDB more resources and see it deliver
-                                        top of the line performance and throughput at any load.
+                                        cutting edge performance and throughput at any load.
                                     </p>
 
                                     <h3>Querying</h3>
                                     <p>
-                                        RavenDB uses indexes to speed up queries. These allow us to search for questions in an efficent manner as well as show statistics on tags distributions. The following indexes are defined:
+                                        RavenDB uses indexes to speed up queries. These allow us to search  data in an efficent manner. as well as showing statistics on tags distributions. The following indexes are defined:
                                         {codeToShow ? (<CodeModal code={codeToShow} onClose={() => setCodeToShow(null)} />) : (<></>)}
                                         <ul>
                                             {serverResult.indexes.map(i => (
@@ -107,22 +90,22 @@ function How() {
                                         </ul>
 
                                     </p>
-                                    <p>Those indexes are defined as part of the backend code and you can click on their buttons above to see the definition. RavenDB indexes allows you to shift the work from the query time to indexing time and allows us to create a very fast experience for the user. Even when running on a very low end machine (or a cloud instance).
+                                    <p>These indexes are defined as part of the backend code. you can click on their buttons above to see the definition. RavenDB indexes allows you to shift the work from the query time to indexing time. allowing us to create a very fast experience for you, the user. Even when running on a very low end machine ,or a cloud instance.
                                     </p>
 
                                     <h3>How we got the data?</h3>
                                     <p>
-                                        The data we are using for this project was taken from the <a href="https://archive.org/details/stackexchange">Stack Exchange Data Dump</a> on archive.org. We took the data sets from the sites focused on administration and devops, so we could generate a dataset to be used offline that would be <em>useful</em> for actual in-field work. </p>
-                                    <p>You can add your own communities to the dataset, visit the archive.org <a href="https://archive.org/details/stackexchange">Stack Exchange Data Dump</a> and download the data sets you want. Then, you can use the following <a href="https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc">code snippet</a> to import the data into RavenDB. You'll also need to provide an <code>svg</code> icon file for the community, to get the UI to display it properly.
+                                        The data we are using for this project was taken from the <a href="https://archive.org/details/stackexchange">Stack Exchange Data Dump</a>, on archive.org. We took the data sets from the sites focused on administration and devops. So we could generate a dataset to be used offline that is <em>useful</em> for actual in-field work. </p>
+                                    <p>You can add your own communities to the dataset. visit the archive.org <a href="https://archive.org/details/stackexchange">Stack Exchange Data Dump</a> and download the data sets you want. Then, you can use the following <a href="https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc">code snippet</a> to import the data into RavenDB. You'll also need to provide an <code>svg</code> icon file for the community. To get the UI to display it properly.
                                     </p>
                                     <h4>Can I get an offline Stack Overflow?</h4>
                                     <p>
-                                        The Stack Overflow data dump is <em>huge</em>. Even with compression, it is over 50GB in size (and without compression) it is much bigger. You'll need to either connect an additional disk to the Raspberry Pi or use a bigger micro SD card to manage that. </p>
+                                        The Stack Overflow data dump is <em>huge</em>. Even with compression, it is over 50GB in size. Without any compression it is much bigger. You'll need to either connect an additional disk to the Raspberry Pi. Or use a bigger micro SD card to manage that data. </p>
                                     <p>
-                                        Note that the primary limitation here is the amount of disk space that you have. RavenDB can handle that much data without any issues, even on a machine as small as the Raspberry Pi Zero 2 W.
+                                        Note that the primary limitation here is the amount of disk space available. RavenDB can handle that much data without any issues, even on a machine as small as the Raspberry Pi Zero 2 W.
                                     </p>
                                     <p>
-                                        The Stack Overflow data dump is distributed using multiple files, so you'll need to update the <a href="https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc">code snippet</a> to handle that (instead of assuming all the files are in the same archive file). But aside from that, it works just fine. </p>
+                                        The Stack Overflow data dump is distributed using multiple files. You'll need to update the <a href="https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc">code snippet</a> to handle its upload. Instead of assuming all the files are in the same archive file. But asides that, it works just fine. </p>
                                 </div>
                             </div>
 
