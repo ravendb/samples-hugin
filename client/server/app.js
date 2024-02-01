@@ -9,6 +9,33 @@ const documentStore = new ravendb.DocumentStore(
 );
 documentStore.initialize();
 
+async function wakeUp() {
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  while (true) {
+    try {
+      const session = documentStore.openSession();
+      const communities = await session.query({ collection: "Communities" }).all();
+      await session.query({ indexName: QuestionsSearch.name })
+        .whereIn("Community", communities.map(c => c.id))
+        .orderByDescending("CreationDate")
+        .take(15)
+        .all();
+      // execute once every 5 minutes, to ensure we are hot
+      await sleep(5 * 60 * 1000);
+    }
+    catch (err) {
+      console.error("Failed to wake up", err);
+      await sleep(15_000);
+    }
+  }
+}
+
+// We call this on startup to ensure that the db is awake and running
+// this is important since IO costs are high (on SD card), so on startup
+// we'll pay the cost of waking up the db, and then we'll be able to run
+// far faster. The issue is typically on first boot, where everything is cold
+_ = wakeUp();
+
 class QuestionsSearch extends ravendb.AbstractJavaScriptIndexCreationTask {
   constructor() {
     super();
