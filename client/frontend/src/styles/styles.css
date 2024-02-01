@@ -14161,4 +14161,21 @@ textarea.form-control-lg {
   .database-link {
     display: none;
   }
+}
+
+.external-link-popup {
+  background-color: rgba(24, 24, 38, 0.5);
+  z-index: 1085;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.external-link-popup .external-link-card {
+  width: 400px;
+  max-width: 100%;
 }/*# sourceMappingURL=styles.css.map */
