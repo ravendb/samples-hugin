@@ -23,7 +23,7 @@ sudo dpkg -i ravendb.deb
 rm  ravendb.deb
 
 sudo mkdir -p /var/lib/ravendb/data/Databases
-sudo mv raspberrypi.stackexchange.com /var/lib/ravendb/data/Databases/raspberrypi.stackexchange.com
+sudo mv Hugin /var/lib/ravendb/data/Databases/Hugin
 sudo chown --recursive ravendb:ravendb /var/lib/ravendb/data/Databases
 sudo mv settings.json /etc/ravendb/settings.json
 sudo chown root:ravendb /etc/ravendb/settings.json
@@ -32,23 +32,23 @@ sudo systemctl restart ravendb
 # setup the web app users
 getent group node-apps || sudo groupadd node-apps
 NODE_GID=$(getent group node-apps | cut -d ':' -f 3)
-getent passwd hugin-web || sudo adduser --disabled-login --disabled-password --system \
-  --home /var/lib/hugin-web --no-create-home --quiet --gid "$NODE_GID" hugin-web
+getent passwd hugin || sudo adduser --disabled-login --disabled-password --system \
+  --home /var/lib/hugin --no-create-home --quiet --gid "$NODE_GID" hugin
 
 cd ~/web
 npm install
 cd ~/
-sudo mv ./web /usr/lib/hugin-web
-sudo chown --recursive root:node-apps /usr/lib/hugin-web
-sudo mv hugin-web.service /etc/systemd/system/hugin-web.service
-sudo systemctl enable hugin-web
+sudo mv ./web /usr/lib/hugin
+sudo chown --recursive root:node-apps /usr/lib/hugin
+sudo mv hugin.service /etc/systemd/system/hugin.service
+sudo systemctl enable hugin
 
 
-curl 'http://127.0.0.1:8080/admin/databases?name=raspberrypi.stackexchange.com&replicationFactor=1' \
-  -X 'PUT' --data-raw '{"DatabaseName":"raspberrypi.stackexchange.com"}'
+curl 'http://127.0.0.1:8080/admin/databases?name=Hugin&replicationFactor=1' \
+  -X 'PUT' --data-raw '{"DatabaseName":"Hugin"}'
 
 
-sudo systemctl start hugin-web
+sudo systemctl start hugin
 
 
 # configuration of the system

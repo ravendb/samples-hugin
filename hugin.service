@@ -4,7 +4,7 @@ Requires=ravendb.service
 After=ravendb.service
 
 [Service]
-ExecStart=/usr/bin/node /usr/lib/hugin-web/index.js
+ExecStart=/usr/bin/node /usr/lib/hugin/server.js
 Restart=always
 User=hugin-web
 Group=node-apps 

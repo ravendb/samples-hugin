@@ -68,5 +68,5 @@ The appliance is composed of two pieces:
         * RavenDB binaries
         * Configuration: ```/etc/ravendb/settings.json```
         * Data directory -  ```/var/lib/ravendb/data```
-    * ```hugin-web.serivce``` - ```/usr/lib/hugin-web```
+    * ```hugin.serivce``` - ```/usr/lib/hugin```
         * Node.js application
