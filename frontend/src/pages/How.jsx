@@ -123,7 +123,7 @@ function How() {
                     <div className="col-lg-4 mb-4">
                         <div className="info-col right-col">
 
-                            <div className="card bg-faded-primary">
+                            <div className="card bg-faded-primary text-light">
                                 <div className="card-body ">
                                     <h3>💡Tip: Read the code</h3>
                                     <p>Most pages has this code icon that you can click:</p>

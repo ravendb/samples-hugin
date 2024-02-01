@@ -97,7 +97,7 @@ function HomePage() {
                   </p>
                   <h3>Learn more...</h3>
                   <p>
-                    You can read more about how Hugin works in the <ExternalLink href="/how">How Hugin Works</ExternalLink> page.
+                    You can read more about how Hugin works in the <ExternalLink className="btn btn-dark" href="/how">How Hugin Works</ExternalLink> page.
                   </p>
                   <h4>Doing more with Hugin</h4>
                   <p>

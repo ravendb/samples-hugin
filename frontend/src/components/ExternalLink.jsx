@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import { useDispatch } from "react-redux";
 
-export function ExternalLink({ href, children }) {
+export function ExternalLink({ href, children, className }) {
   const [showPopup, setShowPopup] = useState(false);
   const [onlineStatus, setOnlineStatus] = useState("loading");
   const dispatch = useDispatch();
@@ -69,7 +69,7 @@ export function ExternalLink({ href, children }) {
 
   return (
     <>
-      <a href={href} onClick={openPopup} target="_blank">
+      <a href={href} className={className} onClick={openPopup} target="_blank">
         {children}
       </a>
       {popupPortal}

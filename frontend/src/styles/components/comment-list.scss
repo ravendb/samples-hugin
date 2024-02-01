@@ -1,0 +1,29 @@
+@import "../scss/colors";
+@import "../scss/bs5variables";
+
+.comment-list {
+  padding: $gutter-sm 0;
+  margin: 0;
+  list-style: none;
+}
+
+.comment {
+  display: flex;
+  gap: 10px;
+  padding: $gutter-xxs;
+  color: $text-emphasis-color;
+  border-top: 1px solid $border-color-light;
+}
+
+.comment-text {
+  margin: 0;
+}
+
+.comment-owner {
+  color: #616587;
+  font-weight: 600;
+}
+
+.comment-creation-date {
+  color: #929292;
+}
