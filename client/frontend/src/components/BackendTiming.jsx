@@ -35,11 +35,11 @@ function BackendTiming({ timings, code }) {
           </li>
         ))}
       </ul>
-      <button className="backend-timing-btn mt-3" onClick={handleToggleModalBtn}>
+      <button className="backend-timing-btn btn btn-secondary btn-lg mt-3" onClick={handleToggleModalBtn}>
         <img src={`/img/code.svg`} className="backend-timing-btn-img" />
-        <span className="backend-timing-btn-text">
+        <code className="backend-timing-btn-text">
           Click here to see how the backend works
-        </span>
+        </code>
       </button>
       {isModalOpen && <CodeModal code={code} onClose={onClose} />}
       </div>

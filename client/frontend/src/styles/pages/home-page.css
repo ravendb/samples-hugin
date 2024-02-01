@@ -5,7 +5,6 @@
   grid-template-columns: repeat(auto-fit, minmax(25em, 1fr));
   max-width: 140em;
   margin: auto;
-  margin-bottom: -11.4px;
   justify-content: center;
   gap: 30px;
   padding-left: 30px;
@@ -95,6 +94,9 @@
   align-items: center;
   gap: 8px;
   word-break: break-all;
+}
+.tech-link a {
+  color: inherit;
 }
 
 .right-col {

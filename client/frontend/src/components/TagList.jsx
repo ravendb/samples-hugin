@@ -8,9 +8,9 @@ function TagList({ tags }) {
   return (
     <div className="tag-list">
       {tags.map((tag) => (
-        <div
+        <button 
           key={tag}
-          className="tag"
+          className="tag btn btn-secondary btn-sm"
           onClick={(e) => {
             e.stopPropagation();
             addToQueryParams({
@@ -20,7 +20,7 @@ function TagList({ tags }) {
           }}
         >
           <span>{tag}</span>
-        </div>
+        </button>
       ))}
     </div>
   );

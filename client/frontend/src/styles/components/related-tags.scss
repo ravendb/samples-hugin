@@ -2,8 +2,6 @@
 @import "../scss/bs5variables";
 
 .related-tags {
-  padding: $gutter-xs;
-  width: 100%;
 }
 
 .related-tags-title {
@@ -58,11 +56,14 @@
 
   .related-tag-communities {
     display: grid;
-    grid-template-columns: repeat(3,minmax(75px,1fr));
+    grid-template-columns: repeat(4,1fr);
     grid-auto-flow: dense;
     gap: $gutter-xxs;
     padding: 0;
     list-style: none;
+    @media (min-width: $screen-md) {
+      grid-template-columns: repeat(auto-fill,minmax(85px,1fr));
+    }
     
 
     .related-tag-community {
@@ -93,18 +94,15 @@
         grid-column-start: 1;
       }
       &.tag-unix {
-        grid-column-end: -2;
+        grid-column-start: 2;
       }
       &.tag-serverfault {
+        // grid-column-end: -2;
+      }
+      &.tag-superuser {
         grid-column-end: -1;
       }
     }
   }
 
-}
-
-@media screen and (min-width: 768px) {
-  .related-tags {
-    max-width: 550px;
-  }
 }

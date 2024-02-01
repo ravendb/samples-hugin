@@ -65,8 +65,9 @@ function AppHeader() {
               className="hero-logo"
               alt="RavenDB"
             />
-            offline knowledge base!
+            Hugin
           </h1>
+          <h2>Offline knowledge base</h2>
           <div className="search-input-container">
             <input
               type="text"

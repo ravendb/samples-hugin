@@ -35,7 +35,6 @@
 
 .hero-title {
   display: flex;
-  flex-direction: column;
   align-items: center;
   gap: 0.3em;
   flex-wrap: wrap;
@@ -56,9 +55,6 @@
     width: 100%;
   }
 
-  .hero-title {
-    flex-direction: row;
-  }
 }
 
 .search-input-container {
