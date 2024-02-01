@@ -63,10 +63,7 @@ function HomePage() {
                     <h2 className="m-0">What is Hugin?</h2>
                   </div>
                   <p className="lead">
-                    Hugin is an offline knowledge base appliance, which is seeded with several
-                    <a href="https://stackexchange.com/">Stack Exchange</a> communities to allow
-                    you to access them even when you are offline. These communities were curated
-                    to be useful for devops scenarios when you don't have access to the internet.
+                    Hugin is an offline knowledge base appliance, which is seeded with several <a href="https://stackexchange.com/">Stack Exchange</a> communities allowing you to browse and search them even when you are offline. These communities were curated to be useful for primarily devops scenarios. If you find yourself in a situation where you need to debug a problem and you don&apos;t have access to the Internet, Hugin can help you find the answer you need.
                   </p>
                   <div className="vstack gap-2 my-4">
                     <div className="tech-link bg-faded-raspberrypi py-2 px-4 rounded-5 hstack gap-3 align-items-center">
@@ -90,27 +87,24 @@ function HomePage() {
 
                   <h3 className="mt-5 mb-3">Why build Hugin?</h3>
                   <p>
-                    RavenDB is also very well suited for running in both disconnected
-                    and partially connected environments and has a set of features
-                    aimed specifically for running on the edge. We wanted to provide you
-                    with a useful demonstration of how RavenDB can be used in such a scenario.
+                    RavenDB is very well suited for running in both disconnected and partially connected environments and has a set of features aimed specifically for running on the edge. We wanted to provide you with a live demonstration of how RavenDB can be used in such a scenario.
                   </p>
                   <p>
-                    Hugin is running on a Raspberry Pi Zero 2 W appliance which hosts a
-                    RavenDB database and a node.js React application to provide a completely
-                    offline exprience. The appliance is loaded with several Stack Exchange
-                    communities with over 2.6 million questions and answers.
+                    Hugin is running on a Raspberry Pi Zero 2 W appliance. which hosts a RavenDB database and a node.js React application, providing a total offline exprience. The appliance is loaded with several Stack Exchange communities with over 2.6 million Q&As.
                   </p>
-                  <p>Even though Hugin is running on low end hardware (just 512MB of RAM) it
-                    holds up very well and is able to run complex queries in a matter of milliseconds.
-                    That is with a dataset that is over ten times bigger than the amount of memory it holds.
-                    We want to make you <em>feel</em> just how fast and efficient RavenDB is.
+                  <p>
+                    Even though Hugin is running on low end hardware, 1GZ CPU and just 512MB of RAM, it holds up very well. It's capable of running complex queries in a matter of milliseconds, while holding a dataset ten times bigger than memory. We want to make you <em>experience</em> just how fast and efficient RavenDB is.
                   </p>
-
                   <h3>Learn more...</h3>
                   <p>
-                    You can read more about how Hugin works in the
-                    <a href="/how">How Hugin Works</a> page.
+                    You can read more about how Hugin works in the <ExternalLink href="/how">How Hugin Works</ExternalLink> page.
+                  </p>
+                  <h4>Doing more with Hugin</h4>
+                  <p>
+                    The device you are holding is running Linux and is accessible via SSH with the following credentials: <code>rdb</code> / <code>awesome</code> while connected to the <code>Hugin (ravendb)</code> network.
+                  </p>
+                  <p>
+                    You'll find the source code for Hugin on the device (<code>/usr/lib/hugin</code>) or on <ExternalLink href="https://github.com/ravendb/samples-hugin">github.com/ravendb/samples-hugin</ExternalLink>.
                   </p>
                 </div>
               </div>
@@ -126,14 +120,10 @@ function HomePage() {
                 <div className="card-body text-light">
                   <h3>How this works?</h3>
                   <p>
-                    You can read more about how Hugin works in the
-                    <a href="/how">How Hugin Works</a> page.
+                    You can read more about how Hugin works in the <a href="/how">How Hugin Works</a> page.
                   </p>
                   <p>
-                    The elevator pitch is that it is a Raspberry Pi Zero 2 W appliance
-                    running RavenDB and a node.js React application to provide a
-                    completely offline access to StackExchange communities&apos;
-                    questions and answers.
+                    The elevator pitch is that it is a Raspberry Pi Zero 2 W appliance running RavenDB and a node.js React application to provide a completely offline access to StackExchange communities&apos; questions and answers.
                   </p>
                   <div className="text-center">
                     <img src="/img/ravendb-logo.svg" alt="RavenDB Logo" width="61%" className="mt-2" />
@@ -143,12 +133,12 @@ function HomePage() {
               <div className="card bg-faded-warning">
                 <div className="card-body bg-faded-primary rounded-2">
                   <div className="hstack align-items-center gap-3 mb-3">
-                  <img
-                    src="/img/raven.svg"
-                    alt="RavenDB's Logo"
-                    className="raven-icon"
-                  />
-                  <h3 className="m-0">Learn more about RavenDB</h3>
+                    <img
+                      src="/img/raven.svg"
+                      alt="RavenDB's Logo"
+                      className="raven-icon"
+                    />
+                    <h3 className="m-0">Learn more about RavenDB</h3>
                   </div>
                   <ul>
                     <li>
@@ -172,11 +162,7 @@ function HomePage() {
                   </ul>
                 </div>
                 <div className="card-body">
-
-                  <em>Note:</em> you may need to disconnect from Hugin&apos;s WiFi
-                  and connect to the normal network to access those links. By
-                  default Hugin&apos;s WiFi is not connected to the Internet.
-
+                  <em>Note:</em> you may need to disconnect from Hugin&apos;s WiFi and connect to the normal network to access those links. By default Hugin&apos;s WiFi is not connected to the Internet.
                 </div>
               </div>
             </div>
