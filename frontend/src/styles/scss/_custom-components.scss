@@ -1,0 +1,126 @@
+@each $key, $value in $theme-colors {
+  .bg-#{$key} {
+    color: color-contrast($value);
+  }
+}
+
+@each $key, $value in $theme-colors {
+  .bg-faded-#{$key} {
+    background-color: mix($panel-bg-1, $value, 80%) !important;
+    color: mix($text-emphasis-color, $value, 30%);
+  }
+}
+
+.hero {
+  position: relative;
+  .hero-img {
+    width: 100%;
+    max-height: 41vh;
+    object-fit: cover;
+    object-position: top;
+  }
+
+  .hero-container {
+    order: 1;
+    text-align: center;
+
+    width: 100%;
+    padding: $gutter;
+    background: linear-gradient(0deg, fade-out($black, 0.1) 0%, fade-out($black, 1) 100%);
+    text-shadow: 0 $gutter-xxs $gutter-sm $black;
+    @media (min-width: $screen-lg) {
+      position: absolute;
+      bottom: 0;
+    }
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+
+      .ravendb-logo {
+        height: 1em;
+      }
+
+      h1 {
+        display: flex;
+        gap: 0.3em;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: start;
+      }
+
+      .hero-input {
+        max-width: 40em;
+      }
+    }
+  }
+}
+.hero-cards {
+  order: 2;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(25em, 1fr));
+  max-width: 160em;
+  margin: auto;
+  margin-bottom: -$gutter-xs;
+  justify-content: center;
+  gap: $gutter;
+  padding-left: $gutter;
+  padding-right: $gutter;
+  padding-top: $gutter-sm;
+
+  .card {
+    max-width: 50em;
+    box-shadow: 0 0 $gutter-sm fade-out($black, 0.2);
+    text-align: left;
+  }
+
+  .hero-cards-img {
+    max-width: 60px;
+  }
+}
+
+.tag-cloud {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 1px 5px;
+  justify-content: space-evenly;
+
+  .tag {
+    line-height: 1em;
+  }
+}
+
+.text-emphasis {
+  color: $text-emphasis-color;
+}
+
+.indexes-list {
+  list-style: none;
+  padding: 0;
+}
+
+.database-link {
+  @media (hover: none) {
+    display: none;
+  }
+}
+
+.external-link-popup {
+  background-color: rgba($color: $body-bg, $alpha: .5);
+  z-index: $zindex-modal;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .external-link-card {
+    width: 400px;
+    max-width: 100%;
+  }
+}
