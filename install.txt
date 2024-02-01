@@ -1,3 +1,9 @@
+# How to prepare and deploy Hugin to a Pi
+
+* Run `npm run build` on the `frontend` directory
+* Ensure that the local directory has a copy of the `Hugin` database (will be deployed to the appliance)
+* 
+
 RAVENDB_DOWNLOAD_URL="https://daily-builds.s3.amazonaws.com/ravendb_6.0.4-0_ubuntu.22.04_armhf.deb"
 wget -O ravendb.deb  $RAVENDB_DOWNLOAD_URL
 
@@ -12,6 +18,6 @@ ar -m -c -a sdsd ravendb.deb debian-binary control.tar.xz data.tar.xz
 rm debian-binary control.tar.xz data.tar.xz control.tar.zst data.tar.zst
 
 
-rsync -avz ./* rdb@192.168.1.37:/home/rdb
+rsync -avz ./* client/frontend/dist client/server rdb@192.168.1.37:/home/rdb
 
 ssh rdb@$192.168.1.37 sudo bash ./setup.sh

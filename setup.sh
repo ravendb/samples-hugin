@@ -38,7 +38,9 @@ getent passwd hugin || sudo adduser --disabled-login --disabled-password --syste
 cd ~/web
 npm install
 cd ~/
-sudo mv ./web /usr/lib/hugin
+sudo mv ./server /usr/lib/hugin
+sudo cp -R ./dist /usr/lib/hugin
+sudo rm -rf ./dist
 sudo chown --recursive root:node-apps /usr/lib/hugin
 sudo mv hugin.service /etc/systemd/system/hugin.service
 sudo systemctl enable hugin
