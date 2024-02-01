@@ -35,9 +35,9 @@ NODE_GID=$(getent group node-apps | cut -d ':' -f 3)
 getent passwd hugin || sudo adduser --disabled-login --disabled-password --system \
   --home /var/lib/hugin --no-create-home --quiet --gid "$NODE_GID" hugin
 
-cd ~/web
+cd /home/rdb/backend
 npm install
-cd ~/
+cd /home/rdb
 sudo mv ./server /usr/lib/hugin
 sudo cp -R ./dist /usr/lib/hugin
 sudo rm -rf ./dist
