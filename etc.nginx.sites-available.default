@@ -21,10 +21,18 @@ server {
 server {
     listen 80;
     listen [::]:80;
-    server_name start.ravendb;
+    # allow either start.ravendb hostname or direct IP access
+    # this allow to bypass the domain redirect more easily in dev
+    server_name start.ravendb $server_addr;
+
+    root /usr/lib/hugin-web/web;
 
     location / {
-       proxy_pass http://127.0.0.1:3000;
+        try_files $uri $uri/ /index.html;
+    }
+
+    location /api/ {
+       proxy_pass http://127.0.0.1:3030;
     }
 }
 
