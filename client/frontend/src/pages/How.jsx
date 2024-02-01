@@ -2,6 +2,7 @@ import { httpService } from "../services/http.service";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import CodeModal from "../components/CodeModal";
+import { ExternalLink } from "../components/ExternalLink";
 
 function How() {
     const [serverResult, setServerResult] = useState({ indexes: [] });
@@ -112,8 +113,8 @@ function How() {
 
                                     <h3>How we got the data?</h3>
                                     <p>
-                                        The data we are using for this project was taken from the <a href="https://archive.org/details/stackexchange">Stack Exchange Data Dump</a> on archive.org. We took the data sets from the sites focused on administration and devops, so we could generate a dataset to be used offline that would be <em>useful</em> for actual in-field work. </p>
-                                    <p>You can add your own communities to the dataset, visit the archive.org <a href="https://archive.org/details/stackexchange">Stack Exchange Data Dump</a> and download the data sets you want. Then, you can use the following <a href="https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc">code snippet</a> to import the data into RavenDB. You'll also need to provide an <code>svg</code> icon file for the community, to get the UI to display it properly.
+                                        The data we are using for this project was taken from the <ExternalLink href="https://archive.org/details/stackexchange">Stack Exchange Data Dump</ExternalLink> on archive.org. We took the data sets from the sites focused on administration and devops, so we could generate a dataset to be used offline that would be <em>useful</em> for actual in-field work. </p>
+                                    <p>You can add your own communities to the dataset, visit the archive.org <ExternalLink href="https://archive.org/details/stackexchange">Stack Exchange Data Dump</ExternalLink> and download the data sets you want. Then, you can use the following <ExternalLink href="https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc">code snippet</ExternalLink> to import the data into RavenDB. You'll also need to provide an <code>svg</code> icon file for the community, to get the UI to display it properly.
                                     </p>
                                     <h4>Can I get an offline Stack Overflow?</h4>
                                     <p>
@@ -122,7 +123,7 @@ function How() {
                                         Note that the primary limitation here is the amount of disk space that you have. RavenDB can handle that much data without any issues, even on a machine as small as the Raspberry Pi Zero 2 W.
                                     </p>
                                     <p>
-                                        The Stack Overflow data dump is distributed using multiple files, so you'll need to update the <a href="https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc">code snippet</a> to handle that (instead of assuming all the files are in the same archive file). But aside from that, it works just fine. </p>
+                                        The Stack Overflow data dump is distributed using multiple files, so you'll need to update the <ExternalLink href="https://gist.github.com/ayende/50cd2f071547016a635adf21292fd0bc">code snippet</ExternalLink> to handle that (instead of assuming all the files are in the same archive file). But aside from that, it works just fine. </p>
                                 </div>
                             </div>
 
@@ -180,24 +181,24 @@ function How() {
                                     </div>
                                     <ul>
                                         <li>
-                                            <a href="https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                                            <ExternalLink href="https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
                                                 RavenDB Home Page
-                                            </a>
+                                            </ExternalLink>
                                         </li>
                                         <li>
-                                            <a href="https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                                            <ExternalLink href="https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
                                                 RavenDB Try
-                                            </a>
+                                            </ExternalLink>
                                         </li>
                                         <li>
-                                            <a href="https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                                            <ExternalLink href="https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
                                                 GitHub Discussions
-                                            </a>
+                                            </ExternalLink>
                                         </li>
                                         <li>
-                                            <a href="https://github.com/ravendb/samples-hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
+                                            <ExternalLink href="https://github.com/ravendb/samples-hugin/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
                                                 Hugin&apos;s GitHub page
-                                            </a>
+                                            </ExternalLink>
                                         </li>
                                     </ul>
                                 </div>

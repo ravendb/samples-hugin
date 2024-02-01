@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { useState, useEffect } from "react";
 import BackendTiming from "../components/BackendTiming";
 import DatabaseLink from "../components/DatabaseLink";
+import { ExternalLink } from "../components/ExternalLink";
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -70,19 +71,19 @@ function HomePage() {
                   <div className="vstack gap-2 my-4">
                     <div className="tech-link bg-faded-raspberrypi py-2 px-4 rounded-5 hstack gap-3 align-items-center">
                       <img src="/img/raspberrypi.svg" alt="raspberry-pi" />
-                      <div className="lead"><a href="https://raspberrypi.stackexchange.com" target="_blank">raspberrypi.stackexchange.com</a></div>
+                      <div className="lead"><ExternalLink href="https://raspberrypi.stackexchange.com">raspberrypi.stackexchange.com</ExternalLink></div>
                     </div>
                     <div className="tech-link bg-faded-unix py-2 px-4 rounded-5 hstack gap-3 align-items-center">
                       <img src="/img/unix.svg" alt="linux" />
-                      <div className="lead"><a href="https://unix.stackexchange.com" target="_blank">unix.stackexchange.com</a></div>
+                      <div className="lead"><ExternalLink href="https://unix.stackexchange.com" >unix.stackexchange.com</ExternalLink></div>
                     </div>
                     <div className="tech-link bg-faded-serverfault py-2 px-4 rounded-5 hstack gap-3 align-items-center">
                       <img src="/img/serverfault.svg" alt="server" />
-                      <div className="lead"><a href="https://serverfault.com" target="_blank">serverfault.com</a></div>
+                      <div className="lead"><ExternalLink href="https://serverfault.com" >serverfault.com</ExternalLink></div>
                     </div>
                     <div className="tech-link bg-faded-superuser py-2 px-4 rounded-5 hstack gap-3 align-items-center">
                       <img src="/img/superuser.svg" alt="superuser" />
-                      <div className="lead"><a href="https://superuser.com" target="_blank">superuser.com</a></div>
+                      <div className="lead"><ExternalLink href="https://superuser.com" >superuser.com</ExternalLink></div>
                     </div>
                   </div>
 
@@ -151,24 +152,22 @@ function HomePage() {
                   </div>
                   <ul>
                     <li>
-                      <a href="https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin" target="_blank" rel="noreferrer">
-                        RavenDB Home Page
-                      </a>
+                      <ExternalLink href="https://ravendb.net/?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">RavenDB Home Page</ExternalLink>
                     </li>
                     <li>
-                      <a href="https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin" target="_blank" rel="noreferrer">
+                      <ExternalLink href="https://ravendb.net/try?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
                         RavenDB Try
-                      </a>
+                      </ExternalLink>
                     </li>
                     <li>
-                      <a href="https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin" target="_blank" rel="noreferrer">
+                      <ExternalLink href="https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin" >
                         GitHub Discussions
-                      </a>
+                      </ExternalLink>
                     </li>
                     <li>
-                      <a href="https://github.com/ravendb/samples-hugin?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin" target="_blank" rel="noreferrer">
+                      <ExternalLink href="https://github.com/ravendb/samples-hugin?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">
                         Hugin&apos;s GitHub page
-                      </a>
+                      </ExternalLink>
                     </li>
                   </ul>
                 </div>
