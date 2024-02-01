@@ -38,9 +38,8 @@ getent passwd hugin || sudo adduser --disabled-login --disabled-password --syste
 cd /home/rdb/backend
 npm install
 cd /home/rdb
-sudo mv ./server /usr/lib/hugin
-sudo cp -R ./dist /usr/lib/hugin
-sudo rm -rf ./dist
+sudo mv ./backend /usr/lib/hugin
+sudo mv ./dist /usr/lib/hugin/dist
 sudo chown --recursive root:node-apps /usr/lib/hugin
 sudo mv hugin.service /etc/systemd/system/hugin.service
 sudo systemctl enable hugin
