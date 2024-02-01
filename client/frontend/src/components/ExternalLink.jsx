@@ -1,14 +1,33 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
+import { useDispatch } from "react-redux";
 
 export function ExternalLink({ href, children }) {
   const [showPopup, setShowPopup] = useState(false);
+  const [onlineStatus, setOnlineStatus] = useState("loading");
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    function checkConnectivity() {
+      fetch("http://google.com/generate_204", { mode: "no-cors" })
+        .then((a) => setOnlineStatus("online"))
+        .catch(err => {
+          setTimeout(checkConnectivity, 2500);
+          setOnlineStatus("offline");
+        });
+    }
+    checkConnectivity();
+  }, [dispatch]);
 
   const openPopup = (e) => {
-    e.preventDefault();
-    setShowPopup(true);
-
+    if (onlineStatus !== "online") {
+      e.preventDefault();
+      setShowPopup(true);
+    }
+    else {
+      setShowPopup(false);
+    }
   };
 
   const closePopup = () => {
@@ -39,7 +58,7 @@ export function ExternalLink({ href, children }) {
             <p className='lead'>By default Hugin's WiFi is not connected to the Internet. Disconnect from Hugin's WiFi and connect to the normal network to and click <strong className='text-emphasis'>Open external website</strong>. </p>
             <div className='hstack gap-3 justify-content-center flex-wrap-1 mt-4'>
               <button onClick={closePopup} className='btn btn-secondary btn-lg'>Cancel</button>
-              <a href={href} className='btn btn-interactive btn-lg' target="_blank" rel="noreferrer" onClick={openExternalLink}>Open external website</a>
+              <a href={href} className='btn btn-interactive btn-lg' target="_blank" onClick={openExternalLink}>Open external website</a>
             </div>
           </div>
         </div>
@@ -50,7 +69,7 @@ export function ExternalLink({ href, children }) {
 
   return (
     <>
-      <a href={href} onClick={openPopup} target="_blank" rel="noreferrer">
+      <a href={href} onClick={openPopup} target="_blank">
         {children}
       </a>
       {popupPortal}
