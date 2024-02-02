@@ -2,7 +2,6 @@
 
 * Run `npm run build` on the `frontend` directory
 * Ensure that the local directory has a copy of the `Hugin` database (will be deployed to the appliance)
-* 
 
 RAVENDB_DOWNLOAD_URL="https://daily-builds.s3.amazonaws.com/ravendb_6.0.4-0_ubuntu.22.04_armhf.deb"
 wget -O ravendb.deb  $RAVENDB_DOWNLOAD_URL

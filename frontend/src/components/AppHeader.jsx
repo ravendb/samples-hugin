@@ -3,7 +3,7 @@ import "../styles/components/app-header.css";
 import { useLocation, useSearchParams, useNavigate } from "react-router-dom";
 import { queryQuestions } from "../services/data.service";
 import { useDispatch } from "react-redux";
-import { setQueryResult } from "../store/questionSlice";
+import { setSearchResult } from "../store/store";
 
 function AppHeader() {
   const [searchParams] = useSearchParams();
@@ -16,7 +16,7 @@ function AppHeader() {
   const onSearch = useCallback(
     async (args) => {
       const q = await queryQuestions(args);
-      dispatch(setQueryResult(q));
+      dispatch(setSearchResult(q));
     },
     [dispatch]
   );
