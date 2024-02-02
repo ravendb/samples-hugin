@@ -3,6 +3,7 @@
     "Setup.Mode": "None",
     "DataDir": "/var/lib/ravendb/data",
     "License.Eula.Accepted": true,
+    "License.Path": "/etc/ravendb/license.json",
     "Security.UnsecuredAccessAllowed": "PublicNetwork",
     "Databases.MaxIdleTimeInSec": 86400,
     "Indexing.TimeToWaitBeforeDeletingAutoIndexMarkedAsIdleInHrs": 730,

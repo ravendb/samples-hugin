@@ -26,6 +26,7 @@ sudo mkdir -p /var/lib/ravendb/data/Databases
 sudo mv Hugin /var/lib/ravendb/data/Databases/Hugin
 sudo chown --recursive ravendb:ravendb /var/lib/ravendb/data/Databases
 sudo mv settings.json /etc/ravendb/settings.json
+sudo mv license.json /etc/ravendb/license.json
 sudo chown root:ravendb /etc/ravendb/settings.json
 sudo systemctl restart ravendb
 
