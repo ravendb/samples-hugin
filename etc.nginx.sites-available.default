@@ -1,4 +1,4 @@
-  GNU nano 5.4                                        /etc/nginx/sites-available/default                                                  server {
+  server {
     listen 80 default_server;
     listen [::]:80 default_server;
     server_name _;
