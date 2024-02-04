@@ -27,7 +27,7 @@ function Redirect() {
             <h1>Checking network connectivity...</h1>
             <p>Checking if you are online and can redirect to:</p>
             <p><a href={searchParams.get("url")}>{searchParams.get("url").split(/[?#]/)[0]}</a></p>
-            <p>You may not be able to if you are running in an offline mode</p>
+            <p>You may not be able to redirect if you are running in an offline mode</p>
           </div>
         );
       }
@@ -37,8 +37,7 @@ function Redirect() {
             <h1>You are currently offline</h1>
             <p>Cannot redirect you to the following link as you are currently offline:</p>
             <p><a href={searchParams.get("url")}>{searchParams.get("url").split(/[?#]/)[0]}</a></p>
-            <p>Your device is connected to Hugin's internal network and you need to connect to your usual network to access the internet and view this page.
-            </p>
+            <p>Your device is connected to Hugin's internal network. To access the internet and view this page, please connect to your regular network.</p>
           </div>
         );
       }
