@@ -12,13 +12,14 @@ Simply plug it into power for immediate usability.
 
 ## The appliance
 
-### TODO: screen shot here
+![Hugin home page](./homepage.png?raw=true)
 
 Using Hugin, you have offline access to the following Stack Exchange communities:
 
 * raspberrypi.stackexchange.com
 * unix.stackexchange.com
 * serverfault.com
+* userfault.com
 
 The dataset includes all data up and including Dec 2023 and was taken from: https://archive.org/download/stackexchange
 
@@ -39,6 +40,7 @@ When you connect to the WiFi, it will redirect you to: http://start.ravendb,
 which is the landing page of the Hugin web application.
 From there you have immediate access to the data and full functionality.
 
+
 ### Connecting directly via SSHA
 
 You can also explore the appliance directly using SSH with the following command:
@@ -55,11 +57,7 @@ The credentials for the machine are:
 
 ### Internal structure
 
-The appliance comprises two components: 
-
-## todo post 👇
-
-1. Access Point configuration (TODO: See separate post for details) 
+1. [Access Point configuration](https://ayende.com/blog/200675-A/walkthrough-turning-a-raspberry-pi-into-an-appliance?key=601a5e9e8f8f47239a47d4d16a11faf9) 
 2. The application & database itself. You can find the following services running:
     * ```ravendb.serice``` - ```/usr/lib/ravendb/server/Raven.Server```
         * RavenDB binaries
@@ -67,3 +65,4 @@ The appliance comprises two components:
         * Data directory -  ```/var/lib/ravendb/data```
     * ```hugin.serivce``` - ```/usr/lib/hugin```
         * Node.js application
+        * React frontend
