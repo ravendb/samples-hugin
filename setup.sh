@@ -47,7 +47,8 @@ sudo systemctl enable hugin
 
 
 curl 'http://127.0.0.1:8080/admin/databases?name=Hugin&replicationFactor=1' \
-  -X 'PUT' --data-raw '{"DatabaseName":"Hugin"}'
+  -X 'PUT' --data-raw '{"DatabaseName":"Hugin"}' --retry 5 --retry-max-time 120 \
+  || true # we ignore this error, as it might be that the database already exists
 
 
 sudo systemctl start hugin

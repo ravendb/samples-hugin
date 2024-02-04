@@ -12,7 +12,7 @@ function CommentList({ comments, users }) {
           <div className="comment-number">{i + 1}</div>
           <p className="comment-text">
             {comment.Text}{" "}
-            <span className="comment-owner">- <a href={getUserLink(comment.User)} className="user-link">{getUserName(comment.User, localUsers)}</a> </span>
+            <span className="comment-owner">- <ExternalLink href={getUserLink(comment.User)} className="user-link">{getUserName(comment.User, localUsers)}</ExternalLink> </span>
             <span className="comment-creation-date">
               {formatDateToRelativeTime(comment.CreationDate)}
             </span>

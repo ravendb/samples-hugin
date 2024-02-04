@@ -9,6 +9,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import BackendTiming from "../components/BackendTiming";
 import DatabaseLink from "../components/DatabaseLink";
+import { ExternalLink } from "../components/ExternalLink";
 
 
 function QuestionPage() {
@@ -81,7 +82,7 @@ function QuestionPage() {
           <div className="question-page-user-info">
             <div className="question-page-user-info-details">
               <span className="question-page-user-info-name">
-                <a href={getUserLink(question.Owner)} className="user-link">{getUserName(question.Owner, users)}</a>
+                <ExternalLink href={getUserLink(question.Owner)} className="user-link">{getUserName(question.Owner, users)}</ExternalLink>
               </span>
             </div>
           </div>
@@ -109,7 +110,7 @@ function QuestionPage() {
                         {formatDateToRelativeTime(answer.CreationDate)}
                       </p>
                       <p className="question-page-answer-user-info-name">
-                        <a href={getUserLink(answer.Owner)} className="user-link">{getUserName(answer.Owner, users)}</a>
+                        <ExternalLink href={getUserLink(answer.Owner)} className="user-link">{getUserName(answer.Owner, users)}</ExternalLink>
                       </p>
                     </div>
                   </div>

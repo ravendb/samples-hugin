@@ -63,7 +63,7 @@ function HomePage() {
                     <h2 className="m-0">What is Hugin?</h2>
                   </div>
                   <p className="lead">
-                    Hugin is an offline knowledge base appliance seeded with several <a href="https://stackexchange.com/">Stack Exchange</a> communities, enabling you to browse and search them even when you are offline. These communities were curated to be useful primarily for DevOps scenarios. If you find yourself in a situation where you need to debug a problem without internet access, Hugin can help you find the answer you need.
+                    Hugin is an offline knowledge base appliance seeded with several <ExternalLink href="https://stackexchange.com/">Stack Exchange</ExternalLink> communities, enabling you to browse and search them even when you are offline. These communities were curated to be useful primarily for DevOps scenarios. If you find yourself in a situation where you need to debug a problem without internet access, Hugin can help you find the answer you need.
                   </p>
                   <div className="vstack gap-2 my-4">
                     <div className="tech-link bg-faded-raspberrypi py-2 px-4 rounded-5 hstack gap-3 align-items-center">

@@ -19,7 +19,6 @@ export function ExternalLink({ href, children, className }) {
         }
 
       } catch (error) {
-        console.error(error);
       }
       setOnlineStatus("offline");
       setTimeout(checkConnectivity, 2500);

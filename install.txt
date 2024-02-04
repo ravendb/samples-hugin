@@ -17,6 +17,6 @@ ar -m -c -a sdsd ravendb.deb debian-binary control.tar.xz data.tar.xz
 rm debian-binary control.tar.xz data.tar.xz control.tar.zst data.tar.zst
 
 
-rsync -avz ./* client/frontend/dist client/server rdb@192.168.1.37:/home/rdb
+rsync -avz ./* frontend/dist backend rdb@192.168.1.37:/home/rdb
 
 ssh rdb@$192.168.1.37 sudo bash ./setup.sh
