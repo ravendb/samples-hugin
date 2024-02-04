@@ -402,3 +402,4 @@ FodyWeavers.xsd
 /license.json
 /frontend/package-lock.json
 /backend/package-lock.json
+/disk-image.img

@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import { formatDateToRelativeTime, getUserName, getUserLink } from "../services/util.service";
 import "../styles/components/comment-list.css";
+import { ExternalLink } from "./ExternalLink";
 
 function CommentList({ comments, users }) {
   if (!comments || comments.length === 0) return null;

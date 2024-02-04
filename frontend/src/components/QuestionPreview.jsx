@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/components/question-preview.css";
 import { formatDateToRelativeTime, getUserLink, getUserName } from "../services/util.service";
 import TagList from "./TagList";
+import { ExternalLink } from "./ExternalLink";
 
 function QuestionPreview({ question, users }) {
   const navigate = useNavigate();
