@@ -73,6 +73,6 @@ sudo service dhcpcd restart
 sudo wpa_cli -i wlan0 reconfigure
 sudo nginx -s reload
 
-rm * # cleanup directoy
+rm ./* -rf  # cleanup directoy
 
 echo "Ready ..."

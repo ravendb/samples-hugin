@@ -17,11 +17,13 @@ async function wakeUp() {
     try {
       const session = documentStore.openSession();
       const communities = await session.query({ collection: "Communities" }).all();
-      await session.query({ indexName: QuestionsSearch.name })
-        .whereIn("Community", communities.map(c => c.id))
-        .orderByDescending("CreationDate")
-        .take(15)
-        .all();
+      for (const community of communities) {
+        await session.query({ indexName: QuestionsSearch.name })
+          .whereEquals("Community", community.id)
+          .orderByDescending("CreationDate")
+          .take(15)
+          .all();
+      }
       // execute once every 5 minutes, to ensure we are hot
       await sleep(5 * 60 * 1000);
     }
