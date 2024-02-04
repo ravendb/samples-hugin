@@ -401,3 +401,4 @@ FodyWeavers.xsd
 /client/server/package-lock.json
 /license.json
 /frontend/package-lock.json
+/backend/package-lock.json
