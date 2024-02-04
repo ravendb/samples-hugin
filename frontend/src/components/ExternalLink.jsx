@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
 import { useDispatch } from "react-redux";
+import { httpService } from '../services/http.service';
 
 export function ExternalLink({ href, children, className }) {
   const [showPopup, setShowPopup] = useState(false);
@@ -9,14 +10,21 @@ export function ExternalLink({ href, children, className }) {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    function checkConnectivity() {
-      fetch("http://google.com/generate_204", { mode: "no-cors" })
-        .then((a) => setOnlineStatus("online"))
-        .catch(err => {
-          setTimeout(checkConnectivity, 2500);
-          setOnlineStatus("offline");
-        });
+    async function checkConnectivity() {
+      try {
+        const result = await httpService.get("is-online");
+        if (result.online) {
+          setOnlineStatus("online");
+          return;
+        }
+
+      } catch (error) {
+        console.error(error);
+      }
+      setOnlineStatus("offline");
+      setTimeout(checkConnectivity, 2500);
     }
+
     checkConnectivity();
   }, [dispatch]);
 

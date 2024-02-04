@@ -1,8 +1,10 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const axios = require('axios');
 const ravendb = require("ravendb");
 const { performance } = require("perf_hooks");
+
 const documentStore = new ravendb.DocumentStore(
   "http://127.0.0.1:8080",
   "Hugin"
@@ -123,7 +125,6 @@ if (isProdEnv) {
 
   app.use(cors(corsOptions));
 }
-
 
 app.get("/api/indexes", (req, res) => {
   const start = performance.now();
@@ -248,5 +249,15 @@ app.asyncGet("/api/communities", async (req, res) => {
     },
   });
 });
+
+
+
+app.asyncGet("/api/is-online", async (req, res) => {
+
+  const r = await axios.request('https://google.com/generate_204');
+  const online = r.status === 204;
+  res.status(online ? 200 : 500).send({ online: online });
+});
+
 
 module.exports = app;

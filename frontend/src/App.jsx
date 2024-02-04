@@ -5,7 +5,6 @@ import AppHeader from "./components/AppHeader";
 import SearchPage from "./pages/SearchPage";
 import QuestionPage from "./pages/QuestionPage";
 import HowPage from "./pages/How";
-import RedirectPage from "./pages/Redirect";
 
 
 function App() {
@@ -18,7 +17,6 @@ function App() {
         <Route path="/search" element={<SearchPage />} />
         <Route path="/question" element={<QuestionPage />} />
         <Route path="/how" element={<HowPage />} />
-        <Route path="/redirect" element={<RedirectPage />} />
       </Routes>
     </>
   );

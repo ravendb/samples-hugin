@@ -400,3 +400,4 @@ FodyWeavers.xsd
 /ravendb.deb
 /client/server/package-lock.json
 /license.json
+/frontend/package-lock.json

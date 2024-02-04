@@ -13,6 +13,7 @@
 
 .hero {
   position: relative;
+
   .hero-img {
     width: 100%;
     max-height: 41vh;
@@ -28,10 +29,12 @@
     padding: $gutter;
     background: linear-gradient(0deg, fade-out($black, 0.1) 0%, fade-out($black, 1) 100%);
     text-shadow: 0 $gutter-xxs $gutter-sm $black;
+
     @media (min-width: $screen-lg) {
       position: absolute;
       bottom: 0;
     }
+
     .hero-content {
       display: flex;
       flex-direction: column;
@@ -55,6 +58,7 @@
     }
   }
 }
+
 .hero-cards {
   order: 2;
   position: relative;
@@ -102,11 +106,6 @@
   padding: 0;
 }
 
-.database-link {
-  @media (hover: none) {
-    display: none;
-  }
-}
 
 .external-link-popup {
   background-color: rgba($color: $body-bg, $alpha: .5);
@@ -119,6 +118,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+
   .external-link-card {
     width: 400px;
     max-width: 100%;
