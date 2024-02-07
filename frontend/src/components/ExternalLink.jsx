@@ -62,7 +62,7 @@ export function ExternalLink({ href, children, className }) {
           <div className='card-body text-center text-light'>
             <h3>Opening an external link</h3>
             <img src={"./img/switch-wifi.svg"} className='img-fluid my-3' />
-            <p className='lead'>By default Hugin's WiFi is not connected to the Internet. Disconnect from Hugin's WiFi and connect to the normal network to and click <strong className='text-emphasis'>Open external website</strong>. </p>
+            <p className='lead'>By default Hugin's WiFi is not connected to the Internet. Disconnect from Hugin's WiFi and connect to the normal network and click <strong className='text-emphasis'>Open external website</strong>. </p>
             <div className='hstack gap-3 justify-content-center flex-wrap-1 mt-4'>
               <button onClick={closePopup} className='btn btn-secondary btn-lg'>Cancel</button>
               <a href={href} className='btn btn-interactive btn-lg' target="_blank" onClick={openExternalLink}>Open external website</a>
