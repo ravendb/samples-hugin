@@ -73,6 +73,9 @@ sudo service dhcpcd restart
 sudo wpa_cli -i wlan0 reconfigure
 sudo nginx -s reload
 
+# test the db works
+curl http://127.0.0.1:8080/databases/Hugin/docs?id=questions%2Fsuperuser%2F1806936
+
 rm ./* -rf  # cleanup directoy
 
 echo "Ready ..."
