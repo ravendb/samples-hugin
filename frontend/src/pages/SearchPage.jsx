@@ -14,7 +14,7 @@ function SearchPage() {
 
   return (
     <main className="search-page container my-3">
-      {!searchResult.data && <div className="search-page-loader">Loading...</div>}
+      {!searchResult.data && <div className="search-page-loader">Waiting for backend to spin-up...</div>}
       {searchResult.data && (
         <div className="row">
           <div className="question-container col-lg-8 mb-4">
