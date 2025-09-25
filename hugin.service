@@ -4,10 +4,13 @@ Requires=ravendb.service
 After=ravendb.service
 
 [Service]
+# Wait up to 90s for RavenDB HTTP to be ready before starting Hugin
+TimeoutStartSec=90
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 90); do curl -sf http://127.0.0.1:8080/databases >/dev/null && exit 0; sleep 1; done; exit 1'
 ExecStart=/usr/bin/node /usr/lib/hugin/server.js
 Restart=always
 User=hugin
-Group=node-apps 
+Group=node-apps
 Environment=PATH=/usr/bin:/usr/local/bin
 Environment=NODE_ENV=production
 WorkingDirectory=/usr/lib/hugin

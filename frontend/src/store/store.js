@@ -8,6 +8,7 @@ const slice = createSlice({
     searchResult: {},
     questionResult: {},
     communitiesResult: {},
+    connectivityStatus: "loading", // "loading" | "online" | "offline"
   },
   reducers: {
     setSearchResult: (state, action) => {
@@ -18,6 +19,9 @@ const slice = createSlice({
     },
     setCommunitiesResult: (state, action) => {
       state.communitiesResult = action.payload;
+    },
+    setConnectivityStatus: (state, action) => {
+      state.connectivityStatus = action.payload;
     }
   },
 });
@@ -33,7 +37,7 @@ function getServerResult() {
 }
 
 
-const { setSearchResult, setQuestionResult, setCommunitiesResult } = slice.actions;
+const { setSearchResult, setQuestionResult, setCommunitiesResult, setConnectivityStatus } = slice.actions;
 
 export {
   store,
@@ -41,4 +45,5 @@ export {
   setSearchResult,
   setQuestionResult,
   setCommunitiesResult,
+  setConnectivityStatus,
 };

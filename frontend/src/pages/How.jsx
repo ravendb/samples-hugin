@@ -34,7 +34,7 @@ function How() {
                                     <ul>
                                         <li><strong>Hardware:</strong> Raspberry Pi Zero 2 W (1GHz quad-core, 512MB RAM) (any Raspberry Pi with WiFi will do)</li>
                                         <li><strong>Operating System:</strong> Raspberry Pi OS Lite (32 Bits, Bullseye)</li>
-                                        <li><strong>Database:</strong> RavenDB 6.0</li>
+                                        <li><strong>Database:</strong> RavenDB 7.1</li>
                                         <li><strong>Programming Language:</strong> JavaScript (node.js, Express, React)</li>
                                         <li><strong>Disk: </strong> 32 GB micro SD card</li>
                                     </ul>

@@ -1,38 +1,19 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import ReactDOM from 'react-dom';
-import { useDispatch } from "react-redux";
-import { httpService } from '../services/http.service';
+import { useSelector } from "react-redux";
 
 export function ExternalLink({ href, children, className }) {
   const [showPopup, setShowPopup] = useState(false);
-  const [onlineStatus, setOnlineStatus] = useState("loading");
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    async function checkConnectivity() {
-      try {
-        const result = await httpService.get("is-online");
-        if (result.online) {
-          setOnlineStatus("online");
-          return;
-        }
-
-      } catch (error) {
-      }
-      setOnlineStatus("offline");
-      setTimeout(checkConnectivity, 2500);
-    }
-
-    checkConnectivity();
-  }, [dispatch]);
+  // Get connectivity status from Redux store instead of individual polling
+  const connectivityStatus = useSelector((state) => state.response.connectivityStatus);
 
   const openPopup = (e) => {
-    if (onlineStatus !== "online") {
+    if (connectivityStatus !== "online") {
       e.preventDefault();
       setShowPopup(true);
-    }
-    else {
+    } else {
       setShowPopup(false);
     }
   };

@@ -5,9 +5,20 @@ import AppHeader from "./components/AppHeader";
 import SearchPage from "./pages/SearchPage";
 import QuestionPage from "./pages/QuestionPage";
 import HowPage from "./pages/How";
-
+import { useEffect } from "react";
+import { connectivityService } from "./services/connectivity.service";
 
 function App() {
+  useEffect(() => {
+    // Start global connectivity checking
+    connectivityService.start();
+
+    // Cleanup on unmount
+    return () => {
+      connectivityService.stop();
+    };
+  }, []);
+
   return (
     <>
       <AppHeader />

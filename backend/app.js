@@ -86,6 +86,7 @@ class QuestionsTags extends ravendb.AbstractJavaScriptIndexCreationTask {
           return result;
         })
     });
+    this.searchEngineType = 'Lucene'
   }
 }
 
@@ -98,11 +99,14 @@ Promise.all(indexes.map(index => new index().execute(documentStore))).then(() =>
 });
 
 const app = express();
-let currentHandlerFunction = null;
 app.asyncGet = function (path, handler) {
   return this.get(path, async (req, res, next) => {
     try {
-      currentHandlerFunction = handler;
+      // Capture the handler for this specific request to avoid races
+      // Skip capturing handler for is-online endpoint to prevent it from showing in "show me the code"
+      if (path !== "/api/is-online") {
+        res.locals.__routeHandler = handler;
+      }
       await handler(req, res, next);
     } catch (err) {
       res
@@ -112,8 +116,9 @@ app.asyncGet = function (path, handler) {
   });
 }
 
-function getRouteCode(req) {
-  return `app.${req.method.toLowerCase()}("${req.route.path}", ${currentHandlerFunction})`;
+function getRouteCode(req, res) {
+  const h = res && res.locals ? res.locals.__routeHandler : undefined;
+  return `app.${req.method.toLowerCase()}("${req.route.path}", ${h})`;
 }
 
 const isProdEnv = process.env.NODE_ENV === "production";
@@ -161,7 +166,7 @@ app.asyncGet("/api/question", async (req, res) => {
 
   res.send({
     data: { question, users },
-    code: getRouteCode(req),
+    code: getRouteCode(req, res),
     timings: {
       load: loadEnd - loadStart,
     }
@@ -229,7 +234,7 @@ app.asyncGet("/api/search", async (req, res) => {
       relatedTags,
       totalResults: queryStats.totalResults,
     },
-    code: getRouteCode(req),
+    code: getRouteCode(req, res),
     timings: {
       query: queryEnd - queryStart,
       tags: tagsEnd - tagsStart,
@@ -245,7 +250,7 @@ app.asyncGet("/api/communities", async (req, res) => {
 
   res.send({
     data: results,
-    code: getRouteCode(req),
+    code: getRouteCode(req, res),
     timings: {
       query: queryEnd - queryStart,
     },
@@ -255,10 +260,17 @@ app.asyncGet("/api/communities", async (req, res) => {
 
 
 app.asyncGet("/api/is-online", async (req, res) => {
-
-  const r = await axios.request('https://google.com/generate_204');
-  const online = r.status === 204;
-  res.status(online ? 200 : 500).send({ online: online });
+  try {
+    const r = await axios.get('http://connectivitycheck.gstatic.com/generate_204', { 
+      validateStatus: () => true,
+      timeout: 5000  // Add timeout to prevent hanging
+    });
+    const online = r.status === 204;
+    res.status(200).send({ online });
+  } catch (error) {
+    // Network error means we're offline
+    res.status(200).send({ online: false });
+  }
 });
 
 

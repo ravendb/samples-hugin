@@ -1,3 +1,66 @@
+  log_format probe '$remote_addr - $host "$request" $status released=$is_released';
+
+  map $http_cookie $is_released {
+    default 0;
+    "~*captive_released=1" 1;
+  }
+
+  # ANDROID / CHROME
+  server {
+    listen 80;
+    server_name connectivitycheck.gstatic.com connectivitycheck.android.com clients3.google.com;
+    access_log /var/log/nginx/probe.access.log probe;
+    add_header Cache-Control "no-store" always;
+    location = /generate_204 { if ($is_released = 1) { return 204; } return 302 http://start.ravendb; }
+    location = /gen_204      { if ($is_released = 1) { return 204; } return 302 http://start.ravendb; }
+    location / { return 204; }
+  }
+
+  # APPLE
+  server {
+    listen 80;
+    server_name captive.apple.com www.apple.com;
+    access_log /var/log/nginx/probe.access.log probe;
+    add_header Cache-Control "no-store" always;
+    location = /hotspot-detect.html {
+        if ($is_released = 1) { return 200 "<HTML><BODY>Success</BODY></HTML>\n"; }
+        return 302 http://start.ravendb;
+    }
+    location = /library/test/success.html {
+        if ($is_released = 1) { return 200 "Success\n"; }
+        return 302 http://start.ravendb;
+    }
+    location / { return 204; }
+  }
+
+  # WINDOWS
+  server {
+    listen 80;
+    server_name msftconnecttest.com www.msftconnecttest.com;
+    access_log /var/log/nginx/probe.access.log probe;
+    add_header Cache-Control "no-store" always;
+    location = /connecttest.txt {
+        if ($is_released = 1) { return 200 "Microsoft Connect Test"; }
+        return 302 http://start.ravendb;
+    }
+    location = /redirect {
+        if ($is_released = 1) { return 200 "Microsoft Connect Test"; }
+        return 302 http://start.ravendb;
+    }
+    location / { return 204; }
+  }
+  server {
+    listen 80;
+    server_name msftncsi.com www.msftncsi.com dns.msftncsi.com;
+    access_log /var/log/nginx/probe.access.log probe;
+    add_header Cache-Control "no-store" always;
+    location = /ncsi.txt {
+        if ($is_released = 1) { return 200 "Microsoft NCSI"; }
+        return 302 http://start.ravendb;
+    }
+    location / { return 204; }
+  }
+
   server {
     listen 80 default_server;
     listen [::]:80 default_server;
@@ -13,6 +76,8 @@
     # Default redirect for any unexpected requests to trigger captive portal
     # sign in screen on device.
     location / {
+        if ($is_released = 1) { return 204; }
+        add_header Set-Cookie "captive_released=1; Path=/; Max-Age=86400; SameSite=Lax; Domain=.ravendb" always;
         return 302 http://start.ravendb;
     }
 }
@@ -33,6 +98,12 @@ server {
     location /api/ {
        proxy_pass http://127.0.0.1:3030;
     }
+
+    location = /captive/complete {
+        add_header Set-Cookie "captive_released=1; Path=/; Max-Age=86400; SameSite=Lax; Domain=.ravendb" always;
+        add_header Cache-Control "no-store" always;
+        return 204;
+    }
 }
 
 
@@ -47,5 +118,40 @@ server {
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "Upgrade";
             proxy_set_header Host $host;
+    }
+}
+
+# HTTPS catch-all default to avoid ERR_CONNECTION_REFUSED
+server {
+    listen 443 ssl default_server;
+    server_name _;
+    ssl_certificate     /etc/nginx/certs/start.ravendb.crt;
+    ssl_certificate_key /etc/nginx/certs/start.ravendb.key;
+    return 302 http://start.ravendb$request_uri;
+}
+
+# HTTPS for start.ravendb
+server {
+    listen 443 ssl;
+    server_name start.ravendb;
+    ssl_certificate     /etc/nginx/certs/start.ravendb.crt;
+    ssl_certificate_key /etc/nginx/certs/start.ravendb.key;
+    root /usr/lib/hugin/dist;
+    location / { try_files $uri $uri/ /index.html; }
+    location /api/ { proxy_pass http://127.0.0.1:3030; }
+}
+
+# HTTPS for database.ravendb
+server {
+    listen 443 ssl;
+    server_name database.ravendb;
+    ssl_certificate     /etc/nginx/certs/start.ravendb.crt;
+    ssl_certificate_key /etc/nginx/certs/start.ravendb.key;
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
     }
 }

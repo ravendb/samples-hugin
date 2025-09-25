@@ -1,3 +1,4 @@
+#!/bin/bash
 set -x
 set -e
 
@@ -9,7 +10,7 @@ sudo raspi-config nonint do_wifi_country IL
 sudo rfkill unblock wifi
 
 sudo swapoff /var/swap
-sudo dd if=/dev/zero of=/var/swap count=8 bs=128M
+sudo dd if=/dev/zero of=/var/swap count=16 bs=128M
 sudo mkswap /var/swap
 sudo chmod 0600 /var/swap
 sudo swapon /var/swap
@@ -21,6 +22,14 @@ curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && sudo apt-ge
 sudo apt-get install -y nginx dnsmasq dhcpcd
 sudo dpkg -i ravendb.deb
 rm  ravendb.deb
+
+# Setup dhcpcd hooks for wpa_supplicant integration
+sudo install -d /lib/dhcpcd/dhcpcd-hooks
+if [ ! -e /lib/dhcpcd/dhcpcd-hooks/10-wpa_supplicant ] \
+   && [ -e /usr/share/dhcpcd/hooks/10-wpa_supplicant ]; then
+  sudo ln -sf /usr/share/dhcpcd/hooks/10-wpa_supplicant \
+              /lib/dhcpcd/dhcpcd-hooks/
+fi
 
 sudo mkdir -p /var/lib/ravendb/data/Databases
 sudo mv Hugin /var/lib/ravendb/data/Databases/Hugin
@@ -61,7 +70,25 @@ sudo mv etc.dhcpcd.conf /etc/dhcpcd.conf
 sudo mv etc.dnsmasq.conf /etc/dnsmasq.conf
 
 sudo sed -i 's/#DNSMASQ_EXCEPT="lo"/DNSMASQ_EXCEPT="lo"/g' /etc/default/dnsmasq
-sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf 
+sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf
+
+# Generate SSL certificate
+sudo mkdir -p /etc/nginx/certs
+if [ ! -s /etc/nginx/certs/start.ravendb.crt ]; then
+    sudo openssl req -x509 -nodes -newkey rsa:2048 -days 825 \
+        -keyout /etc/nginx/certs/start.ravendb.key \
+        -out /etc/nginx/certs/start.ravendb.crt \
+        -subj "/CN=start.ravendb" \
+        -addext "subjectAltName=DNS:start.ravendb,DNS:database.ravendb,IP:10.1.1.1"
+fi
+sudo chmod 640 /etc/nginx/certs/start.ravendb.key
+sudo chmod 644 /etc/nginx/certs/start.ravendb.crt
+
+
+# Disable NetworkManager to prevent conflicts
+sudo systemctl stop NetworkManager 2>/dev/null || true
+sudo systemctl disable NetworkManager 2>/dev/null || true
+sudo systemctl mask NetworkManager 2>/dev/null || true
 
 # restart services and prepare...
 sudo systemctl stop wpa_supplicant
