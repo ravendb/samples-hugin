@@ -55,6 +55,9 @@ assert_contains "$wpa" "country=PL"
 assert_contains "$wpa" 'ssid="Test WiFi"'
 assert_not_contains "$wpa" '#psk="secret"'
 
+# The deployment script must retain the escaped variable inside its remote
+# command string.
+# shellcheck disable=SC2016
 grep -Fq '[[ \$ready -eq 1 ]]' "$ROOT/tools/hugin-deploy" ||
   fail "deploy does not fail closed when readiness is exhausted"
 grep -Fq 'backend/package-lock.json' "$ROOT/tools/hugin-deploy" ||

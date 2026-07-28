@@ -31,6 +31,8 @@ items=(
 (( SYSTEM )) && items+=(runtime setup.sh tools/lib tools/hugin-ap tools/hugin-boot tools/hugin-wifi tools/hugin-reset-radio tools/hugin-warmup tools/hugin-zram)
 tar -C "$ROOT" -czf "$ARCHIVE" "${items[@]}"
 scp -o ConnectTimeout=5 "$ARCHIVE" "$TARGET:/tmp/hugin-deploy.tar.gz"
+# SYSTEM intentionally expands locally before the remote shell receives it.
+# shellcheck disable=SC2029
 ssh "$TARGET" "set -Eeuo pipefail
   rm -rf /tmp/hugin-deploy
   mkdir /tmp/hugin-deploy

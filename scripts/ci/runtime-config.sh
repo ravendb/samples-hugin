@@ -14,7 +14,10 @@ assert_line "$sysctl" "vm.vfs_cache_pressure=200"
 assert_line "$sysctl" "vm.min_free_kbytes=8192"
 
 grep -Fq '768 * 1024 * 1024' tools/hugin-zram
-! grep -R -E '/(swapfile|var/swap)|dphys-swapfile.*start' setup.sh tools runtime
+if grep -R -E '/(swapfile|var/swap)|dphys-swapfile.*start' setup.sh tools runtime; then
+  echo "runtime-config: SD-card swap configuration found" >&2
+  exit 1
+fi
 grep -Fq 'mode=2' tools/lib/wifi.sh
 grep -Fq 'key_mgmt=NONE' tools/lib/wifi.sh
 grep -Fq '10.1.1.1/24' tools/lib/wifi.sh
