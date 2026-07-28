@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+MODEL="${EMB_MODEL:-snowflake-arctic-embed:s}"
+TOKEN="hugin-warmup-$(date +%s)-$$"
+
+for _ in $(seq 1 30); do
+  curl --fail --silent --max-time 3 http://127.0.0.1:11434/api/tags >/dev/null && break
+  sleep 2
+done
+
+curl --fail --silent --show-error --max-time 180 \
+  -H 'Content-Type: application/json' \
+  -d "{\"model\":\"$MODEL\",\"prompt\":\"$TOKEN\",\"keep_alive\":\"30m\"}" \
+  http://127.0.0.1:11434/api/embeddings >/dev/null
+
+curl --fail --silent --show-error --max-time 180 \
+  --get --data-urlencode "q=$TOKEN" --data-urlencode "mode=ai" \
+  --data-urlencode "pageSize=1" http://127.0.0.1:3030/api/search >/dev/null
+
+touch /run/hugin/warmup.done

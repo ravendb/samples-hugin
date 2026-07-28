@@ -1,0 +1,14 @@
+[Unit]
+Description=Hugin 768 MiB zram swap
+DefaultDependencies=no
+After=systemd-modules-load.service
+Before=swap.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/hugin-zram start
+ExecStop=/usr/local/sbin/hugin-zram stop
+
+[Install]
+WantedBy=swap.target

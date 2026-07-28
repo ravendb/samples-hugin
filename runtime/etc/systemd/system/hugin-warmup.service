@@ -1,0 +1,16 @@
+[Unit]
+Description=Warm Hugin embedding model and vector index
+After=ravendb.service ollama.service hugin.service
+Requires=hugin.service
+
+[Service]
+Type=oneshot
+User=hugin
+Group=hugin
+EnvironmentFile=-/etc/default/hugin
+ExecStart=/usr/local/sbin/hugin-warmup
+RuntimeDirectory=hugin
+RuntimeDirectoryMode=0755
+
+[Install]
+WantedBy=multi-user.target
