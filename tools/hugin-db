@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+COMMAND="${1:-}"; shift || true
+TARGET="${1:-${HUGIN_PI:-}}"; shift || true
+SOURCE="${HUGIN_DB_SOURCE:-}"
+DB="${HUGIN_DB_NAME:-Hugin}"
+REUSE=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in --reuse) REUSE="$2"; shift 2 ;; *) echo "unknown option: $1" >&2; exit 2 ;; esac
+done
+[[ "$COMMAND" =~ ^(plan|push|verify)$ && -n "$TARGET" ]] ||
+  { echo "usage: hugin-db plan|push|verify TARGET [--reuse OLD_DB]" >&2; exit 2; }
+[[ -n "$SOURCE" ]] || { echo "set HUGIN_DB_SOURCE" >&2; exit 2; }
+SYSTEM="$SOURCE/System"
+DATABASE="$SOURCE/Databases/$DB"
+[[ -d "$SYSTEM" && -d "$DATABASE" ]] || { echo "invalid source layout" >&2; exit 1; }
+
+remote() { ssh -o ConnectTimeout=8 "$TARGET" "$@"; }
+case "$COMMAND" in
+  plan)
+    echo "Source: $SOURCE"
+    mapfile -t databases < <(find "$SOURCE/Databases" -mindepth 1 -maxdepth 1 -type d -printf '%f\n')
+    printf 'Databases: %s\n' "${databases[*]}"
+    [[ ${#databases[@]} -eq 1 ]] || { echo "source System must describe exactly one database" >&2; exit 1; }
+    du -sh "$SYSTEM" "$DATABASE"
+    remote "ravendb --version 2>/dev/null || true; df -h /var/lib/ravendb; pgrep -af rsync || true; systemctl is-active ravendb hugin || true"
+    ;;
+  push)
+    remote "sudo mkdir /run/hugin/db-transfer.lock 2>/dev/null &&
+      sudo systemctl stop hugin ravendb &&
+      sudo systemctl mask --runtime hugin ravendb" ||
+      { echo "target locked or services could not stop" >&2; exit 1; }
+    trap 'echo "transfer failed; RavenDB remains stopped. Resume with: hugin-db push '"$TARGET" >&2' ERR
+    rsync -aHAX --numeric-ids --partial --info=progress2 --delete \
+      "$SYSTEM/" "$TARGET:/var/lib/ravendb/System/"
+    db_args=(-aHAX --numeric-ids --partial --inplace --info=progress2 --delete)
+    [[ -n "$REUSE" ]] && db_args+=("--compare-dest=$REUSE")
+    rsync "${db_args[@]}" "$DATABASE/" "$TARGET:/var/lib/ravendb/Databases/$DB/"
+    remote "sudo chown -R ravendb:ravendb /var/lib/ravendb;
+      sudo systemctl unmask --runtime ravendb hugin;
+      sudo systemctl start ravendb hugin;
+      sudo rmdir /run/hugin/db-transfer.lock"
+    ;;
+  verify)
+    remote "set -e
+      test \"\$(stat -c %U /var/lib/ravendb/System)\" = ravendb
+      find /var/lib/ravendb/System /var/lib/ravendb/Databases/$DB -type f \\( -name '*.voron' -o -name '*.buffers' \\) -print0 | xargs -0 sha256sum
+      curl -fsS --max-time 15 http://127.0.0.1:3030/api/boot-status
+      curl -fsS --max-time 30 'http://127.0.0.1:3030/api/search?q=linux&pageSize=1'"
+    ;;
+esac
