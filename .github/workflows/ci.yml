@@ -56,6 +56,8 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
       - name: Install configuration validators
         run: sudo apt-get update && sudo apt-get install -y shellcheck nginx-light dnsmasq-base
       - name: ShellCheck
