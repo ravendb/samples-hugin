@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-[[ "$(id -u)" -eq 0 ]] || { echo "run as root" >&2; exit 1; }
-systemctl stop dnsmasq.service dhcpcd.service wpa_supplicant.service 2>/dev/null || true
-ip link set wlan0 down 2>/dev/null || true
+# shellcheck source=tools/lib/wifi.sh
+source "${HUGIN_WIFI_LIB:-/usr/local/lib/hugin/wifi.sh}"
+wifi_require_root
+wifi_teardown
 modprobe -r brcmfmac
 sleep 2
 modprobe brcmfmac

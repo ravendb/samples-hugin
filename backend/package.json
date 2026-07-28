@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "description": "Hugin appliance API",
   "main": "server.js",
+  "engines": {
+    "node": ">=22 <25"
+  },
   "scripts": {
     "test": "node --test",
+    "test:integration": "node --test test/integration/*.test.js",
     "start": "node server.js",
     "dev": "nodemon server.js"
   },

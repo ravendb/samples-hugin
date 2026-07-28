@@ -1,10 +1,7 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
-[[ "$(id -u)" -eq 0 ]] || { echo "run as root" >&2; exit 1; }
-systemctl stop dhcpcd.service wpa_supplicant.service 2>/dev/null || true
-ip link set wlan0 down
-ip address flush dev wlan0
-ip link set wlan0 up
-ip address add 10.1.1.1/24 dev wlan0
-systemctl restart dnsmasq.service
-echo "AP network configured at 10.1.1.1/24"
+# shellcheck source=tools/lib/wifi.sh
+source "${HUGIN_WIFI_LIB:-/usr/local/lib/hugin/wifi.sh}"
+wifi_require_root
+wifi_apply_ap
+echo "AP ${HUGIN_AP_SSID} ready at ${HUGIN_AP_CIDR}"

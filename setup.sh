@@ -8,6 +8,8 @@ id -u hugin >/dev/null 2>&1 || useradd --system --home /var/lib/hugin --create-h
 install -d -o hugin -g hugin -m 0755 /usr/lib/hugin /var/lib/hugin /run/hugin
 
 install -m 0755 "$ROOT"/tools/hugin-* /usr/local/sbin/
+install -d -m 0755 /usr/local/lib/hugin
+install -m 0644 "$ROOT/tools/lib/wifi.sh" /usr/local/lib/hugin/wifi.sh
 install -m 0644 "$ROOT/runtime/etc/nginx/sites-available/hugin" /etc/nginx/sites-available/hugin
 ln -sfn /etc/nginx/sites-available/hugin /etc/nginx/sites-enabled/hugin
 install -m 0644 "$ROOT/runtime/etc/dnsmasq.d/hugin.conf" /etc/dnsmasq.d/hugin.conf
@@ -22,7 +24,10 @@ if [[ ! -e /etc/wpa_supplicant/wpa_supplicant.conf ]]; then
 fi
 
 install -d -o hugin -g hugin -m 0755 /usr/lib/hugin/backend /usr/lib/hugin/frontend
-cp -a "$ROOT/backend/." /usr/lib/hugin/backend/
+install -m 0644 "$ROOT/backend/app.js" "$ROOT/backend/server.js" \
+  "$ROOT/backend/db-config.js" "$ROOT/backend/package.json" \
+  "$ROOT/backend/package-lock.json" /usr/lib/hugin/backend/
+cp -a "$ROOT/backend/lib" "$ROOT/backend/indexes" /usr/lib/hugin/backend/
 cp -a "$ROOT/frontend/dist/." /usr/lib/hugin/frontend/
 chown -R hugin:hugin /usr/lib/hugin
 

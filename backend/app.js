@@ -18,6 +18,12 @@ function routeCode(req) {
   return `${req.method} ${route}`;
 }
 
+function isRavenUnavailable(error) {
+  const value = String(error?.code || error?.message || error);
+  return /ECONNREFUSED|ECONNRESET|ENOTFOUND|EHOSTUNREACH|ETIMEDOUT|No available node/i
+    .test(value);
+}
+
 function createApp(options = {}) {
   const documentStore = options.documentStore || new ravendb.DocumentStore(
     RAVENDB_URL,
@@ -34,10 +40,17 @@ function createApp(options = {}) {
       try {
         await handler(req, res);
       } catch (error) {
-        const status = error.status || 500;
-        res.status(status).send(error.payload || {
-          error: error.message || String(error),
-        });
+        if (isRavenUnavailable(error)) {
+          res.status(503).send({
+            error: "RavenDB is unavailable",
+            stage: "ravendb",
+            code: "service_unavailable",
+          });
+          return;
+        }
+        res.status(error.status || 500).send(
+          error.payload || { error: error.message || String(error) },
+        );
       }
     });
   };
@@ -207,3 +220,4 @@ const app = createApp();
 module.exports = app;
 module.exports.createApp = createApp;
 module.exports.parseArray = parseArray;
+module.exports.isRavenUnavailable = isRavenUnavailable;

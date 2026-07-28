@@ -15,8 +15,20 @@ npm run build --prefix "$ROOT/frontend"
 npm ci --prefix "$ROOT/backend"
 npm test --prefix "$ROOT/backend"
 
-items=(backend frontend/dist tools/hugin-logs tools/hugin-clients tools/hugin-status)
-(( SYSTEM )) && items+=(runtime setup.sh tools/hugin-ap tools/hugin-boot tools/hugin-wifi tools/hugin-reset-radio tools/hugin-warmup tools/hugin-zram)
+items=(
+  backend/app.js
+  backend/server.js
+  backend/db-config.js
+  backend/package.json
+  backend/package-lock.json
+  backend/lib
+  backend/indexes
+  frontend/dist
+  tools/hugin-logs
+  tools/hugin-clients
+  tools/hugin-status
+)
+(( SYSTEM )) && items+=(runtime setup.sh tools/lib tools/hugin-ap tools/hugin-boot tools/hugin-wifi tools/hugin-reset-radio tools/hugin-warmup tools/hugin-zram)
 tar -C "$ROOT" -czf "$ARCHIVE" "${items[@]}"
 scp -o ConnectTimeout=5 "$ARCHIVE" "$TARGET:/tmp/hugin-deploy.tar.gz"
 ssh "$TARGET" "set -Eeuo pipefail
@@ -32,6 +44,8 @@ ssh "$TARGET" "set -Eeuo pipefail
     sudo install -d /etc/systemd/system/ollama.service.d
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/ollama.service.d/hugin.conf /etc/systemd/system/ollama.service.d/hugin.conf
     sudo install -m 0755 /tmp/hugin-deploy/tools/hugin-* /usr/local/sbin/
+    sudo install -d /usr/local/lib/hugin
+    sudo install -m 0644 /tmp/hugin-deploy/tools/lib/wifi.sh /usr/local/lib/hugin/wifi.sh
     sudo sysctl --system
     sudo systemctl daemon-reload
     sudo nginx -t
@@ -42,7 +56,12 @@ ssh "$TARGET" "set -Eeuo pipefail
   sudo chown -R hugin:hugin /usr/lib/hugin
   sudo -u hugin npm ci --omit=dev --prefix /usr/lib/hugin/backend
   sudo systemctl restart hugin
-  for i in \$(seq 1 30); do curl -fsS --max-time 3 http://127.0.0.1:3030/api/ready && break; sleep 1; done"
+  ready=0
+  for i in \$(seq 1 30); do
+    if curl -fsS --max-time 3 http://127.0.0.1:3030/api/ready; then ready=1; break; fi
+    sleep 1
+  done
+  [[ \$ready -eq 1 ]]"
 local_hash="$(sha256sum "$ARCHIVE" | awk '{print $1}')"
 remote_hash="$(ssh "$TARGET" sha256sum /tmp/hugin-deploy.tar.gz | awk '{print $1}')"
 [[ "$local_hash" == "$remote_hash" ]] || { echo "upload hash mismatch" >&2; exit 1; }

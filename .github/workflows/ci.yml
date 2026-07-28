@@ -1,0 +1,130 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+        working-directory: backend
+      - run: npm test
+        working-directory: backend
+
+  frontend:
+    name: Frontend behavior
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run lint
+        working-directory: frontend
+      - run: npm test
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+
+  tooling:
+    name: Appliance contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - name: Install configuration validators
+        run: sudo apt-get update && sudo apt-get install -y shellcheck nginx-light dnsmasq-base
+      - name: ShellCheck
+        run: >-
+          shellcheck -x setup.sh benchmarks/*.sh scripts/ci/*.sh
+          tests/shell/*.sh tests/pi/*.sh tools/hugin-* tools/lib/*.sh
+      - run: scripts/ci/repo-policy.sh
+      - run: tests/shell/run.sh
+      - run: scripts/ci/runtime-config.sh
+
+  importer:
+    name: Importer build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+          cache: true
+          cache-dependency-path: importer/packages.lock.json
+      - run: dotnet restore importer/Hugin.Importer.csproj --locked-mode
+      - run: dotnet build importer/Hugin.Importer.csproj --no-restore --configuration Release
+
+  raven-integration:
+    name: RavenDB integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      ravendb:
+        image: ravendb/ravendb:7.2-latest
+        env:
+          RAVEN_Setup_Mode: None
+          RAVEN_Security_UnsecuredAccessAllowed: PublicNetwork
+          RAVEN_Logs_Mode: Information
+        ports:
+          - 8080:8080
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+        working-directory: backend
+      - name: Wait for RavenDB
+        run: |
+          for attempt in $(seq 1 60); do
+            curl --fail --silent http://127.0.0.1:8080/build/version && exit 0
+            sleep 1
+          done
+          exit 1
+      - run: npm run test:integration
+        working-directory: backend
+        env:
+          HUGIN_INTEGRATION: "1"
+          RAVENDB_URL: http://127.0.0.1:8080
+
+  required:
+    name: Required
+    if: always()
+    needs: [backend, frontend, tooling, importer, raven-integration]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every CI lane
+        run: |
+          test "${{ needs.backend.result }}" = success
+          test "${{ needs.frontend.result }}" = success
+          test "${{ needs.tooling.result }}" = success
+          test "${{ needs.importer.result }}" = success
+          test "${{ needs.raven-integration.result }}" = success

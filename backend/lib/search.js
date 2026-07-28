@@ -159,10 +159,14 @@ async function executeSearch(documentStore, request, queueWaitMs = 0) {
   const tagSet = normalizeTags(trimmed.flatMap((item) => item.Tags || []));
   const ownerIds = [...new Set(trimmed.map((item) => item.Owner).filter(Boolean))];
   const tailStarted = performance.now();
+  // RavenDB sessions are not thread-safe. Tail queries run in parallel on
+  // separate sessions, never concurrently on the search session.
+  const tagsSession = request.includeTail ? documentStore.openSession() : null;
+  const usersSession = request.includeTail ? documentStore.openSession() : null;
   const [tags, users] = request.includeTail
     ? await Promise.all([
-      relatedTags(session, tagSet),
-      ownerIds.length ? session.load(ownerIds) : Promise.resolve({}),
+      relatedTags(tagsSession, tagSet),
+      ownerIds.length ? usersSession.load(ownerIds) : Promise.resolve({}),
     ])
     : [[], {}];
   const finished = performance.now();

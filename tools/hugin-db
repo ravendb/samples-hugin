@@ -16,6 +16,10 @@ DATABASE="$SOURCE/Databases/$DB"
 [[ -d "$SYSTEM" && -d "$DATABASE" ]] || { echo "invalid source layout" >&2; exit 1; }
 
 remote() { ssh -o ConnectTimeout=8 "$TARGET" "$@"; }
+transfer_failed() {
+  echo "transfer failed; RavenDB remains stopped." >&2
+  echo "Resume with: hugin-db push $TARGET" >&2
+}
 case "$COMMAND" in
   plan)
     echo "Source: $SOURCE"
@@ -26,14 +30,24 @@ case "$COMMAND" in
     remote "ravendb --version 2>/dev/null || true; df -h /var/lib/ravendb; pgrep -af rsync || true; systemctl is-active ravendb hugin || true"
     ;;
   push)
-    remote "sudo mkdir /run/hugin/db-transfer.lock 2>/dev/null &&
-      sudo systemctl stop hugin ravendb &&
+    remote "set -e
+      if sudo test -d /run/hugin/db-transfer.lock; then
+        if systemctl is-active --quiet hugin || systemctl is-active --quiet ravendb; then
+          echo 'stale transfer lock while services are active' >&2
+          exit 42
+        fi
+        echo 'resuming interrupted transfer' >&2
+      else
+        sudo mkdir /run/hugin/db-transfer.lock
+      fi
+      sudo systemctl stop hugin ravendb
       sudo systemctl mask --runtime hugin ravendb" ||
       { echo "target locked or services could not stop" >&2; exit 1; }
-    trap 'echo "transfer failed; RavenDB remains stopped. Resume with: hugin-db push '"$TARGET" >&2' ERR
+    trap transfer_failed ERR
     rsync -aHAX --numeric-ids --partial --info=progress2 --delete \
+      --rsync-path="sudo rsync" \
       "$SYSTEM/" "$TARGET:/var/lib/ravendb/System/"
-    db_args=(-aHAX --numeric-ids --partial --inplace --info=progress2 --delete)
+    db_args=(-aHAX --numeric-ids --partial --inplace --info=progress2 --delete --rsync-path="sudo rsync")
     [[ -n "$REUSE" ]] && db_args+=("--compare-dest=$REUSE")
     rsync "${db_args[@]}" "$DATABASE/" "$TARGET:/var/lib/ravendb/Databases/$DB/"
     remote "sudo chown -R ravendb:ravendb /var/lib/ravendb;

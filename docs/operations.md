@@ -36,3 +36,8 @@ stopped. Keep the sealed source artifact on the development machine.
 After deploy and after a cold boot: inspect `/api/boot-status`, run one FTS
 query, one unique AI query, repeat the AI query, and check `free`, `swapon`,
 `df`, service logs, index freshness, and model residency.
+
+Before opening a PR, follow [Pre-PR Raspberry Pi validation](pi-validation.md).
+The local harness takes only the Pi's LAN IP and guides network-changing steps.
+The hosted and local non-hardware checks are documented in
+[Testing Hugin](testing.md).
