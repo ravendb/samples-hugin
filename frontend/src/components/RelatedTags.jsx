@@ -33,13 +33,13 @@ function RelatedTags({ tags }) {
               <strong>{t.Tag}</strong> <span>{t.Count.toLocaleString()}</span>
             </p>
             <ul className="related-tag-communities">
-              {Object.entries(t.Communities).map(([key, value]) => (
+              {Object.entries(t.Communities || (t.Community ? { [t.Community]: t.Count } : {})).map(([key, value]) => (
                 <li
                   key={key}
                   className={"related-tag-community tag-" + key + " bg-faded-" + key}
                   onClick={() => handleCommunityClick(key)}
                 >
-                  <img src={`/img/${key}.svg`} />
+                  <img src={`/img/${key}.svg`} alt="" />
                   <span>{value.toLocaleString()}</span>
                 </li>
               ))}

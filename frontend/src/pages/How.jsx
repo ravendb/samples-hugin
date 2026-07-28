@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { httpService } from "../services/http.service";
 import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -52,7 +53,7 @@ function How() {
                                     </p>
                                     <h3>Connecting to the appliance</h3>
                                     <p>
-                                        The device you are holding is running Linux and is accessible via SSH with the following credentials: <code>rdb</code> / <code>awesome</code> while connected to the <code>Hugin (ravendb)</code> network.
+                                        The device is administered over SSH using credentials set during provisioning. Hugin does not embed a default password.
                                     </p>
                                     <h3>Getting in touch with us</h3>
                                     <p>We would love to hear from you, please visit our <ExternalLink href="https://github.com/ravendb/ravendb/discussions?utm_source=appliance&utm_medium=embedded-app&utm_campaign=hugin">Github discussions page</ExternalLink> if you have any questions or suggestions.

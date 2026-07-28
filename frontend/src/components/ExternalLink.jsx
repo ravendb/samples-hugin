@@ -1,85 +1,33 @@
-import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import ReactDOM from 'react-dom';
-import { useDispatch } from "react-redux";
-import { httpService } from '../services/http.service';
+import { useState } from "react";
+import PropTypes from "prop-types";
+import { isInternetAvailable } from "../services/availability.service";
 
 export function ExternalLink({ href, children, className }) {
-  const [showPopup, setShowPopup] = useState(false);
-  const [onlineStatus, setOnlineStatus] = useState("loading");
-  const dispatch = useDispatch();
+  const [offline, setOffline] = useState(false);
 
-  useEffect(() => {
-    async function checkConnectivity() {
-      try {
-        const result = await httpService.get("is-online");
-        if (result.online) {
-          setOnlineStatus("online");
-          return;
-        }
-
-      } catch (error) {
-      }
-      setOnlineStatus("offline");
-      setTimeout(checkConnectivity, 2500);
+  async function open(event) {
+    event.preventDefault();
+    if (await isInternetAvailable()) {
+      window.open(href, "_blank", "noopener,noreferrer");
+    } else {
+      setOffline(true);
     }
-
-    checkConnectivity();
-  }, [dispatch]);
-
-  const openPopup = (e) => {
-    if (onlineStatus !== "online") {
-      e.preventDefault();
-      setShowPopup(true);
-    }
-    else {
-      setShowPopup(false);
-    }
-  };
-
-  const closePopup = () => {
-    setShowPopup(false);
-  };
-
-  const openExternalLink = () => {
-    closePopup();
-  };
-
-  const portalContainer = document.createElement('div');
-
-  useEffect(() => {
-    document.body.appendChild(portalContainer);
-
-    return () => {
-      document.body.removeChild(portalContainer);
-    };
-  }, [portalContainer]);
-
-  const popupPortal = showPopup
-    ? ReactDOM.createPortal(
-      <div className="external-link-popup">
-        <div className='card bg-faded-interactive external-link-card'>
-          <div className='card-body text-center text-light'>
-            <h3>Opening an external link</h3>
-            <img src={"./img/switch-wifi.svg"} className='img-fluid my-3' />
-            <p className='lead'>By default Hugin's WiFi is not connected to the Internet. Disconnect from Hugin's WiFi and connect to the normal network and click <strong className='text-emphasis'>Open external website</strong>. </p>
-            <div className='hstack gap-3 justify-content-center flex-wrap-1 mt-4'>
-              <button onClick={closePopup} className='btn btn-secondary btn-lg'>Cancel</button>
-              <a href={href} className='btn btn-interactive btn-lg' target="_blank" onClick={openExternalLink}>Open external website</a>
-            </div>
-          </div>
-        </div>
-      </div>,
-      portalContainer
-    )
-    : null;
+  }
 
   return (
     <>
-      <a href={href} className={className} onClick={openPopup} target="_blank">
-        {children}
-      </a>
-      {popupPortal}
+      <a href={href} className={className} onClick={open}>{children}</a>
+      {offline && (
+        <div className="external-link-popup" role="dialog" aria-modal="true">
+          <div className="card bg-faded-interactive external-link-card">
+            <div className="card-body text-center text-light">
+              <h3>External link unavailable</h3>
+              <p>Hugin&apos;s access point is offline by design. Switch Wi-Fi networks before opening this website.</p>
+              <button className="btn btn-secondary" onClick={() => setOffline(false)}>Close</button>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
@@ -87,4 +35,5 @@ export function ExternalLink({ href, children, className }) {
 ExternalLink.propTypes = {
   href: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
+  className: PropTypes.string,
 };

@@ -4,10 +4,12 @@ import { useAddToQueryParams } from "../hooks/useAddToQueryParams";
 
 function TagList({ tags }) {
   const { addToQueryParams } = useAddToQueryParams();
+  const normalized = (Array.isArray(tags) ? tags : [tags])
+    .flatMap((tag) => typeof tag === "string" ? tag.split("|").filter(Boolean) : []);
 
   return (
     <div className="tag-list">
-      {tags.map((tag) => (
+      {normalized.map((tag) => (
         <button 
           key={tag}
           className="tag btn btn-secondary btn-sm"

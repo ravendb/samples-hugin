@@ -1,0 +1,8 @@
+.ai-search-toggle {
+  align-items: center;
+  color: white;
+  display: inline-flex;
+  font-weight: 600;
+  gap: .5rem;
+  margin-top: .75rem;
+}

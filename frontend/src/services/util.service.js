@@ -3,7 +3,7 @@ const MINUTES_IN_HOUR = 60;
 const HOURS_IN_DAY = 24;
 
 function getUserLink(userId) {
-  const [_, community, id] = userId.split('/');
+  const [, community, id] = userId.split('/');
   switch (community) {
     case "stackoverflow":
       return `https://stackoverflow.com/users/${id}`;

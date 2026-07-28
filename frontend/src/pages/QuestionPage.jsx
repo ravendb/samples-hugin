@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useSearchParams } from "react-router-dom";
 import { getQuestion } from "../services/data.service";
 import "../styles/pages/question-page.css";
