@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ "$(id -u)" -eq 0 ]] || { echo "run as root" >&2; exit 1; }
+systemctl stop dnsmasq.service dhcpcd.service wpa_supplicant.service 2>/dev/null || true
+ip link set wlan0 down 2>/dev/null || true
+modprobe -r brcmfmac
+sleep 2
+modprobe brcmfmac
+sleep 2
+exec /usr/local/sbin/hugin-boot

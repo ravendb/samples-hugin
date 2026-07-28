@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ "$(id -u)" -eq 0 ]] || { echo "run as root" >&2; exit 1; }
+[[ $# -eq 2 ]] || { echo "usage: hugin-wifi SSID PASSWORD" >&2; exit 2; }
+tmp="$(mktemp)"
+trap 'rm -f "$tmp"' EXIT
+wpa_passphrase "$1" "$2" >"$tmp"
+install -m 0600 "$tmp" /etc/wpa_supplicant/wpa_supplicant.conf
+exec /usr/local/sbin/hugin-boot

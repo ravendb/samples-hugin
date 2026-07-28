@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+ip neighbour show dev wlan0 | awk '$1 != "10.1.1.1" { print }'

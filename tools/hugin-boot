@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ "$(id -u)" -eq 0 ]] || { echo "run as root" >&2; exit 1; }
+systemctl stop dnsmasq.service 2>/dev/null || true
+ip address flush dev wlan0
+systemctl restart wpa_supplicant.service dhcpcd.service
+for _ in $(seq 1 30); do
+  ip -4 address show dev wlan0 | grep -q 'inet ' && exit 0
+  sleep 1
+done
+exec /usr/local/sbin/hugin-ap

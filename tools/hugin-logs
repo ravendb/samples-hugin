@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+journalctl --no-pager -u hugin -u hugin-warmup -u ravendb -u ollama "$@"
