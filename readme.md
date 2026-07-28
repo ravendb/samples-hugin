@@ -47,13 +47,13 @@ You can also explore the appliance directly using SSH with the following command
 
 ```
  $ ssh rdb@10.1.1.1
-   rdb@10.1.1.1's password: awesome
+   rdb@10.1.1.1's password: <set during provisioning>
 ```
 
 The credentials for the machine are:
 
 * ```Username: rdb```
-* ```Password: awesome```
+* ```Password: set during provisioning```
 
 ### Internal structure
 
