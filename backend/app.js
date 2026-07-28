@@ -1,265 +1,209 @@
+"use strict";
+
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const axios = require('axios');
+const axios = require("axios");
 const ravendb = require("ravendb");
 const { performance } = require("perf_hooks");
+const { DB_NAME, RAVENDB_URL } = require("./db-config");
+const { INDEX_DEFINITIONS } = require("./indexes/definitions");
+const { normalizeCommunity, normalizeTags } = require("./lib/documents");
+const { createLatestWinsQueue } = require("./lib/query-queue");
+const { parseSearchRequest, executeSearch } = require("./lib/search");
+const { createBootStatus } = require("./lib/boot-status");
 
-const documentStore = new ravendb.DocumentStore(
-  "http://127.0.0.1:8080",
-  "Hugin"
-);
-documentStore.initialize();
-
-async function wakeUp() {
-  const sleep = ms => new Promise(r => setTimeout(r, ms));
-  while (true) {
-    try {
-      const session = documentStore.openSession();
-      const communities = await session.query({ collection: "Communities" }).all();
-      for (const community of communities) {
-        await session.query({ indexName: QuestionsSearch.name })
-          .whereEquals("Community", community.id)
-          .orderByDescending("CreationDate")
-          .take(15)
-          .all();
-      }
-      // execute once every 5 minutes, to ensure we are hot
-      await sleep(5 * 60 * 1000);
-    }
-    catch (err) {
-      console.error("Failed to wake up", err);
-      await sleep(15_000);
-    }
-  }
+function routeCode(req) {
+  const route = req.route?.path || req.path;
+  return `${req.method} ${route}`;
 }
 
-// We call this on startup to ensure that the db is awake and running
-// this is important since IO costs are high (on SD card), so on startup
-// we'll pay the cost of waking up the db, and then we'll be able to run
-// far faster. The issue is typically on first boot, where everything is cold
-_ = wakeUp();
+function createApp(options = {}) {
+  const documentStore = options.documentStore || new ravendb.DocumentStore(
+    RAVENDB_URL,
+    DB_NAME,
+  );
+  if (!options.documentStore) documentStore.initialize();
 
-class QuestionsSearch extends ravendb.AbstractJavaScriptIndexCreationTask {
-  constructor() {
-    super();
+  const app = express();
+  const queue = options.queue || createLatestWinsQueue();
+  const bootStatus = options.bootStatus || createBootStatus({ axios });
 
-    this.map('Questions', q => {
-      return {
-        Community: q.Community,
-        Tags: q.Tags,
-        CreationDate: q.CreationDate,
-        ViewCount: q.ViewCount,
-        Query: [q.Title, q.Tags]
+  app.asyncGet = function asyncGet(route, handler) {
+    return this.get(route, async (req, res) => {
+      try {
+        await handler(req, res);
+      } catch (error) {
+        const status = error.status || 500;
+        res.status(status).send(error.payload || {
+          error: error.message || String(error),
+        });
       }
     });
-    const SearchMode = 'Search';
-    this.index('Query', SearchMode);
-    this.searchEngineType = 'Corax'
-  }
-}
-
-class QuestionsTags extends ravendb.AbstractJavaScriptIndexCreationTask {
-  constructor() {
-    super();
-    this.map("Questions", q => {
-      return q.Tags.map(t => {
-        const communities = {};
-        communities[q.Community] = 1;
-        return { Tag: t, Count: 1, Communities: communities };
-      })
-    })
-    this.reduce(g => {
-      return g.groupBy(x => x.Tag)
-        .aggregate(g => {
-          const communities = {};
-          const result = {
-            Tag: g.key,
-            Count: g.values.reduce((count, val) => val.Count + count, 0),
-            Communities: communities
-          };
-          for (const entry of g.values) {
-            for (const [key, value] of Object.entries(entry.Communities)) {
-              communities[key] = (communities[key] || 0) + value;
-            }
-          }
-          return result;
-        })
-    });
-  }
-}
-
-const indexes = [QuestionsSearch, QuestionsTags];
-
-Promise.all(indexes.map(index => new index().execute(documentStore))).then(() => {
-  console.log("Indexes created");
-}).catch(err => {
-  console.error("Failed to create indexes", err);
-});
-
-const app = express();
-let currentHandlerFunction = null;
-app.asyncGet = function (path, handler) {
-  return this.get(path, async (req, res, next) => {
-    try {
-      currentHandlerFunction = handler;
-      await handler(req, res, next);
-    } catch (err) {
-      res
-        .status(err.status || 500)
-        .send({ error: err.message });
-    }
-  });
-}
-
-function getRouteCode(req) {
-  return `app.${req.method.toLowerCase()}("${req.route.path}", ${currentHandlerFunction})`;
-}
-
-const isProdEnv = process.env.NODE_ENV === "production";
-if (isProdEnv) {
-  app.use(express.static(path.join(path.resolve(), "build", "public")));
-} else {
-  const corsOptions = {
-    origin: ["http://127.0.0.1:5173", "http://localhost:5173"],
-    credentials: true,
   };
 
-  app.use(cors(corsOptions));
+  if (process.env.NODE_ENV === "production") {
+    app.use(express.static(path.join(__dirname, "public")));
+  } else {
+    app.use(cors({
+      origin: ["http://127.0.0.1:5173", "http://localhost:5173"],
+      credentials: true,
+    }));
+  }
+
+  app.asyncGet("/api/indexes", async (req, res) => {
+    res.send({
+      indexes: INDEX_DEFINITIONS,
+      timings: { load: 0 },
+    });
+  });
+
+  app.asyncGet("/api/question", async (req, res) => {
+    const session = documentStore.openSession();
+    const started = performance.now();
+    const question = await session
+      .include("Owner")
+      .include("Answers[].Owner")
+      .include("Answers[].Comments[].User")
+      .load(req.query.id);
+    if (!question) {
+      res.status(404).send({ error: "Question not found" });
+      return;
+    }
+    const answers = Array.isArray(question.Answers) ? question.Answers : [];
+    const comments = Array.isArray(question.Comments) ? question.Comments : [];
+    const userIds = [
+      question.Owner,
+      ...comments.map((comment) => comment.User),
+      ...answers.flatMap((answer) => [
+        answer.Owner,
+        ...(Array.isArray(answer.Comments)
+          ? answer.Comments.map((comment) => comment.User)
+          : []),
+      ]),
+    ].filter(Boolean);
+    const users = await session.load([...new Set(userIds)]);
+    res.send({
+      data: { question, users },
+      code: routeCode(req),
+      timings: { load: performance.now() - started },
+    });
+  });
+
+  app.asyncGet("/api/search", async (req, res) => {
+    const request = parseSearchRequest(req.query);
+    const slot = queue.acquire({
+      kind: "search",
+      mode: request.mode,
+      q: request.q,
+      startedAt: Date.now(),
+    });
+    const acquired = await slot.wait();
+    if (acquired.superseded) {
+      slot.release();
+      res.status(409).send({ superseded: true });
+      return;
+    }
+    try {
+      const result = await executeSearch(
+        documentStore,
+        request,
+        acquired.queueWaitMs,
+      );
+      res.send({ ...result, code: routeCode(req) });
+    } finally {
+      slot.release();
+    }
+  });
+
+  app.asyncGet("/api/query-status", async (req, res) => {
+    res.send(queue.status());
+  });
+
+  app.asyncGet("/api/search-authors", async (req, res) => {
+    const started = performance.now();
+    const ids = parseArray(req.query.ids);
+    const users = ids.length
+      ? await documentStore.openSession().load(ids)
+      : {};
+    res.send({
+      data: { users },
+      code: routeCode(req),
+      timings: { query: performance.now() - started },
+    });
+  });
+
+  app.asyncGet("/api/search-tags", async (req, res) => {
+    const started = performance.now();
+    const tags = normalizeTags(parseArray(req.query.tags));
+    let relatedTags = [];
+    if (tags.length) {
+      try {
+        relatedTags = await documentStore.openSession()
+          .query({ indexName: "QuestionsTags" })
+          .whereIn("Tag", tags)
+          .orderByDescending("Count", "Long")
+          .take(10)
+          .all();
+      } catch (error) {
+        if (!String(error.message || error).includes("QuestionsTags")) throw error;
+      }
+    }
+    res.send({
+      data: { relatedTags },
+      code: routeCode(req),
+      timings: { query: performance.now() - started },
+    });
+  });
+
+  app.asyncGet("/api/communities", async (req, res) => {
+    const started = performance.now();
+    const session = documentStore.openSession();
+    const results = await session.query({ collection: "Communities" }).all();
+    res.send({
+      data: results.map(normalizeCommunity),
+      code: routeCode(req),
+      timings: { query: performance.now() - started },
+    });
+  });
+
+  app.asyncGet("/api/boot-status", async (req, res) => {
+    res.send(await bootStatus());
+  });
+
+  app.asyncGet("/api/ready", async (req, res) => {
+    const status = await bootStatus();
+    res.status(status.ready ? 200 : 503).send({ ready: status.ready });
+  });
+
+  app.asyncGet("/api/is-online", async (req, res) => {
+    try {
+      const response = await axios.get("https://google.com/generate_204", {
+        timeout: 3000,
+        validateStatus: () => true,
+      });
+      const online = response.status === 204;
+      res.status(online ? 200 : 503).send({ online });
+    } catch {
+      res.status(503).send({ online: false });
+    }
+  });
+
+  return app;
 }
 
-app.get("/api/indexes", (req, res) => {
-  const start = performance.now();
-  const indexesOutput = indexes.map(i => ({ name: i.name, code: i.toString() }));
-  const end = performance.now();
-  res.send({
-    indexes: indexesOutput,
-    timings: {
-      load: end - start
-    }
-  })
-});
-
-app.asyncGet("/api/question", async (req, res) => {
-  const session = documentStore.openSession();
-  const loadStart = performance.now();
-
-  const question = await session
-    .include("Owner")
-    .include("Answers[].Owner")
-    .include("Answers[].Comments[].User")
-    .load(req.query.id);
-
-  const userIds = question.Answers.map((a) =>
-    a.Comments.map((c) => c.User).concat([a.Owner])
-  ).concat([question.Owner])
-    .concat(question.Comments.map((c) => c.User))
-    .flat();
-  const users = await session.load(userIds);
-
-  const loadEnd = performance.now();
-
-  res.send({
-    data: { question, users },
-    code: getRouteCode(req),
-    timings: {
-      load: loadEnd - loadStart,
-    }
-  });
-});
-
-app.asyncGet("/api/search", async (req, res) => {
-  const session = documentStore.openSession();
-
-  const tags = Array.isArray(req.query.tag)
-    ? req.query.tags
-    : [req.query.tag].filter((x) => x);
-  const page = req.query.page || 0;
-  const pageSize = req.query.pageSize || 10;
-
-  const query = session
-    .query({ indexName: QuestionsSearch.name })
-    .take(pageSize)
-    .skip(page * pageSize);
-
-  if (tags.length > 0) {
-    query.whereIn("Tags", tags);
+function parseArray(value) {
+  if (Array.isArray(value)) return value;
+  if (typeof value !== "string" || !value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed) ? parsed : [parsed];
+  } catch {
+    return value.split(",").filter(Boolean);
   }
-  if (req.query.community) {
-    query.andAlso().whereEquals("Community", req.query.community);
-  }
-  if (req.query.q) {
-    query.andAlso().search("Query", req.query.q);
-  }
+}
 
-  var queryStart = performance.now();
-
-  if (req.query.orderBy === "Score") {
-    query.orderByScore();
-  } else {
-    query.orderByDescending(req.query.orderBy || "CreationDate");
-  }
-
-  let queryStats = null;
-  const results = await query
-    .statistics((stats) => {
-      queryStats = stats;
-    })
-    .include("Owner")
-    .all();
-
-  var queryEnd = performance.now();
-
-  var postTags = new Set(results.map((x) => x.Tags).flat());
-
-  var tagsStart = performance.now();
-  const relatedTags = await session
-    .query({ indexName: QuestionsTags.name })
-    .whereIn("Tag", postTags)
-    .orderByDescending("Count", "Long")
-    .take(10)
-    .all();
-  var tagsEnd = performance.now();
-
-  const users = await session.load(results.map((q) => q.Owner));
-  res.send({
-    data: {
-      results,
-      users,
-      relatedTags,
-      totalResults: queryStats.totalResults,
-    },
-    code: getRouteCode(req),
-    timings: {
-      query: queryEnd - queryStart,
-      tags: tagsEnd - tagsStart,
-    },
-  });
-});
-
-app.asyncGet("/api/communities", async (req, res) => {
-  const session = documentStore.openSession();
-  var queryStart = performance.now();
-  const results = await session.query({ collection: "Communities" }).all();
-  var queryEnd = performance.now();
-
-  res.send({
-    data: results,
-    code: getRouteCode(req),
-    timings: {
-      query: queryEnd - queryStart,
-    },
-  });
-});
-
-
-
-app.asyncGet("/api/is-online", async (req, res) => {
-
-  const r = await axios.request('https://google.com/generate_204');
-  const online = r.status === 204;
-  res.status(online ? 200 : 500).send({ online: online });
-});
-
-
+const app = createApp();
 module.exports = app;
+module.exports.createApp = createApp;
+module.exports.parseArray = parseArray;
