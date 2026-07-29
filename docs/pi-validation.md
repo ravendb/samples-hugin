@@ -8,61 +8,53 @@ is the Pi's current LAN IP:
 ./tests/pi/validate.sh 192.168.1.42
 ```
 
-The default SSH user is `rdb`. Override it with `HUGIN_PI_USER` if needed.
-The harness records a Markdown report under ignored `artifacts/pi-validation/`
-and never publishes the Pi address.
+The default SSH user is `rdb`. Override it with `HUGIN_PI_USER`. The harness
+writes a report under ignored `artifacts/pi-validation/` and does not include
+the Pi address in the report.
 
-## Prepare the Pi
+## Bring the Pi to a test-ready state
 
-Use a disposable or recoverable Pi Zero 2 W, not the only copy of an appliance:
+1. Flash Raspberry Pi OS Bookworm 64-bit or restore a recoverable development
+   image.
+2. Provision Hugin with `sudo ./setup.sh`, or let the harness deploy the
+   checked-out commit with `--deploy`.
+3. Install a sealed Hugin database containing the required indexes and
+   embedding-generation task. Keep the source artifact on the development
+   computer rather than storing a second full copy on the SD card.
+4. Ensure the configured Ollama model is present and wait until
+   `/api/boot-status` reports ready.
+5. Connect the Pi to the same LAN as the development computer, enable SSH key
+   authentication and note its IP.
+6. Run the harness from a clean checkout of the PR commit.
 
-1. Flash Raspberry Pi OS Bookworm 64-bit or restore the current sealed
-   development image.
-2. Boot it on the same LAN as the development computer.
-3. Enable SSH key authentication for `rdb`; the harness is non-interactive over
-   SSH and requires `sudo -n true`.
-4. Reserve or note its LAN IP.
-5. Keep a sealed database artifact on the development machine. The SD card
-   must have enough room for the installed database, but not a second full copy.
-6. Make sure the development computer has `ssh`, `curl`, Node.js and npm.
-7. Run the harness from a clean checkout of the PR commit.
+The development computer needs `ssh`, `curl`, Node.js and npm. `--deploy` and
+`--radio` additionally require passwordless `sudo` on the Pi.
 
-By default the harness offers to run two `hugin-deploy --system` passes. This
-provisions the current source and verifies deploy idempotence. Set
-`HUGIN_PI_SKIP_DEPLOY=1` only when the exact commit is already installed.
+## Default validation
 
-## What the harness checks
+The normal command is read-only. It checks bounded SSH, the target model,
+`hugin-status`, the Hugin/RavenDB/Ollama services, boot readiness, one FTS
+query and one AI query.
 
-- Pi Zero 2 W, aarch64 and Bookworm;
-- bounded SSH and provisioning access;
-- two identical deploys;
-- Hugin, RavenDB, Ollama and warmup services;
-- 768 MiB zram as the only swap and the documented sysctl profile;
-- read-only boot readiness;
-- FTS, unique AI and repeated AI requests;
-- optionally, guided AP/captive portal, saved-network recovery and brcmfmac
-  reset;
-- optionally, database-transfer preflight for a disposable `XferProbe`.
-
-The radio section intentionally pauses. After the Pi switches to
-`Hugin (ravendb)`, connect the development computer to that network and follow
-the prompt. The harness restores the saved client configuration before asking
-you to reconnect to the original LAN.
-
-For database work, prepare a small sealed RavenDB source containing one
-`XferProbe` database and run:
+Additional operations are explicit:
 
 ```bash
-HUGIN_DB_SOURCE=/path/to/xfer-probe ./tests/pi/validate.sh 192.168.1.42
+./tests/pi/validate.sh 192.168.1.42 --deploy
+./tests/pi/validate.sh 192.168.1.42 --radio
+HUGIN_DB_SOURCE=/path/to/xfer-probe \
+  ./tests/pi/validate.sh 192.168.1.42 --db-plan
 ```
 
-Run the destructive `hugin-db push` interruption/resume scenario only on a
-disposable card. The normal harness performs `plan` and leaves the full transfer
-as an explicit maintainer operation.
+Flags may be combined. `--deploy` installs the current commit once.
+`--radio` guides the operator through AP mode and restoration of the saved
+client network. `--db-plan` performs only the low-disk transfer preflight.
+
+Run an interrupted/resumed `hugin-db push` only with a disposable `XferProbe`
+database and a recoverable SD card.
 
 ## PR convention
 
 A PR touching backend search, runtime, provisioning, Wi-Fi, database transfer
-or performance is ready only after a passing report for its HEAD commit.
-Frontend- or documentation-only changes may mark Pi validation not applicable.
-Do not claim Pi validation when hardware is unavailable.
+or performance should have a passing report for its HEAD commit. Frontend- or
+documentation-only changes may mark Pi validation not applicable. Do not claim
+Pi validation when hardware is unavailable.

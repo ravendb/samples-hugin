@@ -38,6 +38,7 @@ query, one unique AI query, repeat the AI query, and check `free`, `swapon`,
 `df`, service logs, index freshness, and model residency.
 
 Before opening a PR, follow [Pre-PR Raspberry Pi validation](pi-validation.md).
-The local harness takes only the Pi's LAN IP and guides network-changing steps.
+The default harness takes only the Pi's LAN IP; deploy, radio and database
+checks are explicit options.
 The hosted and local non-hardware checks are documented in
 [Testing Hugin](testing.md).

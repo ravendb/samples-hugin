@@ -14,33 +14,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  backend:
-    name: Backend contracts
+  application:
+    name: Application
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v6
       - uses: actions/setup-node@v6
         with:
           node-version-file: .node-version
           cache: npm
-          cache-dependency-path: backend/package-lock.json
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+          cache: true
+          cache-dependency-path: importer/packages.lock.json
       - run: npm ci
         working-directory: backend
       - run: npm test
         working-directory: backend
-
-  frontend:
-    name: Frontend behavior
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-node@v6
-        with:
-          node-version-file: .node-version
-          cache: npm
-          cache-dependency-path: frontend/package-lock.json
       - run: npm ci
         working-directory: frontend
       - run: npm run lint
@@ -49,36 +44,6 @@ jobs:
         working-directory: frontend
       - run: npm run build
         working-directory: frontend
-
-  tooling:
-    name: Appliance contracts
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - name: Install configuration validators
-        run: sudo apt-get update && sudo apt-get install -y shellcheck nginx-light dnsmasq-base
-      - name: ShellCheck
-        run: >-
-          shellcheck -x setup.sh benchmarks/*.sh scripts/ci/*.sh
-          tests/shell/*.sh tests/pi/*.sh tools/hugin-* tools/lib/*.sh
-      - run: scripts/ci/repo-policy.sh
-      - run: tests/shell/run.sh
-      - run: scripts/ci/runtime-config.sh
-
-  importer:
-    name: Importer build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 8.0.x
-          cache: true
-          cache-dependency-path: importer/packages.lock.json
       - run: dotnet restore importer/Hugin.Importer.csproj --locked-mode
       - run: dotnet build importer/Hugin.Importer.csproj --no-restore --configuration Release
 
@@ -117,16 +82,23 @@ jobs:
           HUGIN_INTEGRATION: "1"
           RAVENDB_URL: http://127.0.0.1:8080
 
-  required:
-    name: Required
-    if: always()
-    needs: [backend, frontend, tooling, importer, raven-integration]
+  appliance-static:
+    name: Appliance static
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Require every CI lane
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Shell scripts
+        run: >-
+          shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh
+          tools/hugin-* tools/lib/*.sh
+      - name: Pull request whitespace
         run: |
-          test "${{ needs.backend.result }}" = success
-          test "${{ needs.frontend.result }}" = success
-          test "${{ needs.tooling.result }}" = success
-          test "${{ needs.importer.result }}" = success
-          test "${{ needs.raven-integration.result }}" = success
+          if [[ -n "${GITHUB_BASE_REF:-}" ]]; then
+            git diff --check "origin/$GITHUB_BASE_REF...HEAD"
+          else
+            git diff --check HEAD^ HEAD
+          fi

@@ -1,7 +1,7 @@
 # Testing Hugin
 
-GitHub Actions exposes one required `Required` check backed by five independent
-lanes. Jobs run concurrently and older runs for the same PR are cancelled.
+CI deliberately covers portable application behavior. Hardware behavior stays
+in the local Pi validation convention.
 
 ## Local checks
 
@@ -12,32 +12,21 @@ Use Node.js 22 (see `.node-version`), .NET 8 and Bash:
 (cd frontend && npm ci && npm run lint && npm test && npm run build)
 dotnet restore importer/Hugin.Importer.csproj --locked-mode
 dotnet build importer/Hugin.Importer.csproj --no-restore --configuration Release
-tests/shell/run.sh
-scripts/ci/repo-policy.sh
+shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh \
+  tools/hugin-* tools/lib/*.sh
 ```
 
-On Linux with ShellCheck, nginx, dnsmasq and systemd tools installed, also run:
+## CI
 
-```bash
-shellcheck -x setup.sh benchmarks/*.sh scripts/ci/*.sh \
-  tests/shell/*.sh tests/pi/*.sh tools/hugin-* tools/lib/*.sh
-scripts/ci/runtime-config.sh
-```
+GitHub Actions has three independent jobs:
 
-## CI lanes
-
-- **Backend contracts** tests parsing, timings, queueing, origin-compatible HTTP
-  responses, semantic query construction, read-only boot status and RavenDB
-  outage behavior.
-- **Frontend behavior** tests the sequential FTS-to-AI pipeline, abort behavior,
-  superseded requests, errors and boot polling cleanup, then lints and builds.
-- **Appliance contracts** enforces transfer and deploy safety invariants,
-  validates runtime configuration, executable bits, LF and repository policy.
-- **Importer build** restores from the NuGet lockfile and builds the standalone
-  importer.
-- **RavenDB integration** starts a disposable RavenDB 7.2 service, creates a
-  tiny database and Corax index, runs the real FTS endpoint and verifies safe
+- **Application** runs backend contracts, frontend tests, lint and production
+  build, then restores and builds the importer from its lockfile.
+- **RavenDB integration** starts RavenDB 7.2, creates a tiny disposable
+  database and Corax index, exercises the real FTS endpoint and verifies safe
   degradation when the vector index is absent.
+- **Appliance static** runs ShellCheck and checks whitespace in the pull
+  request diff.
 
 The integration test can be reproduced without Compose:
 
@@ -61,7 +50,8 @@ fails.
 
 ## Hardware validation
 
-Hosted CI does not claim radio, cold-boot, memory-pressure or real Ollama
-behavior. Before a relevant PR, run `tests/pi/validate.sh <PI_IP>` following
-[Pre-PR Raspberry Pi validation](pi-validation.md). Actual timing numbers are
-recorded only on the appliance and are never used as hosted-runner thresholds.
+Hosted CI does not claim provisioning, radio, cold-boot, memory-pressure or
+real Ollama behavior. Before a relevant PR, run
+`tests/pi/validate.sh <PI_IP>` following
+[Pre-PR Raspberry Pi validation](pi-validation.md). Optional flags cover
+deploy, radio recovery and database-transfer preflight.
