@@ -26,7 +26,7 @@ source_database_names() {
       const payload = JSON.parse(fs.readFileSync(0, "utf8"));
       for (const record of payload.Databases || []) {
         const name = record.Name || record.DatabaseName;
-        if (name) process.stdout.write(`${name}\n`);
+        if (name) process.stdout.write(name + "\n");
       }
     '
 }

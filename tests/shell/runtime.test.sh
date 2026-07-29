@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+assert_no_match() {
+  local status=0
+  grep "$@" || status=$?
+
+  if ((status == 0)); then
+    echo "Unexpected matching content: $*" >&2
+    return 1
+  fi
+
+  ((status == 1))
+}
+
 grep -qxF 'HUGIN_DB_NAME=HuginAI' runtime/etc/default/hugin
 grep -qxF 'HUGIN_EMB_TASK_IDENTIFIER=embedtaskhuginai' \
   runtime/etc/default/hugin
@@ -14,7 +26,7 @@ grep -qxF 'vm.swappiness=60' runtime/etc/sysctl.d/99-hugin.conf
 grep -qxF 'vm.vfs_cache_pressure=200' runtime/etc/sysctl.d/99-hugin.conf
 grep -qxF 'vm.min_free_kbytes=8192' runtime/etc/sysctl.d/99-hugin.conf
 
-! grep -Eq '^(Wants|Requires)=.*ravendb' \
+assert_no_match -Eq '^(Wants|Requires)=.*ravendb' \
   runtime/etc/systemd/system/hugin.service
 grep -qxF 'After=ollama.service' \
   runtime/etc/systemd/system/ravendb.service.d/hugin.conf
@@ -36,12 +48,13 @@ for payload in \
   grep -qF "$payload" setup.sh
 done
 
-! grep -Eq '(^|[[:space:]])rm[[:space:]].*\./\*' setup.sh
-! grep -qi 'license.json' setup.sh
+assert_no_match -Eq '(^|[[:space:]])rm[[:space:]].*\./\*' setup.sh
+assert_no_match -qi 'license.json' setup.sh
 grep -qF 'api/boot-status' setup.sh
-! grep -qF 'api/ready' setup.sh
+assert_no_match -qF 'api/ready' setup.sh
 grep -qF 'systemctl --no-block restart hugin-warmup.service' setup.sh
 grep -qF 'Raspberry Pi OS' install.txt
 grep -qF 'Bookworm 64-bit' install.txt
 grep -qF 'tools/hugin-db push' install.txt
-! grep -Eq 'armhf|ravendb_6\.0\.4|rsync -avz \./\*|license\.json' install.txt
+assert_no_match -Eq \
+  'armhf|ravendb_6\.0\.4|rsync -avz \./\*|license\.json' install.txt
