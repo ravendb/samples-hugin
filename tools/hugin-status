@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -uo pipefail
 printf 'Hugin appliance status\n\n'
-for service in hugin ravendb ollama hugin-warmup dnsmasq wpa_supplicant; do
+for service in hugin ravendb ollama hugin-warmup dnsmasq; do
   printf '%-18s %s\n' "$service" "$(systemctl is-active "$service" 2>/dev/null || true)"
 done
+printf '%-18s %s\n' "wpa_supplicant" \
+  "$(pgrep -x wpa_supplicant >/dev/null 2>&1 && echo running || echo stopped)"
 printf '\nNetwork\n'
 printf 'SSID: %s\n' "$(iwgetid -r 2>/dev/null || echo AP/offline)"
 ip -brief -4 address show dev wlan0 2>/dev/null || true

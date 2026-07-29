@@ -17,7 +17,6 @@ RUNTIME_TOOLS=(
   hugin-status
   hugin-warmup
   hugin-wifi
-  hugin-zram
 )
 
 for tool in "${RUNTIME_TOOLS[@]}"; do

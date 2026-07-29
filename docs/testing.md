@@ -12,8 +12,10 @@ Use Node.js 22 (see `.node-version`), .NET 8 and Bash:
 (cd frontend && npm ci && npm run lint && npm test && npm run build)
 dotnet restore importer/Hugin.Importer.csproj --locked-mode
 dotnet build importer/Hugin.Importer.csproj --no-restore --configuration Release
-shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh tools/install.sh \
+shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh tests/shell/*.sh \
   tools/hugin-* tools/lib/*.sh
+set -Eeuo pipefail
+for test in tests/shell/*.test.sh; do bash "$test"; done
 ```
 
 ## CI
@@ -25,8 +27,9 @@ GitHub Actions has three independent jobs:
 - **RavenDB integration** starts RavenDB 7.2, creates a tiny disposable
   database and Corax index, exercises the real FTS endpoint and verifies safe
   degradation when the vector index is absent.
-- **Appliance static** runs ShellCheck and checks whitespace in the pull
-  request diff.
+- **Appliance static** runs ShellCheck, exercises saved-network persistence
+  and the database-transfer preflight without hardware, then checks whitespace
+  in the pull request diff.
 
 The integration test can be reproduced without Compose:
 

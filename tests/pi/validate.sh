@@ -85,13 +85,35 @@ else
   fail "hugin-status"
 fi
 
-for service in hugin ravendb ollama; do
+for service in hugin ravendb ollama hugin-warmup \
+  systemd-zram-setup@zram0; do
   if remote "systemctl is-active --quiet '$service'"; then
     pass "$service active"
   else
     fail "$service inactive"
   fi
 done
+
+if remote "set -a
+  . /etc/default/hugin
+  [[ \"\$HUGIN_DB_NAME\" == HuginAI ]]
+  [[ \"\$HUGIN_EMB_TASK_IDENTIFIER\" == embedtaskhuginai ]]
+  [[ \"\$EMB_MODEL\" == snowflake-arctic-embed:s ]]"; then
+  pass "HuginAI runtime identity"
+else
+  fail "HuginAI runtime identity"
+fi
+
+if remote "set -e
+  [[ \$(cat /sys/block/zram0/disksize) -eq 805306368 ]]
+  [[ \$(sysctl -n vm.swappiness) -eq 60 ]]
+  [[ \$(sysctl -n vm.vfs_cache_pressure) -eq 200 ]]
+  [[ \$(sysctl -n vm.min_free_kbytes) -eq 8192 ]]
+  ! swapon --noheadings --show=NAME | grep -qv '^/dev/zram0$'"; then
+  pass "768 MiB zram profile with no SD swap"
+else
+  fail "zram, sysctl or SD swap policy"
+fi
 
 boot="$(curl --fail --silent --show-error --max-time 20 "http://$IP/api/boot-status")"
 if printf '%s' "$boot" | check_json 'j.ready===true'; then

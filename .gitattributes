@@ -13,3 +13,4 @@
 *.service text eol=lf
 *.sh text eol=lf
 tools/hugin-* text eol=lf
+runtime/etc/default/* text eol=lf

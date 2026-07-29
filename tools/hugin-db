@@ -3,7 +3,8 @@ set -Eeuo pipefail
 COMMAND="${1:-}"; shift || true
 TARGET="${1:-${HUGIN_PI:-}}"; shift || true
 SOURCE="${HUGIN_DB_SOURCE:-}"
-DB="${HUGIN_DB_NAME:-Hugin}"
+SOURCE_URL="${HUGIN_DB_SOURCE_URL:-http://127.0.0.1:8080}"
+DB="${HUGIN_DB_NAME:-HuginAI}"
 REUSE=""
 while [[ $# -gt 0 ]]; do
   case "$1" in --reuse) REUSE="$2"; shift 2 ;; *) echo "unknown option: $1" >&2; exit 2 ;; esac
@@ -14,22 +15,60 @@ done
 SYSTEM="$SOURCE/System"
 DATABASE="$SOURCE/Databases/$DB"
 [[ -d "$SYSTEM" && -d "$DATABASE" ]] || { echo "invalid source layout" >&2; exit 1; }
+TARGET_DATA=/var/lib/ravendb/data
 
 remote() { ssh -o ConnectTimeout=8 "$TARGET" "$@"; }
+source_database_names() {
+  curl --fail --silent --show-error --max-time 8 \
+    "$SOURCE_URL/databases?pageSize=1024" |
+    node -e '
+      const fs = require("fs");
+      const payload = JSON.parse(fs.readFileSync(0, "utf8"));
+      for (const record of payload.Databases || []) {
+        const name = record.Name || record.DatabaseName;
+        if (name) process.stdout.write(`${name}\n`);
+      }
+    '
+}
+require_single_source_database() {
+  local names
+  mapfile -t names < <(source_database_names)
+  [[ ${#names[@]} -eq 1 && "${names[0]}" == "$DB" ]] || {
+    printf 'source System registry must contain only %s; found: %s\n' \
+      "$DB" "${names[*]:-(none)}" >&2
+    return 1
+  }
+}
 transfer_failed() {
   echo "transfer failed; RavenDB remains stopped." >&2
-  echo "Resume with: hugin-db push $TARGET" >&2
+  printf 'Resume with: HUGIN_DB_SOURCE=%q HUGIN_DB_NAME=%q hugin-db push %q' \
+    "$SOURCE" "$DB" "$TARGET" >&2
+  [[ -n "$REUSE" ]] && printf ' --reuse %q' "$REUSE" >&2
+  printf '\n' >&2
 }
 case "$COMMAND" in
   plan)
     echo "Source: $SOURCE"
+    echo "Source RavenDB: $SOURCE_URL"
     mapfile -t databases < <(find "$SOURCE/Databases" -mindepth 1 -maxdepth 1 -type d -printf '%f\n')
     printf 'Databases: %s\n' "${databases[*]}"
-    [[ ${#databases[@]} -eq 1 ]] || { echo "source System must describe exactly one database" >&2; exit 1; }
+    [[ ${#databases[@]} -eq 1 && "${databases[0]}" == "$DB" ]] || {
+      echo "source artifact must contain only Databases/$DB" >&2
+      exit 1
+    }
+    require_single_source_database
+    curl --fail --silent --show-error --max-time 8 \
+      "$SOURCE_URL/build/version"
+    echo
     du -sh "$SYSTEM" "$DATABASE"
-    remote "ravendb --version 2>/dev/null || true; df -h /var/lib/ravendb; pgrep -af rsync || true; systemctl is-active ravendb hugin || true"
+    remote "ravendb --version 2>/dev/null || true; df -h $TARGET_DATA; pgrep -af rsync || true; systemctl is-active ravendb hugin || true; systemctl show ravendb -p TimeoutStopUSec"
     ;;
   push)
+    if curl --fail --silent --max-time 3 \
+      "$SOURCE_URL/build/version" >/dev/null 2>&1; then
+      echo "source RavenDB is still running; stop it cleanly before push" >&2
+      exit 1
+    fi
     remote "set -e
       if sudo test -d /run/hugin/db-transfer.lock; then
         if systemctl is-active --quiet hugin || systemctl is-active --quiet ravendb; then
@@ -46,19 +85,23 @@ case "$COMMAND" in
     trap transfer_failed ERR
     rsync -aHAX --numeric-ids --partial --info=progress2 --delete \
       --rsync-path="sudo rsync" \
-      "$SYSTEM/" "$TARGET:/var/lib/ravendb/System/"
+      "$SYSTEM/" "$TARGET:$TARGET_DATA/System/"
     db_args=(-aHAX --numeric-ids --partial --inplace --info=progress2 --delete --rsync-path="sudo rsync")
     [[ -n "$REUSE" ]] && db_args+=("--compare-dest=$REUSE")
-    rsync "${db_args[@]}" "$DATABASE/" "$TARGET:/var/lib/ravendb/Databases/$DB/"
-    remote "sudo chown -R ravendb:ravendb /var/lib/ravendb;
+    rsync "${db_args[@]}" "$DATABASE/" "$TARGET:$TARGET_DATA/Databases/$DB/"
+    remote "sudo chown -R ravendb:ravendb $TARGET_DATA;
       sudo systemctl unmask --runtime ravendb hugin;
       sudo systemctl start ravendb hugin;
       sudo rmdir /run/hugin/db-transfer.lock"
     ;;
   verify)
     remote "set -e
-      test \"\$(stat -c %U /var/lib/ravendb/System)\" = ravendb
-      find /var/lib/ravendb/System /var/lib/ravendb/Databases/$DB -type f \\( -name '*.voron' -o -name '*.buffers' \\) -print0 | xargs -0 sha256sum
+      test \"\$(stat -c %U $TARGET_DATA/System)\" = ravendb
+      find $TARGET_DATA/System $TARGET_DATA/Databases/$DB -type f \\( -name '*.voron' -o -name '*.buffers' \\) -print0 | xargs -0 sha256sum
+      curl -fsS --max-time 30 http://127.0.0.1:8080/databases/$DB/stats |
+        node -e 'let s=\"\";process.stdin.on(\"data\",c=>s+=c).on(\"end\",()=>{const j=JSON.parse(s);const required=[\"QuestionsSearch\",\"QuestionsTags\",\"Questions/ByVector\"];const indexes=j.Indexes||j.indexes||[];const byName=new Map(indexes.map(i=>[i.Name||i.name,i]));const bad=required.filter(n=>!byName.has(n)||(byName.get(n).IsStale??byName.get(n).isStale));if(bad.length){console.error(\"missing or stale indexes: \"+bad.join(\", \"));process.exit(1)}console.log(\"documents=\"+(j.CountOfDocuments??j.countOfDocuments??\"unknown\"))})'
+      curl -fsS --max-time 30 http://127.0.0.1:8080/databases/$DB/tasks |
+        node -e 'let s=\"\";process.stdin.on(\"data\",c=>s+=c).on(\"end\",()=>{const j=JSON.parse(s);const task=(j.OngoingTasks||[]).find(t=>t.TaskType===\"EmbeddingsGeneration\");if(!task||task.Configuration?.Identifier!==\"embedtaskhuginai\"||task.TaskState!==\"Enabled\"){console.error(\"HuginAI embedding task is missing, disabled, or has the wrong identifier\");process.exit(1)}console.log(\"EGT identifier=\"+task.Configuration.Identifier+\" state=\"+task.TaskState+\" etag=\"+(task.Configuration.LastProcessedEtag??\"unknown\"))})'
       curl -fsS --max-time 15 http://127.0.0.1:3030/api/boot-status
       curl -fsS --max-time 30 'http://127.0.0.1:3030/api/search?q=linux&pageSize=1'"
     ;;

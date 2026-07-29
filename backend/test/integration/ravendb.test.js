@@ -23,14 +23,23 @@ class User {
 class QuestionsSearch extends ravendb.AbstractJavaScriptIndexCreationTask {
   constructor() {
     super();
-    this.map("Questions", (question) => ({
-      Query: [question.Title, question.Tags, question.Body],
-      Community: question.Community,
-      Tags: question.Tags,
-      CreationDate: question.CreationDate,
-      ViewCount: question.ViewCount,
-      Score: question.Score,
-    }));
+    this.map("Questions", (question) => {
+      const tokens = [];
+      for (const entry of (question.Tags || [])) {
+        for (const part of String(entry).split("|")) {
+          const tag = (part || "").trim();
+          if (tag) tokens.push(tag);
+        }
+      }
+      return {
+        Query: [question.Title].concat(tokens),
+        Community: question.Community,
+        Tags: tokens,
+        CreationDate: question.CreationDate,
+        ViewCount: question.ViewCount,
+        Score: question.Score,
+      };
+    });
     this.index("Query", "Search");
     this.searchEngineType = "Corax";
   }
@@ -80,7 +89,7 @@ test("real RavenDB executes the FTS endpoint and degrades missing AI", {
     await session.store(new Question({
       Title: "Recover a wireless interface",
       Body: "Use ip link and inspect brcmfmac.",
-      Tags: ["linux", "wifi"],
+      Tags: ["|linux|wifi|"],
       Community: "unix",
       CreationDate: "2026-01-02T00:00:00.000Z",
       ViewCount: 10,

@@ -77,7 +77,7 @@ test("AI query uses explicit vector task identifier", () => {
   assert.equal(session.calls[0][1].indexName, "Questions/ByVector");
   const vector = session.calls.find(([name]) => name === "vectorSearch");
   const value = { byText: (...args) => args };
-  assert.deepEqual(vector[2](value), ["wifi", "questionembeddings"]);
+  assert.deepEqual(vector[2](value), ["wifi", "embedtaskhuginai"]);
 });
 
 test("cache hits never expose stale RavenDB scopes", () => {

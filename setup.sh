@@ -17,20 +17,24 @@ done
 if (( ! OFFLINE )); then
   apt-get update
   apt-get install -y ca-certificates curl dhcpcd dnsmasq iw nginx openssl \
-    rfkill wpasupplicant
+    python3 rfkill systemd-zram-generator wpasupplicant
   node_major="$(node -p "process.versions.node.split('.')[0]" 2>/dev/null || echo 0)"
   if (( node_major < 22 )); then
     curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
     apt-get install -y nodejs
   fi
 else
-  for command in curl dhcpcd dnsmasq iw nginx node npm openssl rfkill \
+  for command in curl dhcpcd dnsmasq iw nginx node npm openssl python3 rfkill \
     wpa_passphrase wpa_supplicant; do
     command -v "$command" >/dev/null || {
       echo "missing dependency in offline mode: $command" >&2
       exit 1
     }
   done
+  [[ -x /usr/lib/systemd/system-generators/zram-generator ]] || {
+    echo "missing dependency in offline mode: systemd-zram-generator" >&2
+    exit 1
+  }
 fi
 
 if [[ -n "${RAVENDB_DEB:-}" ]]; then
@@ -88,13 +92,20 @@ install -m 0644 \
 install -m 0644 \
   "$ROOT/runtime/etc/sysctl.d/99-hugin.conf" \
   /etc/sysctl.d/99-hugin.conf
+install -d -m 0755 /etc/systemd
+install -m 0644 "$ROOT/runtime/etc/systemd/zram-generator.conf" \
+  /etc/systemd/zram-generator.conf
+install -d -m 0755 /etc/default
+install -m 0644 "$ROOT/runtime/etc/default/hugin" /etc/default/hugin
 install -m 0644 \
   "$ROOT/runtime/etc/systemd/system/"*.service \
   /etc/systemd/system/
 install -d -m 0755 /etc/systemd/system/ollama.service.d
-install -m 0644 \
-  "$ROOT/runtime/etc/systemd/system/ollama.service.d/hugin.conf" \
-  /etc/systemd/system/ollama.service.d/hugin.conf
+install -m 0644 "$ROOT/runtime/etc/systemd/system/ollama.service.d/"*.conf \
+  /etc/systemd/system/ollama.service.d/
+install -d -m 0755 /etc/systemd/system/ravendb.service.d
+install -m 0644 "$ROOT/runtime/etc/systemd/system/ravendb.service.d/"*.conf \
+  /etc/systemd/system/ravendb.service.d/
 if [[ ! -e /etc/wpa_supplicant/wpa_supplicant.conf ]]; then
   install -m 0600 \
     "$ROOT/runtime/etc/wpa_supplicant/wpa_supplicant.conf" \
@@ -130,15 +141,16 @@ systemctl disable --now dphys-swapfile.service 2>/dev/null || true
 sysctl --system
 systemctl daemon-reload
 systemctl enable dhcpcd.service nginx.service ravendb.service \
-  ollama.service hugin-boot.service hugin.service hugin-zram.service \
+  ollama.service hugin-boot.service hugin.service \
   hugin-warmup.service
 
 nginx -t
-systemctl restart nginx.service hugin-zram.service ollama.service \
+systemctl restart systemd-zram-setup@zram0.service
+systemctl restart nginx.service ollama.service \
   ravendb.service hugin.service hugin-warmup.service
 
 ready=0
-for _ in $(seq 1 60); do
+for _ in $(seq 1 420); do
   if curl -fsS --max-time 3 http://127.0.0.1:3030/api/ready >/dev/null; then
     ready=1
     break

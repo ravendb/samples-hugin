@@ -7,28 +7,46 @@ const { EMB_TASK_IDENTIFIER } = require("../db-config");
 const INDEX_DEFINITIONS = [
   {
     name: "QuestionsSearch",
-    version: 2,
+    version: 3,
     purpose: "Full-text search and sorting",
-    code: `map("Questions", q => ({
-  Query: [q.Title, q.Tags, q.Body],
-  Community: q.Community,
-  Tags: q.Tags,
-  CreationDate: q.CreationDate,
-  ViewCount: q.ViewCount,
-  Score: q.Score
-}))
+    code: `map("Questions", q => {
+  const tokens = [];
+  for (const entry of (q.Tags || [])) {
+    for (const part of String(entry).split("|")) {
+      const tag = (part || "").trim();
+      if (tag) tokens.push(tag);
+    }
+  }
+  return {
+    Query: [q.Title].concat(tokens),
+    Community: q.Community,
+    Tags: tokens,
+    CreationDate: q.CreationDate,
+    ViewCount: q.ViewCount,
+    Score: q.Score
+  };
+})
 // Query is Search; engine is Corax`,
   },
   {
     name: "QuestionsTags",
-    version: 2,
+    version: 3,
     purpose: "Related tag counts",
-    code: `map("Questions", q => q.Tags.map(tag => ({
-  Tag: tag,
-  Community: q.Community,
-  Count: 1
-})))
-// Reduce by Tag + Community and sum Count`,
+    code: `map("Questions", q => {
+  const tokens = [];
+  for (const entry of (q.Tags || [])) {
+    for (const part of String(entry).split("|")) {
+      const tag = (part || "").trim();
+      if (tag) tokens.push(tag);
+    }
+  }
+  return tokens.map(tag => ({
+    Tag: tag,
+    Count: 1,
+    Communities: { [q.Community]: 1 }
+  }));
+})
+// Reduce by Tag, sum Count, and merge Communities`,
   },
   {
     name: "Questions/ByVector",

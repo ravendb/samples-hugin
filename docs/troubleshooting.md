@@ -9,10 +9,13 @@ mode changes in the Hugin commands and retain their bounded timeouts.
 
 ## RavenDB startup storm after transfer
 
-**Checks:** RavenDB logs and the contents of `System`. **Cause:** copying a
-live or partially updated `System` directory. **Recovery:** stop RavenDB,
-restore `System` from the sealed artifact without `--inplace`, then start it.
-**Prevention:** always use `hugin-db`.
+**Checks:** RavenDB logs, the source `/databases` response and the contents of
+`System`. **Cause:** copying a live or partially updated `System` directory,
+or shipping a cluster registry that still names development databases. The
+Pi then tries to create local stubs for every registered database. **Recovery:**
+stop RavenDB, restore `System` from a clean single-database artifact without
+`--inplace`, then start it. **Prevention:** run `hugin-db plan` against the
+running source before its clean shutdown.
 
 ## ENOSPC or interrupted rsync
 
@@ -30,7 +33,7 @@ use `--inplace` for `System`; shut down cleanly.
 
 **Checks:** task identifier, task state and index definition. **Cause:** EGT
 identifier mismatch. **Recovery:** stop the task and restore the validated
-database. **Prevention:** use the explicit `questionembeddings` identifier.
+database. **Prevention:** use the explicit `embedtaskhuginai` identifier.
 
 ## Model eviction or kswapd pressure
 
@@ -41,5 +44,7 @@ and Ollama keep-alive.
 ## Captive portal, stale indexes or broken tags
 
 Confirm AP address `10.1.1.1`, dnsmasq, required index freshness, and whether
-tags are arrays or pipe-delimited strings. Re-enter AP mode, rebuild indexes
-off-Pi, or re-import with normalized tags respectively.
+tags are arrays containing pipe-delimited strings. Re-enter AP mode or rebuild
+the normalized `QuestionsSearch` and `QuestionsTags` indexes off-Pi. The
+frontend keeps tag splitting only as compatibility defense; re-importing the
+corpus is not required.

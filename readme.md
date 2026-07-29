@@ -1,6 +1,6 @@
 # Hugin - Offline knowledge base appliance using RavenDB
 
-Hugin is an offline knowledge base appliance powered by RavenDB, designed to run on a Raspberry Pi.
+Hugin is an offline knowledge base appliance powered by RavenDB, designed to run on a Raspberry Pi Zero 2 W.
 It is intended for scenarios where access to information is needed without an internet connection.
 Simply plug it into power for immediate usability.
 
@@ -19,7 +19,7 @@ Using Hugin, you have offline access to the following Stack Exchange communities
 * raspberrypi.stackexchange.com
 * unix.stackexchange.com
 * serverfault.com
-* userfault.com
+* superuser.com
 
 The dataset includes all data up and including Dec 2023 and was taken from: https://archive.org/download/stackexchange
 
@@ -28,9 +28,9 @@ who posted and answered all those questions.
 
 ## How this works?
 
-The appliance runs on Raspberry Pi (typically Zero W, but it can be any modern one).
-It uses Raspberry Pi OS (Legacy, 32 bits) Lite as the base image and includes the
-RavenDB server, the datasets, and the application for viewing, searching, and using it.
+The appliance runs on Raspberry Pi Zero 2 W with Raspberry Pi OS Bookworm
+64-bit Lite. It includes RavenDB, a sealed HuginAI database and the application
+for full-text and optional semantic search.
 
 The appliance is running a RavenDB Server and hosts all the data locally for offline  
 access as well as the web application to search and view the data.
@@ -41,7 +41,7 @@ which is the landing page of the Hugin web application.
 From there you have immediate access to the data and full functionality.
 
 
-### Connecting directly via SSHA
+### Connecting directly via SSH
 
 You can also explore the appliance directly using SSH with the following command:
 

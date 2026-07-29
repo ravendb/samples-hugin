@@ -93,8 +93,15 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y shellcheck
       - name: Shell scripts
         run: >-
-          shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh tools/install.sh
+          shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh
+          tests/shell/*.sh tools/install.sh
           tools/hugin-* tools/lib/*.sh
+      - name: Shell behavior
+        run: |
+          set -Eeuo pipefail
+          for test in tests/shell/*.test.sh; do
+            bash "$test"
+          done
       - name: Pull request whitespace
         run: |
           if [[ -n "${GITHUB_BASE_REF:-}" ]]; then

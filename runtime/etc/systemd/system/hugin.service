@@ -1,7 +1,6 @@
 [Unit]
 Description=Hugin application
-After=network.target ravendb.service ollama.service
-Wants=ravendb.service ollama.service
+After=network.target
 
 [Service]
 Type=simple

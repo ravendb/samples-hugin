@@ -145,7 +145,7 @@ test("AI mode uses the vector index and explicit task identifier", async () => {
     call[0] === "query" && call[1].indexName === "Questions/ByVector"));
   assert.ok(store.calls.some((call) =>
     call[0] === "vectorSearch" &&
-    call[2][1] === "questionembeddings"));
+    call[2][1] === "embedtaskhuginai"));
 });
 
 test("RavenDB transport failures map to a stable 503 contract", async () => {

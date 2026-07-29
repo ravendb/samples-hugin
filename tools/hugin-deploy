@@ -38,7 +38,6 @@ items=(
   tools/hugin-wifi
   tools/hugin-reset-radio
   tools/hugin-warmup
-  tools/hugin-zram
 )
 tar -C "$ROOT" -czf "$ARCHIVE" "${items[@]}"
 scp -o ConnectTimeout=5 "$ARCHIVE" "$TARGET:/tmp/hugin-deploy.tar.gz"
@@ -55,14 +54,21 @@ ssh "$TARGET" "set -Eeuo pipefail
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/dnsmasq.d/hugin.conf /etc/dnsmasq.d/hugin.conf
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/dhcpcd.conf /etc/dhcpcd.conf
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/sysctl.d/99-hugin.conf /etc/sysctl.d/99-hugin.conf
+    sudo install -d /etc/systemd
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/zram-generator.conf /etc/systemd/zram-generator.conf
+    sudo install -d /etc/default
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/default/hugin /etc/default/hugin
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/*.service /etc/systemd/system/
     sudo install -d /etc/systemd/system/ollama.service.d
-    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/ollama.service.d/hugin.conf /etc/systemd/system/ollama.service.d/hugin.conf
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/ollama.service.d/*.conf /etc/systemd/system/ollama.service.d/
+    sudo install -d /etc/systemd/system/ravendb.service.d
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/ravendb.service.d/*.conf /etc/systemd/system/ravendb.service.d/
     sudo /tmp/hugin-deploy/tools/install.sh
     sudo sysctl --system
     sudo systemctl daemon-reload
     sudo nginx -t
     sudo systemctl restart nginx
+    sudo systemctl restart ollama
   fi
   sudo install -d -o hugin -g hugin -m 0755 /usr/lib/hugin/backend /usr/lib/hugin/frontend
   sudo cp -a /tmp/hugin-deploy/backend/. /usr/lib/hugin/backend/
@@ -70,8 +76,14 @@ ssh "$TARGET" "set -Eeuo pipefail
   sudo chown -R hugin:hugin /usr/lib/hugin
   sudo -u hugin npm ci --omit=dev --prefix /usr/lib/hugin/backend
   sudo systemctl restart hugin
+  if [[ $SYSTEM -eq 1 ]]; then
+    sudo rm -f /run/hugin/warmup.done
+    sudo systemctl restart hugin-warmup
+  fi
   ready=0
-  for i in \$(seq 1 30); do
+  ready_attempts=30
+  [[ $SYSTEM -eq 1 ]] && ready_attempts=420
+  for i in \$(seq 1 \$ready_attempts); do
     if curl -fsS --max-time 3 http://127.0.0.1:3030/api/ready; then ready=1; break; fi
     sleep 1
   done

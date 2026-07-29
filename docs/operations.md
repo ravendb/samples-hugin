@@ -42,7 +42,11 @@ them. The task identifier must match `HUGIN_EMB_TASK_IDENTIFIER`.
 
 Run `hugin-db plan TARGET`, then `push`, then `verify`. `System` is transferred
 without `--inplace`; the database may use `--inplace` only while RavenDB is
-stopped. Keep the sealed source artifact on the development machine.
+stopped. Run `plan` while the source RavenDB is available so the tool can
+confirm that its `System` registry contains exactly one database (`HuginAI`),
+then stop the source cleanly before `push`. Set `HUGIN_DB_SOURCE_URL` when the
+source does not listen on `http://127.0.0.1:8080`. Keep the sealed source
+artifact on the development machine.
 
 ## Smoke
 
