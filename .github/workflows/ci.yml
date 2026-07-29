@@ -93,7 +93,7 @@ jobs:
       - run: sudo apt-get update && sudo apt-get install -y shellcheck
       - name: Shell scripts
         run: >-
-          shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh
+          shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh tools/install.sh
           tools/hugin-* tools/lib/*.sh
       - name: Pull request whitespace
         run: |

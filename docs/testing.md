@@ -12,7 +12,7 @@ Use Node.js 22 (see `.node-version`), .NET 8 and Bash:
 (cd frontend && npm ci && npm run lint && npm test && npm run build)
 dotnet restore importer/Hugin.Importer.csproj --locked-mode
 dotnet build importer/Hugin.Importer.csproj --no-restore --configuration Release
-shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh \
+shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh tools/install.sh \
   tools/hugin-* tools/lib/*.sh
 ```
 

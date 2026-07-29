@@ -28,7 +28,18 @@ items=(
   tools/hugin-clients
   tools/hugin-status
 )
-(( SYSTEM )) && items+=(runtime setup.sh tools/lib tools/hugin-ap tools/hugin-boot tools/hugin-wifi tools/hugin-reset-radio tools/hugin-warmup tools/hugin-zram)
+(( SYSTEM )) && items+=(
+  runtime
+  setup.sh
+  tools/install.sh
+  tools/lib
+  tools/hugin-ap
+  tools/hugin-boot
+  tools/hugin-wifi
+  tools/hugin-reset-radio
+  tools/hugin-warmup
+  tools/hugin-zram
+)
 tar -C "$ROOT" -czf "$ARCHIVE" "${items[@]}"
 scp -o ConnectTimeout=5 "$ARCHIVE" "$TARGET:/tmp/hugin-deploy.tar.gz"
 # SYSTEM intentionally expands locally before the remote shell receives it.
@@ -40,17 +51,18 @@ ssh "$TARGET" "set -Eeuo pipefail
   if [[ $SYSTEM -eq 1 ]]; then
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/nginx/sites-available/hugin /etc/nginx/sites-available/hugin
     sudo ln -sfn /etc/nginx/sites-available/hugin /etc/nginx/sites-enabled/hugin
+    sudo rm -f /etc/nginx/sites-enabled/default
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/dnsmasq.d/hugin.conf /etc/dnsmasq.d/hugin.conf
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/dhcpcd.conf /etc/dhcpcd.conf
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/sysctl.d/99-hugin.conf /etc/sysctl.d/99-hugin.conf
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/*.service /etc/systemd/system/
     sudo install -d /etc/systemd/system/ollama.service.d
     sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/ollama.service.d/hugin.conf /etc/systemd/system/ollama.service.d/hugin.conf
-    sudo install -m 0755 /tmp/hugin-deploy/tools/hugin-* /usr/local/sbin/
-    sudo install -d /usr/local/lib/hugin
-    sudo install -m 0644 /tmp/hugin-deploy/tools/lib/wifi.sh /usr/local/lib/hugin/wifi.sh
+    sudo /tmp/hugin-deploy/tools/install.sh
     sudo sysctl --system
     sudo systemctl daemon-reload
     sudo nginx -t
+    sudo systemctl restart nginx
   fi
   sudo install -d -o hugin -g hugin -m 0755 /usr/lib/hugin/backend /usr/lib/hugin/frontend
   sudo cp -a /tmp/hugin-deploy/backend/. /usr/lib/hugin/backend/

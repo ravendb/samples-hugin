@@ -16,8 +16,9 @@ the Pi address in the report.
 
 1. Flash Raspberry Pi OS Bookworm 64-bit or restore a recoverable development
    image.
-2. Provision Hugin with `sudo ./setup.sh`, or let the harness deploy the
-   checked-out commit with `--deploy`.
+2. Provision Hugin with the RavenDB arm64 package as described in
+   [Hugin operations](operations.md), or let the harness update an already
+   provisioned appliance with `--deploy`.
 3. Install a sealed Hugin database containing the required indexes and
    embedding-generation task. Keep the source artifact on the development
    computer rather than storing a second full copy on the SD card.

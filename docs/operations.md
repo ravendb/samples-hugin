@@ -5,9 +5,22 @@ Compose development stack.
 
 ## Provision and update
 
-Build the frontend, copy the repository to a Bookworm 64-bit Pi, then run
-`sudo ./setup.sh`. The script is idempotent, keeps licenses and databases
-outside the repository, disables SD-card swap, and enables 768 MiB zram.
+Build the frontend and provide a Bookworm arm64 RavenDB package plus an
+installed Ollama binary/model, then run:
+
+```bash
+sudo RAVENDB_DEB=/path/to/ravendb-arm64.deb ./setup.sh
+```
+
+If RavenDB and all OS dependencies are already installed, use
+`sudo ./setup.sh --offline`. Provisioning installs the application, runtime
+tools, dynamic dhcpcd client/AP configuration, captive DNS/nginx, boot-time
+Wi-Fi recovery, service units and the 768 MiB zram profile. It keeps licenses,
+models and databases outside the repository and never creates a second
+database copy on the SD card.
+
+Reboot after initial provisioning. `hugin-boot.service` then tries the saved
+client configuration and falls back to the `Hugin (ravendb)` AP.
 
 Deploy application-only changes with `hugin-deploy user@pi`. Add `--system`
 only when reviewed units or configuration changed. Run `hugin-status` and

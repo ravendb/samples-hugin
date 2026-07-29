@@ -3,10 +3,14 @@ set -Eeuo pipefail
 
 : "${HUGIN_WPA_CONF:=/etc/wpa_supplicant/wpa_supplicant.conf}"
 : "${HUGIN_CLIENT_WPA_CONF:=/var/lib/hugin/wpa-client.conf}"
-: "${HUGIN_WIFI_COUNTRY:=00}"
+: "${HUGIN_DHCPCD_CONF:=/etc/dhcpcd.conf}"
+: "${HUGIN_WIFI_COUNTRY:=PL}"
 : "${HUGIN_AP_SSID:=Hugin (ravendb)}"
 : "${HUGIN_AP_CIDR:=10.1.1.1/24}"
 : "${HUGIN_WIFI_TIMEOUT:=15}"
+
+WIFI_MARKER_BEGIN="# >>> hugin-mode wlan0 (managed) >>>"
+WIFI_MARKER_END="# <<< hugin-mode wlan0 (managed) <<<"
 
 wifi_require_root() {
   [[ "$(id -u)" -eq 0 ]] || {
@@ -46,6 +50,44 @@ wifi_write_client() {
   } >"$tmp"
   install -m 0600 "$tmp" "$HUGIN_WPA_CONF"
   rm -f "$tmp" "$network"
+}
+
+wifi_strip_dhcpcd_mode() {
+  if grep -qF "$WIFI_MARKER_BEGIN" "$HUGIN_DHCPCD_CONF" 2>/dev/null; then
+    sed -i \
+      "/^${WIFI_MARKER_BEGIN}\$/,/^${WIFI_MARKER_END}\$/d" \
+      "$HUGIN_DHCPCD_CONF"
+  fi
+  # Remove the unmarked static wlan0 block used by pre-HuginV2 images.
+  if grep -qE '^interface wlan0' "$HUGIN_DHCPCD_CONF" 2>/dev/null &&
+    grep -qF "static ip_address=$HUGIN_AP_CIDR" "$HUGIN_DHCPCD_CONF"; then
+    sed -i \
+      "/^interface wlan0\$/,/^\(interface \|\$\)/{/^interface wlan0\$/d; /^static ip_address=/d; /^env wpa_supplicant_conf=/d;}" \
+      "$HUGIN_DHCPCD_CONF"
+  fi
+}
+
+wifi_write_dhcpcd_ap() {
+  wifi_strip_dhcpcd_mode
+  cat >>"$HUGIN_DHCPCD_CONF" <<EOF
+
+${WIFI_MARKER_BEGIN}
+env wpa_supplicant_conf=${HUGIN_WPA_CONF}
+interface wlan0
+static ip_address=${HUGIN_AP_CIDR}
+nohook lookup-hostname
+${WIFI_MARKER_END}
+EOF
+}
+
+wifi_write_dhcpcd_client() {
+  wifi_strip_dhcpcd_mode
+  cat >>"$HUGIN_DHCPCD_CONF" <<EOF
+
+${WIFI_MARKER_BEGIN}
+env wpa_supplicant_conf=${HUGIN_WPA_CONF}
+${WIFI_MARKER_END}
+EOF
 }
 
 wifi_teardown() {
@@ -90,6 +132,7 @@ wifi_try_saved_client() {
   if [[ -f "$HUGIN_CLIENT_WPA_CONF" ]]; then
     install -m 0600 "$HUGIN_CLIENT_WPA_CONF" "$HUGIN_WPA_CONF"
   fi
+  wifi_write_dhcpcd_client
   wifi_teardown
   wifi_spawn_supplicant
   timeout --kill-after=2s 5s systemctl start dhcpcd.service >/dev/null 2>&1 || true
@@ -104,6 +147,7 @@ wifi_apply_client() {
 
 wifi_apply_ap() {
   wifi_write_ap
+  wifi_write_dhcpcd_ap
   wifi_teardown
   wifi_spawn_supplicant
   ip address add "$HUGIN_AP_CIDR" dev wlan0 2>/dev/null || true
