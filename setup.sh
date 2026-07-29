@@ -147,17 +147,23 @@ systemctl enable dhcpcd.service nginx.service ravendb.service \
 nginx -t
 systemctl restart systemd-zram-setup@zram0.service
 systemctl restart nginx.service ollama.service \
-  ravendb.service hugin.service hugin-warmup.service
+  ravendb.service hugin.service
+rm -f /run/hugin/warmup.done
+systemctl --no-block restart hugin-warmup.service
 
-ready=0
-for _ in $(seq 1 420); do
-  if curl -fsS --max-time 3 http://127.0.0.1:3030/api/ready >/dev/null; then
-    ready=1
+reachable=0
+for _ in $(seq 1 60); do
+  if curl -fsS --max-time 3 \
+    http://127.0.0.1:3030/api/boot-status >/dev/null; then
+    reachable=1
     break
   fi
   sleep 1
 done
-[[ "$ready" -eq 1 ]] || { echo "Hugin readiness check failed" >&2; exit 1; }
+[[ "$reachable" -eq 1 ]] || {
+  echo "Hugin boot-status endpoint is unreachable" >&2
+  exit 1
+}
 
 echo "Hugin provisioned. Reboot to activate client-to-AP boot recovery."
-echo "No RavenDB license or database was copied."
+echo "No RavenDB license or database was copied; readiness may stay degraded."

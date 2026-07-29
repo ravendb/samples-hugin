@@ -17,7 +17,9 @@ If RavenDB and all OS dependencies are already installed, use
 tools, dynamic dhcpcd client/AP configuration, captive DNS/nginx, boot-time
 Wi-Fi recovery, service units and the 768 MiB zram profile. It keeps licenses,
 models and databases outside the repository and never creates a second
-database copy on the SD card.
+database copy on the SD card. A fresh installation only requires the
+read-only `/api/boot-status` endpoint to become reachable; full readiness is
+expected only after the sealed database has been transferred.
 
 Reboot after initial provisioning. `hugin-boot.service` then tries the saved
 client configuration and falls back to the `Hugin (ravendb)` AP.

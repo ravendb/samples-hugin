@@ -38,3 +38,10 @@ done
 
 ! grep -Eq '(^|[[:space:]])rm[[:space:]].*\./\*' setup.sh
 ! grep -qi 'license.json' setup.sh
+grep -qF 'api/boot-status' setup.sh
+! grep -qF 'api/ready' setup.sh
+grep -qF 'systemctl --no-block restart hugin-warmup.service' setup.sh
+grep -qF 'Raspberry Pi OS' install.txt
+grep -qF 'Bookworm 64-bit' install.txt
+grep -qF 'tools/hugin-db push' install.txt
+! grep -Eq 'armhf|ravendb_6\.0\.4|rsync -avz \./\*|license\.json' install.txt

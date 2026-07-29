@@ -92,7 +92,9 @@ case "$COMMAND" in
     remote "sudo chown -R ravendb:ravendb $TARGET_DATA;
       sudo systemctl unmask --runtime ravendb hugin;
       sudo systemctl start ravendb hugin;
-      sudo rmdir /run/hugin/db-transfer.lock"
+      sudo rmdir /run/hugin/db-transfer.lock;
+      sudo rm -f /run/hugin/warmup.done;
+      sudo systemctl --no-block restart hugin-warmup"
     ;;
   verify)
     remote "set -e
@@ -102,7 +104,16 @@ case "$COMMAND" in
         node -e 'let s=\"\";process.stdin.on(\"data\",c=>s+=c).on(\"end\",()=>{const j=JSON.parse(s);const required=[\"QuestionsSearch\",\"QuestionsTags\",\"Questions/ByVector\"];const indexes=j.Indexes||j.indexes||[];const byName=new Map(indexes.map(i=>[i.Name||i.name,i]));const bad=required.filter(n=>!byName.has(n)||(byName.get(n).IsStale??byName.get(n).isStale));if(bad.length){console.error(\"missing or stale indexes: \"+bad.join(\", \"));process.exit(1)}console.log(\"documents=\"+(j.CountOfDocuments??j.countOfDocuments??\"unknown\"))})'
       curl -fsS --max-time 30 http://127.0.0.1:8080/databases/$DB/tasks |
         node -e 'let s=\"\";process.stdin.on(\"data\",c=>s+=c).on(\"end\",()=>{const j=JSON.parse(s);const task=(j.OngoingTasks||[]).find(t=>t.TaskType===\"EmbeddingsGeneration\");if(!task||task.Configuration?.Identifier!==\"embedtaskhuginai\"||task.TaskState!==\"Enabled\"){console.error(\"HuginAI embedding task is missing, disabled, or has the wrong identifier\");process.exit(1)}console.log(\"EGT identifier=\"+task.Configuration.Identifier+\" state=\"+task.TaskState+\" etag=\"+(task.Configuration.LastProcessedEtag??\"unknown\"))})'
-      curl -fsS --max-time 15 http://127.0.0.1:3030/api/boot-status
+      ready=0
+      for i in \$(seq 1 420); do
+        if curl -fsS --max-time 15 http://127.0.0.1:3030/api/boot-status |
+          grep -q '\"ready\":true'; then
+          ready=1
+          break
+        fi
+        sleep 1
+      done
+      test \"\$ready\" -eq 1
       curl -fsS --max-time 30 'http://127.0.0.1:3030/api/search?q=linux&pageSize=1'"
     ;;
 esac

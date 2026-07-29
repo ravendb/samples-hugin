@@ -1,1 +1,68 @@
-See docs/operations.md for provisioning, deployment and database transfer.
+# How to prepare and deploy Hugin to a Pi
+
+The supported target is a Raspberry Pi Zero 2 W running Raspberry Pi OS
+Bookworm 64-bit. There is no local Compose development stack.
+
+## Prerequisites
+
+- A clean checkout of this repository on the development machine.
+- Node.js 22 for building the frontend.
+- An arm64 RavenDB package for the Pi.
+- Ollama installed on the Pi with `snowflake-arctic-embed:s` available.
+- A sealed `HuginAI` artifact whose `System` registry contains only HuginAI.
+  Keep this artifact on the development machine.
+
+Do not put a RavenDB license, database, model, image, or build artifact in the
+repository.
+
+## Initial provisioning
+
+Build the frontend:
+
+```bash
+npm ci --prefix frontend
+npm run build --prefix frontend
+```
+
+Copy a clean source checkout containing `frontend/dist` to a temporary
+directory on the Pi, and copy the RavenDB arm64 package separately. Then run
+on the Pi:
+
+```bash
+sudo RAVENDB_DEB=/tmp/ravendb-arm64.deb /tmp/hugin-source/setup.sh
+```
+
+Provisioning installs the application and system configuration. It does not
+copy a database or license, so `/api/boot-status` may remain degraded until
+the database transfer is complete.
+
+## Database transfer
+
+On the development machine, while the source RavenDB is running:
+
+```bash
+HUGIN_DB_SOURCE=/path/to/sealed-data \
+  tools/hugin-db plan rdb@PI_ADDRESS
+```
+
+Stop the source RavenDB cleanly, then transfer and verify:
+
+```bash
+HUGIN_DB_SOURCE=/path/to/sealed-data \
+  tools/hugin-db push rdb@PI_ADDRESS
+HUGIN_DB_SOURCE=/path/to/sealed-data \
+  tools/hugin-db verify rdb@PI_ADDRESS
+```
+
+Use `HUGIN_DB_SOURCE_URL` when the source does not listen on
+`http://127.0.0.1:8080`.
+
+## Subsequent updates
+
+```bash
+tools/hugin-deploy rdb@PI_ADDRESS
+tools/hugin-deploy rdb@PI_ADDRESS --system  # only for reviewed runtime changes
+```
+
+See `docs/operations.md` for normal operations and
+`docs/pi-validation.md` for the optional pre-PR hardware convention.
