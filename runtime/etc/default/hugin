@@ -1,0 +1,3 @@
+HUGIN_DB_NAME=HuginAI
+HUGIN_EMB_TASK_IDENTIFIER=embedtaskhuginai
+EMB_MODEL=snowflake-arctic-embed:s

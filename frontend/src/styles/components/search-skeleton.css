@@ -1,0 +1,11 @@
+.search-skeleton { padding: 1.5rem 0; }
+.search-skeleton-row { display: grid; gap: .6rem; margin: 1rem 0; }
+.search-skeleton-row span {
+  animation: hugin-pulse 1.2s ease-in-out infinite;
+  background: #e8e9ed;
+  border-radius: .4rem;
+  display: block;
+  height: 1rem;
+}
+.search-skeleton-row span:first-child { width: 70%; }
+@keyframes hugin-pulse { 50% { opacity: .45; } }

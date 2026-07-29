@@ -57,3 +57,8 @@
   text-align: left;
   line-height: 1.2em;
 }/*# sourceMappingURL=backend-timing.css.map */
+.backend-timing-total { display: block; font-size: 2rem; margin: .5rem 0; }
+.backend-timing-breakdown > div {
+  display: flex;
+  justify-content: space-between;
+}

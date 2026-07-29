@@ -27,3 +27,13 @@
   background-color: #1e1f2b;
   color: #f0f1f6;
 }/*# sourceMappingURL=search-controller.css.map */
+.search-header {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+.search-header-filters { display: flex; flex: 1; gap: .4rem; }
+.search-mode button.active { background: #ca1f56; color: white; }

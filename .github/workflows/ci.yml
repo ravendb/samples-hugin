@@ -1,0 +1,111 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  application:
+    name: Application
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 8.0.x
+          cache: true
+          cache-dependency-path: importer/packages.lock.json
+      - run: npm ci
+        working-directory: backend
+      - run: npm test
+        working-directory: backend
+      - run: npm ci
+        working-directory: frontend
+      - run: npm run lint
+        working-directory: frontend
+      - run: npm test
+        working-directory: frontend
+      - run: npm run build
+        working-directory: frontend
+      - run: dotnet restore importer/Hugin.Importer.csproj --locked-mode
+      - run: dotnet build importer/Hugin.Importer.csproj --no-restore --configuration Release
+
+  raven-integration:
+    name: RavenDB integration
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      ravendb:
+        image: ravendb/ravendb:7.2-latest
+        env:
+          RAVEN_Setup_Mode: None
+          RAVEN_Security_UnsecuredAccessAllowed: PublicNetwork
+          RAVEN_Logs_Mode: Information
+        ports:
+          - 8080:8080
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm ci
+        working-directory: backend
+      - name: Wait for RavenDB
+        run: |
+          for attempt in $(seq 1 60); do
+            curl --fail --silent http://127.0.0.1:8080/build/version && exit 0
+            sleep 1
+          done
+          exit 1
+      - run: npm run test:integration
+        working-directory: backend
+        env:
+          HUGIN_INTEGRATION: "1"
+          RAVENDB_URL: http://127.0.0.1:8080
+
+  appliance-static:
+    name: Appliance static
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+      - run: sudo apt-get update && sudo apt-get install -y shellcheck
+      - name: Shell scripts
+        run: >-
+          shellcheck -x setup.sh benchmarks/*.sh tests/pi/*.sh
+          tests/shell/*.sh tools/install.sh
+          tools/hugin-* tools/lib/*.sh
+      - name: Shell behavior
+        run: |
+          set -Eeuo pipefail
+          for test in tests/shell/*.test.sh; do
+            bash "$test"
+          done
+      - name: Pull request whitespace
+        run: |
+          if [[ -n "${GITHUB_BASE_REF:-}" ]]; then
+            git diff --check "origin/$GITHUB_BASE_REF...HEAD"
+          else
+            git diff --check HEAD^ HEAD
+          fi

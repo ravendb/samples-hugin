@@ -1,81 +1,169 @@
-set -x
-set -e
+#!/usr/bin/env bash
+set -Eeuo pipefail
 
-# we assume that we have a Raspbian system running
-# with a user named rdb 
+[[ "$(id -u)" -eq 0 ]] || { echo "run as root" >&2; exit 1; }
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+OFFLINE=0
+WIFI_COUNTRY="${HUGIN_WIFI_COUNTRY:-PL}"
 
-# setup wifi properly
-sudo raspi-config nonint do_wifi_country IL
-sudo rfkill unblock wifi
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --offline) OFFLINE=1 ;;
+    *) echo "usage: setup.sh [--offline]" >&2; exit 2 ;;
+  esac
+  shift
+done
 
-sudo swapoff /var/swap
-sudo dd if=/dev/zero of=/var/swap count=8 bs=128M
-sudo mkswap /var/swap
-sudo chmod 0600 /var/swap
-sudo swapon /var/swap
+if (( ! OFFLINE )); then
+  apt-get update
+  apt-get install -y ca-certificates curl dhcpcd dnsmasq iw nginx openssl \
+    python3 rfkill systemd-zram-generator wpasupplicant
+  node_major="$(node -p "process.versions.node.split('.')[0]" 2>/dev/null || echo 0)"
+  if (( node_major < 22 )); then
+    curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+    apt-get install -y nodejs
+  fi
+else
+  for command in curl dhcpcd dnsmasq iw nginx node npm openssl python3 rfkill \
+    wpa_passphrase wpa_supplicant; do
+    command -v "$command" >/dev/null || {
+      echo "missing dependency in offline mode: $command" >&2
+      exit 1
+    }
+  done
+  [[ -x /usr/lib/systemd/system-generators/zram-generator ]] || {
+    echo "missing dependency in offline mode: systemd-zram-generator" >&2
+    exit 1
+  }
+fi
 
-# install node.js from nodesource (raspbian has only node 12)
-curl -fsSL https://deb.nodesource.com/setup_21.x | sudo -E bash - && sudo apt-get install -y nodejs
+if [[ -n "${RAVENDB_DEB:-}" ]]; then
+  [[ -f "$RAVENDB_DEB" ]] || { echo "RAVENDB_DEB does not exist" >&2; exit 1; }
+  apt-get install -y "$RAVENDB_DEB"
+fi
+systemctl cat ravendb.service >/dev/null 2>&1 || {
+  echo "RavenDB is not installed; provide RAVENDB_DEB=/path/to/arm64.deb" >&2
+  exit 1
+}
+[[ -x /usr/local/bin/ollama ]] || {
+  echo "Ollama is not installed at /usr/local/bin/ollama" >&2
+  exit 1
+}
 
-# install nginx and dnsmasq
-sudo apt-get install -y nginx dnsmasq dhcpcd
-sudo dpkg -i ravendb.deb
-rm  ravendb.deb
+if command -v raspi-config >/dev/null; then
+  raspi-config nonint do_wifi_country "$WIFI_COUNTRY"
+fi
+rfkill unblock wifi
+if systemctl cat NetworkManager.service >/dev/null 2>&1; then
+  # Do not stop the active unit underneath an SSH provision. It is masked for
+  # the next boot, where hugin-boot takes ownership of wlan0.
+  systemctl disable NetworkManager.service 2>/dev/null || true
+  systemctl mask NetworkManager.service
+fi
+systemctl disable wpa_supplicant.service 2>/dev/null || true
+systemctl mask wpa_supplicant.service 2>/dev/null || true
+# hugin-boot starts dnsmasq only when AP mode wins. Keeping it enabled would
+# make client-mode boots fail a bind to the absent 10.1.1.1 address.
+systemctl disable dnsmasq.service 2>/dev/null || true
 
-sudo mkdir -p /var/lib/ravendb/data/Databases
-sudo mv Hugin /var/lib/ravendb/data/Databases/Hugin
-sudo chown --recursive ravendb:ravendb /var/lib/ravendb/data/Databases
-sudo mv settings.json /etc/ravendb/settings.json
-sudo mv license.json /etc/ravendb/license.json
-sudo chown root:ravendb /etc/ravendb/settings.json
-sudo systemctl restart ravendb
+getent group hugin >/dev/null || groupadd --system hugin
+id -u hugin >/dev/null 2>&1 ||
+  useradd --system --gid hugin --home /var/lib/hugin --create-home hugin
+getent group ollama >/dev/null || groupadd --system ollama
+id -u ollama >/dev/null 2>&1 ||
+  useradd --system --gid ollama --home /var/lib/ollama ollama
+usermod -aG ravendb,ollama hugin
 
-# setup the web app users
-getent group node-apps || sudo groupadd node-apps
-NODE_GID=$(getent group node-apps | cut -d ':' -f 3)
-getent passwd hugin || sudo adduser --disabled-login --disabled-password --system \
-  --home /var/lib/hugin --no-create-home --quiet --gid "$NODE_GID" hugin
+install -d -o hugin -g hugin -m 0755 \
+  /usr/lib/hugin /var/lib/hugin /run/hugin
+install -d -o ollama -g ollama -m 2775 \
+  /var/lib/ollama /var/lib/ollama/models \
+  /var/lib/ollama/models/manifests /var/lib/ollama/models/blobs
 
-cd /home/rdb/backend
-npm install
-cd /home/rdb
-sudo mv ./backend /usr/lib/hugin
-sudo mv ./dist /usr/lib/hugin/dist
-sudo chown --recursive root:node-apps /usr/lib/hugin
-sudo mv hugin.service /etc/systemd/system/hugin.service
-sudo systemctl enable hugin
+install -m 0644 "$ROOT/runtime/etc/dhcpcd.conf" /etc/dhcpcd.conf
+install -m 0644 \
+  "$ROOT/runtime/etc/nginx/sites-available/hugin" \
+  /etc/nginx/sites-available/hugin
+ln -sfn /etc/nginx/sites-available/hugin /etc/nginx/sites-enabled/hugin
+rm -f /etc/nginx/sites-enabled/default
+install -m 0644 \
+  "$ROOT/runtime/etc/dnsmasq.d/hugin.conf" \
+  /etc/dnsmasq.d/hugin.conf
+install -m 0644 \
+  "$ROOT/runtime/etc/sysctl.d/99-hugin.conf" \
+  /etc/sysctl.d/99-hugin.conf
+install -d -m 0755 /etc/systemd
+install -m 0644 "$ROOT/runtime/etc/systemd/zram-generator.conf" \
+  /etc/systemd/zram-generator.conf
+install -d -m 0755 /etc/default
+install -m 0644 "$ROOT/runtime/etc/default/hugin" /etc/default/hugin
+install -m 0644 \
+  "$ROOT/runtime/etc/systemd/system/"*.service \
+  /etc/systemd/system/
+install -d -m 0755 /etc/systemd/system/ollama.service.d
+install -m 0644 "$ROOT/runtime/etc/systemd/system/ollama.service.d/"*.conf \
+  /etc/systemd/system/ollama.service.d/
+install -d -m 0755 /etc/systemd/system/ravendb.service.d
+install -m 0644 "$ROOT/runtime/etc/systemd/system/ravendb.service.d/"*.conf \
+  /etc/systemd/system/ravendb.service.d/
+if [[ ! -e /etc/wpa_supplicant/wpa_supplicant.conf ]]; then
+  install -m 0600 \
+    "$ROOT/runtime/etc/wpa_supplicant/wpa_supplicant.conf" \
+    /etc/wpa_supplicant/wpa_supplicant.conf
+fi
 
+install -d -m 0755 /etc/nginx/certs
+if [[ ! -s /etc/nginx/certs/start.ravendb.crt ]]; then
+  openssl req -x509 -nodes -newkey rsa:2048 -days 825 \
+    -keyout /etc/nginx/certs/start.ravendb.key \
+    -out /etc/nginx/certs/start.ravendb.crt \
+    -subj "/CN=start.ravendb" \
+    -addext \
+    "subjectAltName=DNS:start.ravendb,DNS:database.ravendb,IP:10.1.1.1"
+fi
+chmod 0640 /etc/nginx/certs/start.ravendb.key
+chmod 0644 /etc/nginx/certs/start.ravendb.crt
 
-curl 'http://127.0.0.1:8080/admin/databases?name=Hugin&replicationFactor=1' \
-  -X 'PUT' --data-raw '{"DatabaseName":"Hugin"}' --retry 5 --retry-max-time 120 \
-  || true # we ignore this error, as it might be that the database already exists
+"$ROOT/tools/install.sh"
 
+install -d -o hugin -g hugin -m 0755 \
+  /usr/lib/hugin/backend /usr/lib/hugin/frontend
+install -m 0644 "$ROOT/backend/app.js" "$ROOT/backend/server.js" \
+  "$ROOT/backend/db-config.js" "$ROOT/backend/package.json" \
+  "$ROOT/backend/package-lock.json" /usr/lib/hugin/backend/
+cp -a "$ROOT/backend/lib" "$ROOT/backend/indexes" /usr/lib/hugin/backend/
+cp -a "$ROOT/frontend/dist/." /usr/lib/hugin/frontend/
+chown -R hugin:hugin /usr/lib/hugin
+sudo -u hugin npm ci --omit=dev --prefix /usr/lib/hugin/backend
 
-sudo systemctl start hugin
+swapoff -a || true
+systemctl disable --now dphys-swapfile.service 2>/dev/null || true
+sysctl --system
+systemctl daemon-reload
+systemctl enable dhcpcd.service nginx.service ravendb.service \
+  ollama.service hugin-boot.service hugin.service \
+  hugin-warmup.service
 
+nginx -t
+systemctl restart systemd-zram-setup@zram0.service
+systemctl restart nginx.service ollama.service \
+  ravendb.service hugin.service
+rm -f /run/hugin/warmup.done
+systemctl --no-block restart hugin-warmup.service
 
-# configuration of the system
-sudo mv etc.wpa_supplicant.wpa_supplicant.conf /etc/wpa_supplicant/wpa_supplicant.conf
-sudo mv etc.nginx.sites-available.default /etc/nginx/sites-available/default
-sudo mv etc.dhcpcd.conf /etc/dhcpcd.conf
-sudo mv etc.dnsmasq.conf /etc/dnsmasq.conf
+reachable=0
+for _ in $(seq 1 60); do
+  if curl -fsS --max-time 3 \
+    http://127.0.0.1:3030/api/boot-status >/dev/null; then
+    reachable=1
+    break
+  fi
+  sleep 1
+done
+[[ "$reachable" -eq 1 ]] || {
+  echo "Hugin boot-status endpoint is unreachable" >&2
+  exit 1
+}
 
-sudo sed -i 's/#DNSMASQ_EXCEPT="lo"/DNSMASQ_EXCEPT="lo"/g' /etc/default/dnsmasq
-sudo sed -i 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/g' /etc/sysctl.conf 
-
-# restart services and prepare...
-sudo systemctl stop wpa_supplicant
-sudo systemctl mask wpa_supplicant
-
-sudo systemctl enable dnsmasq
-sudo systemctl restart dnsmasq
-sudo service dhcpcd restart
-sudo wpa_cli -i wlan0 reconfigure
-sudo nginx -s reload
-
-# test the db works
-curl http://127.0.0.1:8080/databases/Hugin/docs?id=questions%2Fsuperuser%2F1806936
-
-rm ./* -rf  # cleanup directoy
-
-echo "Ready ..."
+echo "Hugin provisioned. Reboot to activate client-to-AP boot recovery."
+echo "No RavenDB license or database was copied; readiness may stay degraded."

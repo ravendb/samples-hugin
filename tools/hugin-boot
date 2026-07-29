@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+# shellcheck source=tools/lib/wifi.sh
+source "${HUGIN_WIFI_LIB:-/usr/local/lib/hugin/wifi.sh}"
+wifi_require_root
+
+AP_ONLY=0
+[[ "${1:-}" == "--ap-only" ]] && { AP_ONLY=1; shift; }
+[[ $# -eq 0 ]] || { echo "usage: hugin-boot [--ap-only]" >&2; exit 2; }
+
+if (( ! AP_ONLY )); then
+  entries="$(wifi_known_networks 3)"
+  if [[ -n "$entries" ]]; then
+    visible="$(wifi_visible_networks || true)"
+    while IFS=$'\t' read -r ssid password; do
+      [[ -n "$ssid" && -n "$password" ]] || continue
+      if [[ -n "$visible" ]] && ! grep -qxF "$ssid" <<<"$visible"; then
+        echo "skipping Wi-Fi '$ssid': not visible" >&2
+        continue
+      fi
+      echo "trying saved Wi-Fi '$ssid'" >&2
+      if wifi_apply_client "$ssid" "$password"; then
+        echo "connected to '$ssid'"
+        exit 0
+      fi
+    done <<<"$entries"
+  elif [[ -f "$HUGIN_CLIENT_WPA_CONF" ]] && wifi_try_saved_client; then
+    echo "connected using legacy saved Wi-Fi configuration"
+    exit 0
+  fi
+fi
+
+echo "saved Wi-Fi unavailable; starting Hugin AP" >&2
+wifi_apply_ap

@@ -1,0 +1,18 @@
+.boot-screen {
+  align-items: center;
+  background: rgba(19, 17, 30, .94);
+  color: white;
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  z-index: 10000;
+}
+.boot-screen-card { max-width: 40rem; padding: 2rem; width: 100%; }
+.boot-screen-card li {
+  display: grid;
+  gap: .25rem;
+  grid-template-columns: 7rem 6rem 1fr;
+  padding: .4rem 0;
+}
+.boot-screen-card small { opacity: .75; }

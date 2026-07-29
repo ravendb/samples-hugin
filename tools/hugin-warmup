@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+MODEL="${EMB_MODEL:-snowflake-arctic-embed:s}"
+TOKEN="hugin-warmup-$(date +%s)-$$"
+HUGIN_URL="${HUGIN_URL:-http://127.0.0.1:3030}"
+HARD_TIMEOUT="${HUGIN_WARMUP_TIMEOUT:-300}"
+
+upstream_ready() {
+  local body=$1
+  printf '%s' "$body" |
+    grep -Eq '"ollama":[[:space:]]*\{[^}]*"status":[[:space:]]*"ready"' &&
+    printf '%s' "$body" |
+      grep -Eq '"ravendb":[[:space:]]*\{[^}]*"status":[[:space:]]*"ready"'
+}
+
+deadline=$((SECONDS + HARD_TIMEOUT))
+while (( SECONDS < deadline )); do
+  body="$(curl --silent --show-error --max-time 5 \
+    "$HUGIN_URL/api/boot-status" 2>/dev/null || true)"
+  if [[ -n "$body" ]] && upstream_ready "$body"; then
+    break
+  fi
+  sleep 2
+done
+(( SECONDS < deadline )) || {
+  echo "timed out waiting for Ollama and RavenDB" >&2
+  exit 1
+}
+
+curl --fail --silent --show-error --max-time 180 \
+  -H 'Content-Type: application/json' \
+  -d "{\"model\":\"$MODEL\",\"prompt\":\"$TOKEN\",\"keep_alive\":\"24h\"}" \
+  http://127.0.0.1:11434/api/embeddings >/dev/null
+
+curl --fail --silent --show-error --max-time 180 \
+  --get --data-urlencode "q=$TOKEN" --data-urlencode "mode=ai" \
+  --data-urlencode "pageSize=1" "$HUGIN_URL/api/search" >/dev/null
+
+touch /run/hugin/warmup.done

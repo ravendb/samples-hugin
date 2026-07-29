@@ -1,0 +1,19 @@
+[Unit]
+Description=Hugin boot-time Wi-Fi recovery
+After=network-pre.target sys-subsystem-net-devices-wlan0.device
+Wants=sys-subsystem-net-devices-wlan0.device
+Before=hugin.service dhcpcd.service
+ConditionPathExists=/usr/local/sbin/hugin-boot
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+EnvironmentFile=-/etc/default/hugin
+ExecStart=/usr/local/sbin/hugin-boot
+TimeoutStartSec=120
+SuccessExitStatus=0 1
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

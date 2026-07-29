@@ -1,0 +1,21 @@
+[Unit]
+Description=Hugin application
+After=network.target
+
+[Service]
+Type=simple
+User=hugin
+Group=hugin
+WorkingDirectory=/usr/lib/hugin/backend
+Environment=NODE_ENV=production
+EnvironmentFile=-/etc/default/hugin
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/run/hugin /var/lib/hugin
+
+[Install]
+WantedBy=multi-user.target

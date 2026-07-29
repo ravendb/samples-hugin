@@ -1,87 +1,59 @@
 import "../styles/components/search-controller.css";
 import { useSearchParams } from "react-router-dom";
-import { IoClose } from "react-icons/io5";
+import { useDispatch } from "react-redux";
+import { getServerResult, setViewMode } from "../store/store";
 
-function SearchController() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const tags = searchParams.getAll("tag");
-  const communities = searchParams.getAll("community");
-
-  function handleRemoveTag(tag) {
-    setSearchParams(searchParams => {
-      searchParams.delete("tag", tag);
-      return searchParams;
-    })
-  }
-
-  function handleRemoveCommunity(community) {
-    setSearchParams(searchParams => {
-      searchParams.delete("community", community);
-      return searchParams;
-    });
-  }
-
-  function handleSortByChange(e) {
-    setSearchParams(searchParams => {
-      searchParams.set("orderBy", e.target.value);
-      return searchParams;
-    });
-  }
+export default function SearchController() {
+  const [params, setParams] = useSearchParams();
+  const dispatch = useDispatch();
+  const { searchResult } = getServerResult();
+  const showAi = searchResult.aiEnabled &&
+    (searchResult.refining || searchResult.ai);
 
   return (
-    <div className="card bg-faded-interactive">
-      <div className="card-body search-controller hstack gap-4 align-items-start">
-      <div className="flex-grow-1">
-        <h4 className="search-controller-sort-by-title mb-2">Tags and Communities</h4>
-        <div className="search-controller-tags">
-          {communities.map((community) => (
-            <div key={community} className={"search-controller-community bg-faded-" + community}>
-              <span>{community}</span>
-              <IoClose
-                className="search-controller-close"
-                onClick={() => handleRemoveCommunity(community)}
-              />
-            </div>
-          ))}
-          {tags.map((tag) => (
-            <div key={tag} className="search-controller-tag">
-              <span>{tag}</span>
-              <IoClose
-                className="search-controller-close"
-                onClick={() => handleRemoveTag(tag)}
-              />
-            </div>
-          ))}
-        </div>
-        
+    <div className="search-header">
+      <div className="search-header-filters">
+        {params.getAll("community").map((value) => (
+          <button key={value} onClick={() => setParams((next) => {
+            next.delete("community", value);
+            return next;
+          })}>{value} ×</button>
+        ))}
+        {params.getAll("tag").map((value) => (
+          <button key={value} onClick={() => setParams((next) => {
+            next.delete("tag", value);
+            return next;
+          })}>{value} ×</button>
+        ))}
       </div>
-      <div className="search-controller-sort-by">
-        <h4 className="search-controller-sort-by-title mb-2">Sort By</h4>
+      <label>
+        Sort{" "}
         <select
-          onChange={handleSortByChange}
-          className="search-controller-sort-by-select form-control form-control-lg"
+          value={params.get("orderBy") || "CreationDate"}
+          onChange={(event) => setParams((next) => {
+            next.set("orderBy", event.target.value);
+            return next;
+          })}
         >
-          <option
-            value="CreationDate"
-            className="search-controller-sort-by-option"
-          >
-            Creation Date
-          </option>
-          <option value="Score" className="search-controller-sort-by-option">
-            Score
-          </option>
-          <option
-            value="ViewCount"
-            className="search-controller-sort-by-option"
-          >
-            View Count
-          </option>
+          <option value="CreationDate">Newest</option>
+          <option value="Score">Score</option>
+          <option value="ViewCount">Views</option>
         </select>
-      </div>
-      </div>
+      </label>
+      {showAi && (
+        <div className="search-mode" role="group" aria-label="Search result mode">
+          <button
+            className={searchResult.viewMode === "normal" ? "active" : ""}
+            onClick={() => dispatch(setViewMode("normal"))}
+          >Full text</button>
+          <button
+            className={searchResult.viewMode === "ai" ? "active" : ""}
+            onClick={() => dispatch(setViewMode("ai"))}
+          >
+            AI {searchResult.aiPhase === "running" && !searchResult.ai ? "…" : ""}
+          </button>
+        </div>
+      )}
     </div>
   );
 }
-
-export default SearchController;

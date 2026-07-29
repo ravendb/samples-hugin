@@ -21,7 +21,7 @@ string file = Environment.GetCommandLineArgs()[1];
 
 string prefix = Environment.GetCommandLineArgs()[2];
 
-using var archive = ArchiveFactory.Open(file);
+using var archive = ArchiveFactory.OpenArchive(file);
 var answerToQuestion = new Dictionary<int, int>();
 var state = new State { Session = store.OpenAsyncSession() };
 

@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import "./styles/styles.css";
 import AppHeader from "./components/AppHeader";
+import BootScreen from "./components/BootScreen";
 import SearchPage from "./pages/SearchPage";
 import QuestionPage from "./pages/QuestionPage";
 import HowPage from "./pages/How";
@@ -10,6 +11,7 @@ import HowPage from "./pages/How";
 function App() {
   return (
     <>
+      <BootScreen />
       <AppHeader />
       <Routes>
         <Route index element={<Navigate replace to="/home" />} />

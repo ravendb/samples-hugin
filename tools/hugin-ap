@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+# shellcheck source=tools/lib/wifi.sh
+source "${HUGIN_WIFI_LIB:-/usr/local/lib/hugin/wifi.sh}"
+wifi_require_root
+wifi_apply_ap
+echo "AP ${HUGIN_AP_SSID} ready at ${HUGIN_AP_CIDR}"

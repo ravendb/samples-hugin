@@ -1,0 +1,159 @@
+log_format hugin_probe '$remote_addr - $host "$request" $status released=$hugin_released';
+
+map $http_cookie $hugin_released {
+    default 0;
+    "~*captive_released=1" 1;
+}
+
+# Android and Chrome connectivity probes.
+server {
+    listen 80;
+    server_name connectivitycheck.gstatic.com connectivitycheck.android.com
+        clients1.google.com clients3.google.com;
+    access_log /var/log/nginx/hugin-probe.access.log hugin_probe;
+    add_header Cache-Control "no-store" always;
+
+    location = /generate_204 {
+        if ($hugin_released = 1) { return 204; }
+        return 302 http://start.ravendb;
+    }
+    location = /gen_204 {
+        if ($hugin_released = 1) { return 204; }
+        return 302 http://start.ravendb;
+    }
+    location / { return 204; }
+}
+
+# Apple connectivity probes.
+server {
+    listen 80;
+    server_name captive.apple.com www.apple.com;
+    access_log /var/log/nginx/hugin-probe.access.log hugin_probe;
+    add_header Cache-Control "no-store" always;
+
+    location = /hotspot-detect.html {
+        if ($hugin_released = 1) {
+            return 200 "<HTML><BODY>Success</BODY></HTML>\n";
+        }
+        return 302 http://start.ravendb;
+    }
+    location = /library/test/success.html {
+        if ($hugin_released = 1) { return 200 "Success\n"; }
+        return 302 http://start.ravendb;
+    }
+    location / { return 204; }
+}
+
+# Windows connectivity probes.
+server {
+    listen 80;
+    server_name msftconnecttest.com www.msftconnecttest.com
+        msftncsi.com www.msftncsi.com dns.msftncsi.com;
+    access_log /var/log/nginx/hugin-probe.access.log hugin_probe;
+    add_header Cache-Control "no-store" always;
+
+    location = /connecttest.txt {
+        if ($hugin_released = 1) { return 200 "Microsoft Connect Test"; }
+        return 302 http://start.ravendb;
+    }
+    location = /ncsi.txt {
+        if ($hugin_released = 1) { return 200 "Microsoft NCSI"; }
+        return 302 http://start.ravendb;
+    }
+    location / { return 204; }
+}
+
+# Unknown captive requests enter the portal.
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+    server_name _;
+
+    location / {
+        if ($hugin_released = 1) { return 204; }
+        add_header Set-Cookie
+            "captive_released=1; Path=/; Max-Age=86400; SameSite=Lax" always;
+        return 302 http://start.ravendb;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name start.ravendb "~^(192\.168|10\.1|10\.0)\.\d{1,3}\.\d{1,3}$";
+    root /usr/lib/hugin/frontend;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    location /api/ {
+        proxy_pass http://127.0.0.1:3030;
+        proxy_connect_timeout 30s;
+        proxy_read_timeout 180s;
+        proxy_send_timeout 180s;
+    }
+    location = /captive/complete {
+        add_header Set-Cookie
+            "captive_released=1; Path=/; Max-Age=86400; SameSite=Lax" always;
+        add_header Cache-Control "no-store" always;
+        return 204;
+    }
+}
+
+server {
+    listen 80;
+    listen [::]:80;
+    server_name database.ravendb;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+}
+
+# HTTPS is redirected back to the HTTP captive portal. A self-signed
+# certificate avoids a hard connection refusal on clients that force HTTPS.
+server {
+    listen 443 ssl default_server;
+    server_name _;
+    ssl_certificate /etc/nginx/certs/start.ravendb.crt;
+    ssl_certificate_key /etc/nginx/certs/start.ravendb.key;
+    return 302 http://start.ravendb$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name start.ravendb;
+    ssl_certificate /etc/nginx/certs/start.ravendb.crt;
+    ssl_certificate_key /etc/nginx/certs/start.ravendb.key;
+    root /usr/lib/hugin/frontend;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+    location /api/ {
+        proxy_pass http://127.0.0.1:3030;
+        proxy_connect_timeout 30s;
+        proxy_read_timeout 180s;
+        proxy_send_timeout 180s;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name database.ravendb;
+    ssl_certificate /etc/nginx/certs/start.ravendb.crt;
+    ssl_certificate_key /etc/nginx/certs/start.ravendb.key;
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "Upgrade";
+        proxy_set_header Host $host;
+    }
+}

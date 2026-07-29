@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unescaped-entities */
 import { useNavigate } from "react-router-dom";
 import { getCommunities } from "../services/data.service";
 import "../styles/pages/home-page.css";
@@ -100,10 +101,7 @@ function HomePage() {
                   </p>
                   <h4>Doing more with Hugin</h4>
                   <p>
-                    The device you are holding is running Linux and is accessible via SSH with the following credentials: <code>rdb</code> / <code>awesome</code> while connected to the <code>Hugin (ravendb)</code> network.
-                  </p>
-                  <p>
-                    You'll find the source code for Hugin on the device (<code>/usr/lib/hugin</code>) or on <ExternalLink href="https://github.com/ravendb/samples-hugin">github.com/ravendb/samples-hugin</ExternalLink>.
+                    Appliance administration is documented in the project&apos;s operations guide. Access credentials are set during provisioning and are never embedded in the application.
                   </p>
                 </div>
               </div>

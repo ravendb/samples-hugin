@@ -1,0 +1,95 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+TARGET="${1:-${HUGIN_PI:-}}"
+[[ -n "$TARGET" ]] || { echo "usage: hugin-deploy TARGET [--system]" >&2; exit 2; }
+shift || true
+SYSTEM=0
+[[ "${1:-}" == "--system" ]] && SYSTEM=1
+ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+ARCHIVE="$(mktemp --suffix=.tar.gz)"
+trap 'rm -f "$ARCHIVE"' EXIT
+
+timeout 8 ssh -o BatchMode=yes -o ConnectTimeout=5 "$TARGET" true
+npm ci --prefix "$ROOT/frontend"
+npm run build --prefix "$ROOT/frontend"
+npm ci --prefix "$ROOT/backend"
+npm test --prefix "$ROOT/backend"
+
+items=(
+  backend/app.js
+  backend/server.js
+  backend/db-config.js
+  backend/package.json
+  backend/package-lock.json
+  backend/lib
+  backend/indexes
+  frontend/dist
+  tools/hugin-logs
+  tools/hugin-clients
+  tools/hugin-status
+)
+(( SYSTEM )) && items+=(
+  runtime
+  setup.sh
+  tools/install.sh
+  tools/lib
+  tools/hugin-ap
+  tools/hugin-boot
+  tools/hugin-wifi
+  tools/hugin-reset-radio
+  tools/hugin-warmup
+)
+tar -C "$ROOT" -czf "$ARCHIVE" "${items[@]}"
+scp -o ConnectTimeout=5 "$ARCHIVE" "$TARGET:/tmp/hugin-deploy.tar.gz"
+# SYSTEM intentionally expands locally before the remote shell receives it.
+# shellcheck disable=SC2029
+ssh "$TARGET" "set -Eeuo pipefail
+  rm -rf /tmp/hugin-deploy
+  mkdir /tmp/hugin-deploy
+  tar -xzf /tmp/hugin-deploy.tar.gz -C /tmp/hugin-deploy
+  if [[ $SYSTEM -eq 1 ]]; then
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/nginx/sites-available/hugin /etc/nginx/sites-available/hugin
+    sudo ln -sfn /etc/nginx/sites-available/hugin /etc/nginx/sites-enabled/hugin
+    sudo rm -f /etc/nginx/sites-enabled/default
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/dnsmasq.d/hugin.conf /etc/dnsmasq.d/hugin.conf
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/dhcpcd.conf /etc/dhcpcd.conf
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/sysctl.d/99-hugin.conf /etc/sysctl.d/99-hugin.conf
+    sudo install -d /etc/systemd
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/zram-generator.conf /etc/systemd/zram-generator.conf
+    sudo install -d /etc/default
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/default/hugin /etc/default/hugin
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/*.service /etc/systemd/system/
+    sudo install -d /etc/systemd/system/ollama.service.d
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/ollama.service.d/*.conf /etc/systemd/system/ollama.service.d/
+    sudo install -d /etc/systemd/system/ravendb.service.d
+    sudo install -m 0644 /tmp/hugin-deploy/runtime/etc/systemd/system/ravendb.service.d/*.conf /etc/systemd/system/ravendb.service.d/
+    sudo /tmp/hugin-deploy/tools/install.sh
+    sudo sysctl --system
+    sudo systemctl daemon-reload
+    sudo nginx -t
+    sudo systemctl restart nginx
+    sudo systemctl restart ollama
+  fi
+  sudo install -d -o hugin -g hugin -m 0755 /usr/lib/hugin/backend /usr/lib/hugin/frontend
+  sudo cp -a /tmp/hugin-deploy/backend/. /usr/lib/hugin/backend/
+  sudo cp -a /tmp/hugin-deploy/frontend/dist/. /usr/lib/hugin/frontend/
+  sudo chown -R hugin:hugin /usr/lib/hugin
+  sudo -u hugin npm ci --omit=dev --prefix /usr/lib/hugin/backend
+  sudo systemctl restart hugin
+  if [[ $SYSTEM -eq 1 ]]; then
+    sudo rm -f /run/hugin/warmup.done
+    sudo systemctl restart hugin-warmup
+  fi
+  ready=0
+  ready_attempts=30
+  [[ $SYSTEM -eq 1 ]] && ready_attempts=420
+  for i in \$(seq 1 \$ready_attempts); do
+    if curl -fsS --max-time 3 http://127.0.0.1:3030/api/ready; then ready=1; break; fi
+    sleep 1
+  done
+  [[ \$ready -eq 1 ]]"
+local_hash="$(sha256sum "$ARCHIVE" | awk '{print $1}')"
+remote_hash="$(ssh "$TARGET" sha256sum /tmp/hugin-deploy.tar.gz | awk '{print $1}')"
+[[ "$local_hash" == "$remote_hash" ]] || { echo "upload hash mismatch" >&2; exit 1; }
+curl --fail --silent --show-error --max-time 10 "http://${TARGET#*@}/api/boot-status"
+echo

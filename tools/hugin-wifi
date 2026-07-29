@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+# shellcheck source=tools/lib/wifi.sh
+source "${HUGIN_WIFI_LIB:-/usr/local/lib/hugin/wifi.sh}"
+wifi_require_root
+[[ $# -eq 2 ]] || { echo "usage: hugin-wifi SSID PASSWORD" >&2; exit 2; }
+wifi_apply_client "$1" "$2"
+wifi_save_network "$1" "$2"
+echo "connected to '$1' and saved it for boot recovery"
