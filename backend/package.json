@@ -18,7 +18,7 @@
     "axios": "^1.6.7",
     "cors": "^2.8.5",
     "express": "4.22.2",
-    "ravendb": "7.2.5"
+    "ravendb": "7.2.6"
   },
   "devDependencies": {
     "nodemon": "3.0.3"
