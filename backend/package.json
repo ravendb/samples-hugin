@@ -15,7 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "axios": "^1.6.7",
+    "axios": "^1.20.0",
     "cors": "^2.8.5",
     "express": "4.22.2",
     "ravendb": "7.2.6"
