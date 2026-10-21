@@ -32,6 +32,8 @@ function createApp(options = {}) {
   if (!options.documentStore) documentStore.initialize();
 
   const app = express();
+  // Express 5 defaults to the "simple" parser, which leaves axios' tag[]=a as a "tag[]" key.
+  app.set("query parser", "extended");
   const queue = options.queue || createLatestWinsQueue();
   const bootStatus = options.bootStatus || createBootStatus({ axios });
 
