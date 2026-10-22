@@ -131,6 +131,21 @@ test("origin endpoints retain their response contracts", async () => {
   });
 });
 
+test("bracketed tag arrays from axios filter the search", async () => {
+  const store = createFakeStore();
+  const app = createApp({
+    documentStore: store,
+    bootStatus: async () => ({ ready: true, stages: {} }),
+  });
+  await withServer(app, async (base) => {
+    const response = await fetch(`${base}/api/search?q=wifi&tag[]=linux&tag[]=wifi`);
+    assert.equal(response.status, 200);
+  });
+  assert.ok(store.calls.some((call) =>
+    call[0] === "whereIn" && call[1] === "Tags" &&
+    call[2].join() === "linux,wifi"));
+});
+
 test("AI mode uses the vector index and explicit task identifier", async () => {
   const store = createFakeStore();
   const app = createApp({
